@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Episode++</title>
+    <link rel="stylesheet" href="stylesheet.css">
+    <script src="series.js"></script>
+    <script src="edit.js"></script>
+  </head>
+  <body>
+    <form name="editSeasonEpisodeURL" id="epp_edit_form">
+      <table>
+        <tr>
+          <td colspan="2">Title:</td>
+        </tr>
+        <tr>
+          <td colspan="2"><input type="text" id="epp_title" name="title" autofocus></td>
+        </tr>
+        <tr>
+          <td colspan="2">URL:</td>
+        </tr>
+        <tr>
+          <td colspan="2"><input type="url" id="epp_url" name="url"></td>
+        </tr>
+        <tr>
+          <td>Season:</td>
+          <td>Episode:</td>
+        </tr>
+        <tr>
+          <td><input type="number" min="0" id="epp_season" name="season" value="0"></td> 
+          <td><input type="number" min="0" id="epp_episode" name="episode" value="0"></td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <input type="checkbox" id="epp_incognito" name="incognito" value="incognito" checked>
+            <label for="epp_incognito">open incognito</label>
+          </td>
+        </tr>
+      </table>
+      <br>
+      <a id="cancel" title="Cancel" class="btn" href="popup.html">Cancel</a>
+      <span class="right"><input type="submit" id="save" title="Save" class="btn" value="Save"></span>
+    </form>
+  </body>
+</html>

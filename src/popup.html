@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Episode++</title>
+    <link rel="stylesheet" href="stylesheet.css">
+    <script src="series.js"></script>
+    <script src="popup.js"></script>
+    </head>
+  <body>
+    <form>
+      <div id="selection">
+        <select id="select_series" autofocus>
+          <option value="add new series">add new series</option>
+        </select>
+        <p class="edit">
+        <a title="Edit" href="edit.html" id="editSeries">&nbsp;&#x270E;&nbsp;</a>
+        <a title="Delete" href="#confirmationDialog" id="deleteSeries">&nbsp;&#x2718;&nbsp;</a>
+        <span class="right"><a title="Select" href="#" id="selectSeries">&nbsp;&#x2714;&nbsp;</a></span>
+        </p>
+      </div>
+    </form>
+    <div id="confirmationDialog" class="overlay">
+      <div class="dialog">
+        Are you sure you want to delete <a id="selectedSeries"></a>?
+        <p><a title="do not delete" href="#" id="deleteCancel" class="btn">Cancel</a>
+        <span class="right"><a title="definitely delete" href="#" id="definitelyDelete" class="btn">Yes</a></span></p>
+      </div>
+    </div>
+  </body>
+</html>

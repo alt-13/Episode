@@ -1,0 +1,105 @@
+body {
+  font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+  font-size: 100%;
+  margin:1em;
+  width:10em;
+}
+input {
+  border-radius: 3px;
+  width: 97%;
+}
+input[type="number"] {
+  width: 94%;
+}
+input[type="checkbox"] {
+  float: left;
+  width: auto;
+  margin-right: .7em;
+}
+input[type="checkbox"] + label {
+  display: inline-block;
+}
+.right {
+  float: right;
+}
+#editSeries {
+  float:left;
+}
+#selectSeries {
+  font-size: 1em;
+  text-decoration: none;
+  background: none;
+  border-style: none;
+}
+select {
+  width: 100%;
+  border-radius: 3px;
+  margin:0.5em 0 0.5em 0;
+  font-size:90%;
+}
+.edit {
+  text-align:center;
+}
+.edit a, .edit span {
+  font-size: 2em;
+  text-decoration: none;
+  color: black;
+}
+.edit a:hover, .edit span:hover {
+  background:#F8F8F8;
+  border-radius: 10px;
+}
+.btn {
+  background: #A0A0A0;
+  border: #606060 solid 1px;
+  border-radius: 3px;
+  display: inline-block;
+  padding: 4px 8px;
+  text-align: center;
+  transition: all 200ms;
+  color: #F0F0F0;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 100%;
+}
+.btn:hover {
+  background: #808080;
+  color: white;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.1);
+  transition: opacity 200ms;
+  visibility: hidden;
+  opacity: 0;
+}
+.overlay:target {
+  visibility: visible;
+  opacity: 1;
+  /*overflow-y:auto;*/
+}
+.hidden {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.1);
+  visibility: hidden;
+  opacity: 0;
+}
+.hidden:target {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.dialog {
+  padding:1em;
+  background: #fff;
+  border-radius: 3px;
+  transition: all 200ms ease-in-out;
+}
