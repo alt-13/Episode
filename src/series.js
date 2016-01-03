@@ -12,7 +12,7 @@ function Series(name, url, season, episode, incognito, selected) {
 Series.prototype.log = function() {
   var properties = "";
   for(var property in this) {
-    if(typeof this[property] !== typeof function(){})
+    if(typeof this[property] !== "function")
       properties += property + ": " + this[property] + "\n";
   }
   console.log(properties);
@@ -35,7 +35,7 @@ Series.prototype.save = function(clone) {
   clone = typeof clone !== "undefined" ? clone : false;
   var seriesToStore = {};
   for(var property in this) {
-    if(typeof this[property] !== typeof function(){}){
+    if(typeof this[property] !== "function"){
       if(property == "url")
         seriesToStore[property] = clone ? this[property] : encodeURL(this[property]);
       else
@@ -51,7 +51,7 @@ function SeriesList(obj) {
   var length = function(obj) {
     var numberOfSeries = 0;
     for(var series in obj) {
-      if(typeof obj[series] !== typeof function(){}) {
+      if(typeof obj[series] !== "function") {
         numberOfSeries++;
       }
     }
@@ -61,7 +61,7 @@ function SeriesList(obj) {
   this.save = function() {
     var seriesListToStore = {};
     for(var series in this) {
-      if(typeof this[series] !== typeof function(){}) {
+      if(typeof this[series] !== "function") {
         seriesListToStore[series] = this[series].save();
       }
     }
@@ -78,7 +78,7 @@ function SeriesList(obj) {
     save = typeof save !== "undefined" ? save : true;
     var sname = name;
     for(var series in this) {
-      if(typeof this[series] === typeof function(){}) {
+      if(typeof this[series] === "function") {
         if(series == name) {
           sname = name + " ";
         }
@@ -92,7 +92,7 @@ function SeriesList(obj) {
   };
   // deletes series: refreshes popup.html/redirects to edit.html if list empty
   this.delete = function(name, ifListEmpty, reload) {
-    if(typeof this[name] !== typeof function(){})
+    if(typeof this[name] !== "function")
       delete this[name];
     if(length(this) === 0) {
       ifListEmpty();
@@ -105,7 +105,7 @@ function SeriesList(obj) {
   // selects series and saves changes
   this.select = function(name) {
     for(var series in this) {
-      if(typeof this[series] !== typeof function(){})
+      if(typeof this[series] !== "function")
         this[series].selected = false;
     }
     if(name != null && name in this)
@@ -117,7 +117,7 @@ function SeriesList(obj) {
     var selected = null;
     for(var series in this) {
       var s = this[series];
-      if(typeof s !== typeof function(){}) {
+      if(typeof s !== "function") {
         if(s.selected) selected = s;
       }
     }
@@ -125,7 +125,7 @@ function SeriesList(obj) {
   };
   // @return true on success, false otherwise (e.g.: existing rename name)
   this.edit = function(name, url, season, episode, incognito) {
-    if(!this[name]) { // name not in list
+    if(!this[name] || typeof this[name] === "function") { // name not in list
       var s = this.getSelected();
       if(s !== null) // rename
         delete this[s.name];        
@@ -139,11 +139,22 @@ function SeriesList(obj) {
       return true;
     }
   };
+  // checks if name is available while editing
+  this.checkNameOK = function(name) {
+    if(name === "undefined" || name === "")
+      return false;
+    else if(!this[name])
+      return true;
+    else if(!this[name].selected)
+      return false;
+    else
+      return true;
+  }
   // logs series list content to console
   this.log = function() {
     console.log("===== SeriesList =====");
     for(var series in this) {
-      if(typeof this[series] !== typeof function(){}) {
+      if(typeof this[series] !== "function") {
         console.log("----- " + series + " -----");
         this[series].log();
       }

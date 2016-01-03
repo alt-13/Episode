@@ -2,7 +2,7 @@
    "manifest_version": 2,
    
    "name": "Episode++",
-   "description": "This extension opens the next to whatch episode in incognito window. Doubleclick to aktivate popup!",
+   "description": "This extension opens the next to whatch episode in a new tab or incognito window. Doubleclick to aktivate popup!",
    
    "background": {
       "scripts": [ "jquery.min.js", "series.js", "context_menus.js", "background.js" ],

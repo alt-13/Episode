@@ -1,8 +1,9 @@
 var alreadyClicked = false;
 var timer;
-var funMap = {"proxer.me":buildProxerURL, "bs.to":findeEpisodeString,
-              "animehaven.org":buildAnimehavenURL};
 var storedTabID = "episode++TabID";
+var funMap = {"proxer.me":buildProxerURL, "bs.to":findeEpisodeString,
+              "animehaven.org":buildAnimehavenURL, "kinox":buildKinoxURL,
+              "91.202.61.170":buildKinoxURL};
 
 // Entry: single/double click listener------------------------------------------
 chrome.browserAction.onClicked.addListener(function(tab) {
@@ -68,12 +69,17 @@ function ifListFound(items) {
 
 function updateURL(series, seriesList) {
   var url = parseURL(series.url);
-  var chosenFunction = funMap[url.hostname];
+  var chosenFunction = funMap[url.hostname] ? funMap[url.hostname] : funMap[url.hostname.split(".")[0]];
   if(!chosenFunction) {
     alert(url.hostname + " not yet supported!");
+    setPopup();
   } else {
     chosenFunction(url, series, seriesList);
   }
+}
+// The kinox way
+function buildKinoxURL(url, series, seriesList) {
+  open(url.protocol + "//" + url.host + url.pathname + ",s" + series.season + "e" + series.episode, series.incognito);
 }
 // The proxer way (no season support)
 function buildProxerURL(url, series, seriesList) {
