@@ -1,6 +1,5 @@
 var alreadyClicked = false;
 var timer;
-var storedTabID = "episode++TabID";
 var funMap = {"proxer.me":buildProxerURL, "bs.to":findeEpisodeString,
               "animehaven.org":buildAnimehavenURL, "kinox":buildKinoxURL,
               "91.202.61.170":buildKinoxURL};
@@ -25,17 +24,17 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 // Check tabs/windows removed --------------------------------------------------
 chrome.tabs.onRemoved.addListener(
   function(tabID) {
-    var ids = localStorage.getItem(storedTabID);
+    var ids = getTabID();
     if(ids != null && ids.split("|")[1] == tabID) {
-      localStorage.setItem(storedTabID, 0);
+      setTabID(0);
     }
   });
 
 chrome.windows.onRemoved.addListener(
   function(windowID) {
-    var ids = localStorage.getItem(storedTabID);
+    var ids = getTabID();
     if(ids != null && ids.split("|")[0] == windowID) {
-      localStorage.setItem(storedTabID, 0);
+      setTabID(0);
     }
   }
 );
@@ -170,7 +169,7 @@ function buildBsURL(url, season, episode, incognito) {
 function open(url, incognito) {
   incognito = typeof incognito !== "undefined" ? incognito : true;
   chrome.extension.isAllowedIncognitoAccess(function(isAllowedAccess) {
-    var ids = localStorage.getItem(storedTabID);
+    var ids = getTabID();
     var windowID = 0;
     var tabID = 0;
     var incognitoWindow = false;
@@ -190,7 +189,7 @@ function open(url, incognito) {
       if(create) {
         chrome.windows.create({url:url, incognito:incognito, state:"maximized"}, function(window) {
           if(isAllowedAccess) {
-            localStorage.setItem(storedTabID, window.id+"|"+window.tabs[0].id+"|incognito");
+            setTabID(window.id+"|"+window.tabs[0].id+"|incognito");
           }
         });
       }
@@ -199,7 +198,7 @@ function open(url, incognito) {
         chrome.tabs.update(parseInt(tabID),{url:url});
       } else {
         chrome.tabs.create({url:url}, function(tab){
-          localStorage.setItem(storedTabID, tab.windowId+"|"+tab.id);
+          setTabID(tab.windowId+"|"+tab.id);
         });
       }
     }
@@ -213,6 +212,14 @@ function setPopup() {
 
 function unsetPopup() {
   chrome.browserAction.setPopup({popup:""});
+}
+
+function getTabID() {
+  return localStorage.getItem("episode++TabID");
+}
+
+function setTabID(tabID) {
+  localStorage.setItem("episode++TabID", tabID);
 }
 
 function parseURL(url) {
