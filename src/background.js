@@ -2,7 +2,7 @@ var alreadyClicked = false;
 var timer;
 var funMap = {"proxer.me":buildProxerURL, "bs.to":findeEpisodeString,
               "animehaven.org":buildAnimehavenURL, "kinox":buildKinoxURL,
-              "91.202.61.170":buildKinoxURL};
+              "91.202.61.170":buildKinoxURL, "netflix":buildNetflixURL};
 
 // Entry: single/double click listener------------------------------------------
 chrome.browserAction.onClicked.addListener(function(tab) {
@@ -15,49 +15,42 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   alreadyClicked = true;
   var  DOUBLECLICK_TIME = 250; // Timer to detect next click
   timer = setTimeout(function () { // ----> Process single click <----
-    processSingleClick();
+    restore(setPopup, ifListFound);
     clearTimeout(timer); // Clear all timers
     alreadyClicked = false; // Ignore clicks
   }, DOUBLECLICK_TIME);
 });
 
 // Check tabs/windows removed --------------------------------------------------
-chrome.tabs.onRemoved.addListener(
-  function(tabID) {
-    var ids = getTabID();
-    if(ids != null && ids.split("|")[1] == tabID) {
-      setTabID(0);
-    }
-  });
-
-chrome.windows.onRemoved.addListener(
-  function(windowID) {
-    var ids = getTabID();
-    if(ids != null && ids.split("|")[0] == windowID) {
-      setTabID(0);
-    }
+chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
+  var ids = getTabID();
+  if(ids !== null && ids.windowID == removeInfo.windowId && ids.tabID == tabId) {
+    setTabID(0);
   }
-);
+});
+
+chrome.windows.onRemoved.addListener(function(windowId) {
+  var ids = getTabID();
+  if(ids !== null && ids.windowID == windowId) {
+    setTabID(0);
+  }
+});
 
 // Create context menus (limited to 6) -----------------------------------------
 chrome.runtime.onInstalled.addListener(function(){restore(createContextMenu, createContextMenu);});
 restore(setPopup, ifListFoundAddContextMenuOnClickedListeners);
 addStorageOnChangedListenerForContexMenu();
 
-// Process double click: setPopup (see Helper functions) -----------------------
+// Process double click: setPopup (see utils) ----------------------------------
 
 // Process single click --------------------------------------------------------
-function processSingleClick(){
-  restore(setPopup, ifListFound);
-}
-
 function ifListFound(items) {
   var seriesList = new SeriesList(items);
   var selected = seriesList.getSelected();
   if(selected === null) {
     setPopup();
-  } else if(selected.url == null) {
-    setPopup();
+  } else if(selected.url === "") {
+    setPopupTo("edit.html");
   } else {
     if(parseInt(selected.season) === 0) seriesList.edit(selected.name, selected.url, 1, selected.episode, selected.incognito);
     if(parseInt(selected.episode) === 0) seriesList.edit(selected.name, selected.url, selected.season, 1, selected.incognito);
@@ -68,7 +61,7 @@ function ifListFound(items) {
 
 function updateURL(series, seriesList) {
   var url = parseURL(series.url);
-  var chosenFunction = funMap[url.hostname] ? funMap[url.hostname] : funMap[url.hostname.split(".")[0]];
+  var chosenFunction = funMap[url.hostname] ? funMap[url.hostname] : (funMap[url.hostname.split(".")[0]] ? funMap[url.hostname.split(".")[0]] : funMap[url.hostname.split(".")[1]]);
   if(!chosenFunction) {
     alert(url.hostname + " not yet supported!");
     setPopup();
@@ -76,29 +69,30 @@ function updateURL(series, seriesList) {
     chosenFunction(url, series, seriesList);
   }
 }
-// The kinox way
+// The netflix way -------------------------------------------------------------
+function buildNetflixURL(url, series, seriesList) {
+  var path = url.pathname.split("/");
+  path.splice(2,1,(parseInt(path[2])+parseInt(series.episode)-1).toString());
+  open(url.protocol + "//" + url.host + path.join("/"), series.incognito);
+}
+// The kinox way ---------------------------------------------------------------
 function buildKinoxURL(url, series, seriesList) {
   open(url.protocol + "//" + url.host + url.pathname + ",s" + series.season + "e" + series.episode, series.incognito);
 }
-// The proxer way (no season support)
+// The proxer way (no season support) ------------------------------------------
 function buildProxerURL(url, series, seriesList) {
   var path = url.pathname.split("/");
   path.splice(3,1,series.episode);
   open(url.protocol + "//" + url.host + path.join("/"), series.incognito);
 }
-// The animehaven way
+// The animehaven way (experimental) -------------------------------------------
 function buildAnimehavenURL(url, series, seriesList) {
   var path = url.pathname.split("/");
-  if(path[1] == "episodes") {
-    path.splice(1,1);
-    open(url.protocol + "//" + url.host + path.join("/") + "-episode-" + series.episode, series.incognito);
-  } else {
-    var ep = path[path.length-1].split("-");
-    ep.splice((parseInt(series.season)==2) ? ep.length-2 : ep.length-1, 1, series.episode);
-    open(url.protocol + "//" + url.host + "/" + path.splice(1,1).join("/") + "/" + ep.join("-"), series.incognito);
-  }
+  var ep = path[path.length-1].split("-");
+  ep.splice((parseInt(series.season)>1 || !isNaN(parseInt(ep[ep.length-2]))) ? ep.length-2 : ep.length-1, 1, series.episode);
+  open(url.protocol + "//" + url.host + "/" + path.splice(1,1).join("/") + "/" + ep.join("-"), series.incognito);
 }
-// The bs way
+// The bs way ------------------------------------------------------------------
 function findeEpisodeString(url, series, seriesList) {
   var path = url.pathname.split("/");
   if(path[3] != series.season) {
@@ -163,84 +157,4 @@ function buildBsURL(url, season, episode, incognito) {
     path.splice(4,1,episode);
   }
   open(url.protocol + "//" + url.host + path.join("/"), incognito);
-}
-
-// Creates incognito window/tab of given url -----------------------------------
-function open(url, incognito) {
-  incognito = typeof incognito !== "undefined" ? incognito : true;
-  chrome.extension.isAllowedIncognitoAccess(function(isAllowedAccess) {
-    var ids = getTabID();
-    var windowID = 0;
-    var tabID = 0;
-    var incognitoWindow = false;
-    var create = false;
-    if(ids != null) {
-      var idsarr = ids.split("|");
-      windowID = idsarr[0];
-      tabID = idsarr[1];
-      incognitoWindow = idsarr.length == 3 ? true : false;
-    }
-    if(incognito) {
-      if(isAllowedAccess){
-        if(windowID != 0 && tabID != 0 && incognitoWindow) {
-          chrome.tabs.update(parseInt(tabID),{url:url});
-        } else create = true;
-      } else create = true;
-      if(create) {
-        chrome.windows.create({url:url, incognito:incognito, state:"maximized"}, function(window) {
-          if(isAllowedAccess) {
-            setTabID(window.id+"|"+window.tabs[0].id+"|incognito");
-          }
-        });
-      }
-    } else {
-      if(windowID != 0 && tabID != 0 && !incognitoWindow) {
-        chrome.tabs.update(parseInt(tabID),{url:url});
-      } else {
-        chrome.tabs.create({url:url}, function(tab){
-          setTabID(tab.windowId+"|"+tab.id);
-        });
-      }
-    }
-  });
-}
-
-// Helper functions ------------------------------------------------------------
-function setPopup() {
-  chrome.browserAction.setPopup({popup:"popup.html"});
-}
-
-function unsetPopup() {
-  chrome.browserAction.setPopup({popup:""});
-}
-
-function getTabID() {
-  return localStorage.getItem("episode++TabID");
-}
-
-function setTabID(tabID) {
-  localStorage.setItem("episode++TabID", tabID);
-}
-
-function parseURL(url) {
-  var parser = document.createElement('a'),
-      searchObject = {},
-      queries, split, i;
-  parser.href = url; // Let the browser do the work
-  // Convert query string to object
-  queries = parser.search.replace(/^\?/, '').split('&');
-  for( i = 0; i < queries.length; i++ ) {
-    split = queries[i].split('=');
-    searchObject[split[0]] = split[1];
-  }
-  return {
-    protocol: parser.protocol,
-    host: parser.host,
-    hostname: parser.hostname,
-    port: parser.port,
-    pathname: parser.pathname,
-    search: parser.search,
-    searchObject: searchObject,
-    hash: parser.hash
-  };
 }

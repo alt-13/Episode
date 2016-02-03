@@ -21,6 +21,7 @@ function ifListFound(items) {
   }, true);
   // editSeries with parameters edits series
   document.getElementById("save").addEventListener("click", function(){editSeries(seriesList);}, false);
+  document.getElementById("cancel").addEventListener("click", removeFormContentFromStorage, false);
 }
 // Edits/adds series list entry
 function editSeries(seriesList) {
@@ -41,8 +42,13 @@ function editSeries(seriesList) {
   }
   if(ok) {
     removeFormContentFromStorage();
-    window.close();
-    setPopupTo("");
+    if(isCorrectAhURL()) {
+      window.close();
+      setPopupTo("");
+    } else {
+      window.close();
+      setPopupTo("ah.html");
+    }
   }
 }
 // Stores the form content so that you can continue to edit after reload
@@ -60,7 +66,6 @@ function saveFormContent() {
 // Restores form content
 function fillInFormContent(series) {
   var content = localStorage.getItem("episode++FormContent");
-  console.log(content);
   if(content != null)
     series = JSON.parse(content);
   if(series !== null) {
@@ -73,9 +78,24 @@ function fillInFormContent(series) {
 }
 // Remove form content from storage
 function removeFormContentFromStorage() {
+  window.removeEventListener("unload", saveFormContent);
   localStorage.removeItem("episode++FormContent");
 }
 // Helper function to set popup to given string
 function setPopupTo(popup) {
   chrome.browserAction.setPopup({popup:popup});
+}
+// Check if it is a correct animehaven URL
+function isCorrectAhURL() {
+  var parser = document.createElement('a');
+  parser.href = document.getElementById("epp_url").value;;
+  if(parser.hostname === "animehaven.org") {
+    var path = parser.pathname.split("/");
+    if(path.length < 3) {
+      return false;
+    } else if(path[1] === "episodes" || (path[1] !== "subbed" && path[1] !== "dubbed")) {
+      return false;
+    }
+  } else return true; // no ah url -> don't care
+  return true;
 }

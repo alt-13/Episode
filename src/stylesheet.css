@@ -37,8 +37,8 @@ input[type="checkbox"] + label {
 select {
   width: 100%;
   border-radius: 3px;
-  margin:0.5em 0 0.5em 0;
-  font-size:90%;
+  margin: 0.5em 0 0.5em 0;
+  font-size: 90%;
 }
 .edit {
   text-align:center;
@@ -49,7 +49,7 @@ select {
   color: black;
 }
 .edit a:hover, .edit span:hover {
-  background:#F8F8F8;
+  background: #F8F8F8;
   border-radius: 10px;
 }
 .btn {
@@ -69,6 +69,19 @@ select {
   background: #808080;
   color: white;
 }
+.btn:disabled {
+  background: #FAFAFA;
+  border: #F0F0F0 solid 1px;
+  border-radius: 3px;
+  display: inline-block;
+  padding: 4px 8px;
+  text-align: center;
+  transition: all 200ms;
+  color: #F0F0F0;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 100%;
+}
 .overlay {
   position: fixed;
   top: 0;
@@ -83,7 +96,8 @@ select {
 .overlay:target {
   visibility: visible;
   opacity: 1;
-  /*overflow-y:auto;*/
+  overflow-y: scroll;
+  right: -15px;
 }
 .hidden {
   position: fixed;
@@ -101,7 +115,7 @@ select {
 }
 
 .dialog {
-  padding:1em;
+  padding: 1em;
   background: #fff;
   border-radius: 3px;
   transition: all 200ms ease-in-out;
