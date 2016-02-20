@@ -1,16 +1,15 @@
 // Entry: look for series in storage and react accordingly
 window.onload = function() {
-  restore(ifListNotFound, ifListFound);
+  restore(ifListNotFoundSetupPlainEditPopup, ifListFoundSetupEditPopup);
 }
 // Store form content when popup closed
 window.addEventListener("unload", saveFormContent);
 // No series list found (empty storage): Save -> add series
-function ifListNotFound() {
+function ifListNotFoundSetupPlainEditPopup() {
   document.getElementById("save").addEventListener("click", function(){editSeries(null);}, false);
 }
 // User wants to edit series list entry: Save -> edit series
-function ifListFound(items) {
-  var seriesList = new SeriesList(items);
+function ifListFoundSetupEditPopup(seriesList) {
   var selected = seriesList.getSelected();
   fillInFormContent(selected);
   document.getElementById("epp_title").addEventListener("input", function(event) {

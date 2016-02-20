@@ -1,27 +1,16 @@
 // Entry: look for series in storage and react accordingly
 window.onload = function() {
-  restore(ifListNotFound, ifListFound);
+  restore(ifListNotFoundGoToEdit, ifListFoundSetupPopup);
 }
 // No series list found (empty storage): User should enter series information
-function ifListNotFound() {
+function ifListNotFoundGoToEdit() {
   document.location.href = "edit.html";
 }
 // Fill series list entries into dropdown select and react to buttons
-function ifListFound(items) {
+function ifListFoundSetupPopup(seriesList) {
   setPopupTo("popup.html");
-  var seriesList = new SeriesList(items);
   var select = document.getElementById("select_series");
-  for(var key in items) {
-    var property = items[key];
-    if(typeof property !== typeof function(){}) {
-      var el = document.createElement("option");
-      if(property.selected)
-        el.selected = true;
-      el.innerHTML = key;
-      el.value = key;
-      select.appendChild(el);
-    }
-  }
+  seriesList.fillInSelectOptions(select);
   document.getElementById("editSeries").addEventListener("click", function() {selectSeries(seriesList,false);}, false);
   document.getElementById("deleteSeries").addEventListener("click", insertSeriesName, false);
   document.getElementById("definitelyDelete").addEventListener("click", function(){deleteSeries(seriesList);}, false);

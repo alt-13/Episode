@@ -1,16 +1,15 @@
 var contextMenuIDBeginning = "episode++ContextMenu";
 // Entry: called from restore in background (onInstalled)
-function createContextMenu(items) {
+function createContextMenu(seriesList) {
   chrome.contextMenus.create({
     id: contextMenuIDBeginning + "Decrement",
     title:"Episode – –",
     contexts: ["browser_action"]
   });
-  if(items !== "undefined") {
-    var seriesList = new SeriesList(items);
+  if(seriesList !== "undefined") {
     for(var series in seriesList) {
       var s = seriesList[series];
-      if(typeof s !== typeof function(){}) {
+      if(typeof s !== "function") {
         addContextMenu(s);
       }
     }
@@ -27,8 +26,7 @@ function addContextMenu(series) {
   });
 }
 // Adds onClicked listeners to all available context menus
-function ifListFoundAddContextMenuOnClickedListeners(items) {
-  var seriesList = new SeriesList(items);
+function ifListFoundAddContextMenuOnClickedListeners(seriesList) {
   chrome.contextMenus.onClicked.addListener(function(info, tab) {
     if(info.menuItemId === contextMenuIDBeginning + "Decrement") {
       restore(setPopup, ifListFoundDecrement);
@@ -36,7 +34,7 @@ function ifListFoundAddContextMenuOnClickedListeners(items) {
   });
   for(var series in seriesList) {
     var s = seriesList[series];
-    if(typeof s !== typeof function(){}) {
+    if(typeof s !== "function") {
       addContextMenuOnClickedListener(s);
     }
   }
@@ -45,13 +43,12 @@ function ifListFoundAddContextMenuOnClickedListeners(items) {
 function addContextMenuOnClickedListener(series) {
   chrome.contextMenus.onClicked.addListener(function(info, tab) {
     if(info.menuItemId === contextMenuIDBeginning + series.name) {
-      restore(setPopup, function(items){ifListFoundSelectSeries(items, series.name);});
+      restore(setPopup, function(seriesList){ifListFoundSelectSeries(seriesList, series.name);});
     }
   });
 }
 // Episode — —: decrementing the selected series' episode (created first)
-function ifListFoundDecrement(items) {
-  var seriesList = new SeriesList(items);
+function ifListFoundDecrement(seriesList) {
   var selected = seriesList.getSelected();
   if(selected === null) {
     setPopup();
@@ -60,8 +57,7 @@ function ifListFoundDecrement(items) {
   }
 }
 // Series is selected in context menu -> changes selected property in storage
-function ifListFoundSelectSeries(items, name) {
-  var seriesList = new SeriesList(items);
+function ifListFoundSelectSeries(seriesList, name) {
   seriesList.select(name);
   unsetPopup();
 }
@@ -96,7 +92,8 @@ function addStorageOnChangedListenerForContexMenu() {
         } else {
           for(var series in seriesList) {
             var s = seriesList[series];
-            chrome.contextMenus.update(contextMenuIDBeginning + s.name, {checked:s.selected});
+            if(series !== "__fragments__")
+              chrome.contextMenus.update(contextMenuIDBeginning + s.name, {checked:s.selected});
           }
         }
       }

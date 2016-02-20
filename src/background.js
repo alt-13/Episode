@@ -15,7 +15,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   alreadyClicked = true;
   var  DOUBLECLICK_TIME = 250; // Timer to detect next click
   timer = setTimeout(function () { // ----> Process single click <----
-    restore(setPopup, ifListFound);
+    restore(setPopup, ifListFoundOpenNewestEpisode);
     clearTimeout(timer); // Clear all timers
     alreadyClicked = false; // Ignore clicks
   }, DOUBLECLICK_TIME);
@@ -44,23 +44,22 @@ addStorageOnChangedListenerForContexMenu();
 // Process double click: setPopup (see utils) ----------------------------------
 
 // Process single click --------------------------------------------------------
-function ifListFound(items) {
-  var seriesList = new SeriesList(items);
+function ifListFoundOpenNewestEpisode(seriesList) {
   var selected = seriesList.getSelected();
   if(selected === null) {
     setPopup();
   } else if(selected.url === "") {
     setPopupTo("edit.html");
   } else {
-    if(parseInt(selected.season) === 0) seriesList.edit(selected.name, selected.url, 1, selected.episode, selected.incognito);
+    var url = parseURL(selected.url);
+    if(url.hostname !== "bs.to" && parseInt(selected.season) === 0) seriesList.edit(selected.name, selected.url, 1, selected.episode, selected.incognito);
     if(parseInt(selected.episode) === 0) seriesList.edit(selected.name, selected.url, selected.season, 1, selected.incognito);
-    updateURL(selected.save(true), seriesList);
+    updateURL(url, selected.save(true), seriesList);
     seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)+1, selected.incognito);
   }
 }
 
-function updateURL(series, seriesList) {
-  var url = parseURL(series.url);
+function updateURL(url, series, seriesList) {
   var chosenFunction = funMap[url.hostname] ? funMap[url.hostname] : (funMap[url.hostname.split(".")[0]] ? funMap[url.hostname.split(".")[0]] : funMap[url.hostname.split(".")[1]]);
   if(!chosenFunction) {
     alert(url.hostname + " not yet supported!");
@@ -69,7 +68,7 @@ function updateURL(series, seriesList) {
     chosenFunction(url, series, seriesList);
   }
 }
-// The netflix way -------------------------------------------------------------
+// The netflix way (no season support) -----------------------------------------
 function buildNetflixURL(url, series, seriesList) {
   var path = url.pathname.split("/");
   path.splice(2,1,(parseInt(path[2])+parseInt(series.episode)-1).toString());

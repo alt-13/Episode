@@ -1,12 +1,11 @@
 // Entry: look for series in storage and react accordingly
 window.onload = function() {
-  restore(ifListNotFound, ifListFound);
+  restore(ifListNotFoundWarn, ifListFoundSetupAhPopup);
 }
 // No series list found (empty storage)
-function ifListNotFound() {console.warn("Should have never happened!");}
+function ifListNotFoundWarn() {console.warn("Should have never happened!");}
 // User has to choose between Subbed or Dubbed if possible
-function ifListFound(items) {
-  var seriesList = new SeriesList(items);
+function ifListFoundSetupAhPopup(seriesList) {
   var selected = seriesList.getSelected();
   var sUrl = parseURL(selected.url);
   var path = sUrl.pathname.split("/");
@@ -29,20 +28,19 @@ function ifListFound(items) {
         var subbed = $(response).find("a:contains('English Sub')");
         var dubbed = $(response).find("a:contains('English Dub')");
         if(subbed.length !== 0 && dubbed.length === 0) {
-          setNewAhURL(items, "subbed");
+          setNewAhURL(seriesList, "subbed");
         } else if(subbed.length === 0 && dubbed.length !== 0) {
-          setNewAhURL(items, "dubbed");
+          setNewAhURL(seriesList, "dubbed");
         } else {
-          document.getElementById("subbed").addEventListener("click", function(){restore(ifListNotFound, function(items){setNewAhURL(items, "subbed", false);});}, false);
-          document.getElementById("dubbed").addEventListener("click", function(){restore(ifListNotFound, function(items){setNewAhURL(items, "dubbed", false);});}, false);
+          document.getElementById("subbed").addEventListener("click", function(){restore(ifListNotFound, function(seriesList){setNewAhURL(seriesList, "subbed");});}, false);
+          document.getElementById("dubbed").addEventListener("click", function(){restore(ifListNotFound, function(seriesList){setNewAhURL(seriesList, "dubbed");});}, false);
         }
       }
     }
   });
 }
 // Modifies the URL to chosen version (dubbed/subbed)
-function setNewAhURL(items, version) {
-  var seriesList = new SeriesList(items);
+function setNewAhURL(seriesList, version) {
   var s = seriesList.getSelected();
   var url = parseURL(s.url);
   var path = url.pathname.split("/");

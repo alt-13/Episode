@@ -23,9 +23,9 @@ Series.prototype.edit = function(name, url, season, episode, incognito) {
     this.name = name;
   if(url != null)
     this.url = url;
-  if(season != 0)
+  if(season >= 0)
     this.season = season;
-  if(episode != 0)
+  if(episode > 0)
     this.episode = episode;
   this.incognito = incognito;
 };
@@ -46,28 +46,57 @@ Series.prototype.save = function(clone) {
 };
 
 // SeriesList ------------------------------------------------------------------
-function SeriesList(obj) {
-  // @return number of properties (!= typeof function(){}) of @param obj
-  var length = function(obj) {
+function SeriesList(seriesList) {
+  var fragments_ = 1;
+  // @return number of series (typeof series != "function") of @param seriesList
+  var length = function(seriesList) {
     var numberOfSeries = 0;
-    for(var series in obj) {
-      if(typeof obj[series] !== "function") {
+    for(var series in seriesList) {
+      if(typeof seriesList[series] !== "function") {
         numberOfSeries++;
       }
     }
     return numberOfSeries;
-  }
+  };
   // saves trimmed (no functions) list to sync storage
   this.save = function() {
     var seriesListToStore = {};
+    var frags = 1;
+    var storedSeriesPart = storedSeries;
+    // delete chunk if not needed anymore
     for(var series in this) {
       if(typeof this[series] !== "function") {
+        var sListBytes = JSON.stringify(seriesListToStore).length;
+        var sBytes = JSON.stringify(this[series]).length;
+        if(sListBytes + sBytes > 8000) { //Exact: 8192 (calcs are not 100%)
+          storedSeriesPart = frags === 1 ? storedSeries : storedSeries+frags.toString();
+          seriesListToStore.__fragments__ = ++frags;
+          var save = {};
+          save[storedSeriesPart] = seriesListToStore;
+          chrome.storage.sync.set(save, function(){
+            if(chrome.runtime.lastError) {
+              console.error("SeriesList chunk was too big or too many chunks have been produced.\n"+chrome.runtime.lastError.message);
+            }
+          });
+          seriesListToStore = {};
+        }
         seriesListToStore[series] = this[series].save();
       }
     }
+    while(frags < fragments_) {
+      chrome.storage.sync.remove(storedSeries+fragments_.toString(), function(){if(chrome.runtime.lastError)console.error(chrome.runtime.lastError.message);});
+      fragments_--;
+    }
+    storedSeriesPart = frags === 1 ? storedSeries : storedSeries+frags.toString();
+    seriesListToStore.__fragments__ = frags;
     var save = {};
-    save[storedSeries] = seriesListToStore;
-    chrome.storage.sync.set(save);
+    save[storedSeriesPart] = seriesListToStore;
+    var bytes = JSON.stringify(save).length;
+    chrome.storage.sync.set(save, function(){
+      if(chrome.runtime.lastError) {
+        console.error("SeriesList chunk was too big.");
+      }
+    });
   };
   // adds series to list (and saves changes to sync storage)
   // @param selected (optional), default true
@@ -148,6 +177,19 @@ function SeriesList(obj) {
       return true;
     }
   };
+  // merges entries into current series list (seriesList + seriesList)
+  this.merge = function(seriesList) {
+    if(seriesList !== null) {
+      for(var series in seriesList) {
+        if(series !== "__fragments__") {
+          var s = seriesList[series];
+          this.add(s.name, decodeURL(s.url), s.season, s.episode, s.incognito, s.selected, false);
+        } else {
+          fragments_ = seriesList[series];
+        }
+      }
+    }
+  };
   // checks if name is available while editing
   this.checkNameOK = function(name) {
     if(name === "undefined" || name === "")
@@ -158,7 +200,20 @@ function SeriesList(obj) {
       return false;
     else
       return true;
-  }
+  };
+  // fills select options into popup dropdown
+  this.fillInSelectOptions = function(select) {
+    for(var series in this) {
+      if(typeof this[series] !== "function") {
+        var el = document.createElement("option");
+        if(this[series].selected)
+          el.selected = true;
+        el.innerHTML = this[series].name;
+        el.value = this[series].name;
+        select.appendChild(el);
+      }
+    }
+  };
   // logs series list content to console
   this.log = function() {
     console.log("===== SeriesList =====");
@@ -170,26 +225,48 @@ function SeriesList(obj) {
     }
   };
   // SeriesList constructor
-  if(obj != null) {
-    for(var property in obj) {
-      var s = obj[property];
-      this.add(s.name, decodeURL(s.url), s.season, s.episode, s.incognito, s.selected, false);
+  if(seriesList !== null) {
+    for(var series in seriesList) {
+      if(series !== "__fragments__") {
+        var s = seriesList[series];
+        this.add(s.name, decodeURL(s.url), s.season, s.episode, s.incognito, s.selected, false);
+      } else {
+        fragments_ = seriesList[series];
+      }
     }
   }
 }
 
 // Restore SeriesList from chrome sync storage ---------------------------------
-function restore(ifListNotFound, ifListFound) {
-  chrome.storage.sync.get(storedSeries, function(items) {
+function restore(ifListNotFound, ifListFound, frags, fragInProcess, seriesList) {
+  frags = typeof frags !== "undefined" ? frags : 1;
+  fragInProcess = typeof fragInProcess !== "undefined" ? fragInProcess : 1;
+  if(fragInProcess > 512) {
+    console.error("MAX_ITEMS for sync storage reached!");
+    ifListNotFound();
+  }
+  var storedSeriesPart = frags === 1 ? storedSeries : storedSeries+fragInProcess.toString();
+  chrome.storage.sync.get(storedSeriesPart, function(items) {
     try {
       if(chrome.runtime.lastError) {
         console.warn(chrome.runtime.lastError.message);
       } else {
-        if(items[storedSeries] == null) {
+        if(items[storedSeriesPart] == null) {
           console.info("No series found!");
           ifListNotFound();
         } else {
-          ifListFound(items[storedSeries]);
+          if(fragInProcess === 1) {
+            seriesList = new SeriesList(items[storedSeriesPart]);
+            frags = parseInt(items[storedSeriesPart].__fragments__);
+          } else {
+            seriesList.merge(items[storedSeriesPart]);
+            frags = parseInt(items[storedSeriesPart].__fragments__);
+          }
+          if(frags - fragInProcess === 0) {
+            ifListFound(seriesList);
+          } else {
+            restore(ifListNotFound, ifListFound, frags, fragInProcess+1, seriesList);
+          }
         }
       }
     } catch(e) {
