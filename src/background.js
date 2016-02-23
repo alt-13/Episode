@@ -62,8 +62,8 @@ function ifListFoundOpenNewestEpisode(seriesList) {
 function updateURL(url, series, seriesList) {
   var chosenFunction = funMap[url.hostname] ? funMap[url.hostname] : (funMap[url.hostname.split(".")[0]] ? funMap[url.hostname.split(".")[0]] : funMap[url.hostname.split(".")[1]]);
   if(!chosenFunction) {
-    alert(url.hostname + " not yet supported!");
-    setPopup();
+    chrome.notifications.create("Episode++Notification", {type:"basic", iconUrl:"img/icon128.png", title:"Episode++", message:chrome.i18n.getMessage("notYetSupported",url.hostname)});
+    openURL(series.url, series.incognito);
   } else {
     chosenFunction(url, series, seriesList);
   }
@@ -72,24 +72,24 @@ function updateURL(url, series, seriesList) {
 function buildNetflixURL(url, series, seriesList) {
   var path = url.pathname.split("/");
   path.splice(2,1,(parseInt(path[2])+parseInt(series.episode)-1).toString());
-  open(url.protocol + "//" + url.host + path.join("/"), series.incognito);
+  openURL(url.protocol + "//" + url.host + path.join("/"), series.incognito);
 }
 // The kinox way ---------------------------------------------------------------
 function buildKinoxURL(url, series, seriesList) {
-  open(url.protocol + "//" + url.host + url.pathname + ",s" + series.season + "e" + series.episode, series.incognito);
+  openURL(url.protocol + "//" + url.host + url.pathname + ",s" + series.season + "e" + series.episode, series.incognito);
 }
 // The proxer way (no season support) ------------------------------------------
 function buildProxerURL(url, series, seriesList) {
   var path = url.pathname.split("/");
   path.splice(3,1,series.episode);
-  open(url.protocol + "//" + url.host + path.join("/"), series.incognito);
+  openURL(url.protocol + "//" + url.host + path.join("/"), series.incognito);
 }
 // The animehaven way (experimental) -------------------------------------------
 function buildAnimehavenURL(url, series, seriesList) {
   var path = url.pathname.split("/");
   var ep = path[path.length-1].split("-");
   ep.splice((parseInt(series.season)>1 || !isNaN(parseInt(ep[ep.length-2]))) ? ep.length-2 : ep.length-1, 1, series.episode);
-  open(url.protocol + "//" + url.host + "/" + path.splice(1,1).join("/") + "/" + ep.join("-"), series.incognito);
+  openURL(url.protocol + "//" + url.host + "/" + path.splice(1,1).join("/") + "/" + ep.join("-"), series.incognito);
 }
 // The bs way ------------------------------------------------------------------
 function findeEpisodeString(url, series, seriesList) {
@@ -155,5 +155,5 @@ function buildBsURL(url, season, episode, incognito) {
   } else {
     path.splice(4,1,episode);
   }
-  open(url.protocol + "//" + url.host + path.join("/"), incognito);
+  openURL(url.protocol + "//" + url.host + path.join("/"), incognito);
 }

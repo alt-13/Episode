@@ -1,5 +1,6 @@
 // Entry: look for series in storage and react accordingly
 window.onload = function() {
+  localizeHtmlPage();
   restore(ifListNotFoundGoToEdit, ifListFoundSetupPopup);
 }
 // No series list found (empty storage): User should enter series information
@@ -11,15 +12,15 @@ function ifListFoundSetupPopup(seriesList) {
   setPopupTo("popup.html");
   var select = document.getElementById("select_series");
   seriesList.fillInSelectOptions(select);
-  document.getElementById("editSeries").addEventListener("click", function() {selectSeries(seriesList,false);}, false);
-  document.getElementById("deleteSeries").addEventListener("click", insertSeriesName, false);
-  document.getElementById("definitelyDelete").addEventListener("click", function(){deleteSeries(seriesList);}, false);
-  document.getElementById("selectSeries").addEventListener("click", function(){selectSeries(seriesList,true);}, false);
+  document.getElementById("editSeries").addEventListener("click", function() {selectSeries(seriesList,false);});
+  document.getElementById("deleteSeries").addEventListener("click", insertSeriesName);
+  document.getElementById("definitelyDelete").addEventListener("click", function(){deleteSeries(seriesList);});
+  document.getElementById("selectSeries").addEventListener("click", function(){selectSeries(seriesList,true);});
 }
 // Select series/deselect all series and navigate to edit.html if required
 function selectSeries(seriesList, select) {
   var selected = getSelected();
-  if(selected == "add new series") {
+  if(selected == chrome.i18n.getMessage("addNewSeries")) {
     seriesList.select();
     if(select)
       document.getElementById("selectSeries").href = "edit.html";
@@ -36,11 +37,11 @@ function selectSeries(seriesList, select) {
 // Inserts series' name which will be deleted
 function insertSeriesName() {
   var selected = getSelected();
-  if(selected == "add new series") {
+  if(selected == chrome.i18n.getMessage("addNewSeries")) {
     document.getElementById("confirmationDialog").className = "hidden";
   } else {
     document.getElementById("confirmationDialog").className = "overlay";
-    document.getElementById("selectedSeries").text = "\"" + selected + "\"";
+    document.getElementById("confirmationMessage").text = chrome.i18n.getMessage("confirmationMessage",selected);
   }
 }
 // Deletes series and redirects to edit.html if series list is empty after del

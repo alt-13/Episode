@@ -1,29 +1,28 @@
 {
-   "manifest_version": 2,
-   
-   "name": "Episode++",
-   "description": "This extension opens the next to whatch episode in a new tab or incognito window. Doubleclick to aktivate popup!",
-   
-   "background": {
-      "scripts": [ "jquery.min.js", "series.js", "context_menus.js", "utils.js", "background.js" ],
-      "persistent": false
-   },
-   
-   "browser_action": {
-     "default_icon": {
-         "19": "img/icon19.png",
-         "38": "img/icon38.png"
-     },
-     "default_title": "Episode++\n\nDoubleclick to aktivate popup!"
-  },
+  "manifest_version": 2,
+  "name": "Episode++",
+  "version": "0.1",
+
+  "default_locale": "en",
+  "description": "__MSG_description__",
   "icons": {
-      "128": "img/icon128.png",
-      "16": "img/icon16.png",
-      "48": "img/icon48.png"
-   },
+    "128": "img/icon128.png",
+    "16": "img/icon16.png",
+    "48": "img/icon48.png"
+  },
+
+  "browser_action": {
+    "default_icon": {
+      "19": "img/icon19.png",
+      "38": "img/icon38.png"
+    },
+    "default_title": "__MSG_defaultTitle__"
+  },
+
+  "background": {
+    "scripts": [ "jquery.min.js", "series.js", "context_menus.js", "utils.js", "background.js" ],
+    "persistent": false
+  },
    
-   "version": "0.1",
-   
-   "permissions": [ "tabs", "storage", "contextMenus", "http://*/*", "https://*/*" ]
-   
+  "permissions": [ "tabs", "storage", "notifications", "contextMenus", "http://*/*", "https://*/*" ]
 }

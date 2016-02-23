@@ -1,0 +1,80 @@
+{
+	// Manifest
+	"defaultTitle": {
+		"message": "Episode++\n\n¡Activar la ventana emergente con doble clic!"
+	},
+	"description": {
+		"message": "Esta extensión abre el capítulo inadvertido más acutal en un nuevo tab o ventana de incógnito. ¡Activar la ventana emergente con doble clic!"
+	},
+	// Background
+	"notYetSupported": {
+		"message": "¡$details$ aún no soportado!",
+		"placeholders": {
+	    "details": {
+	      "content": "$1",
+	      "example": "series.com"
+	    }
+	  }
+	},
+	// Popup
+	"addNewSeries": {
+		"message": "- añadir serie nueva -"
+	},
+	"edit": {
+		"message": "Editar"
+	},
+	"delete": {
+		"message": "Borrar"
+	},
+	"select": {
+		"message": "Seleccionar"
+	},
+	"confirmationMessage": {
+		"message": "¿Está seguro de que desea borrar \"$details$\"?",
+		"placeholders": {
+	    "details": {
+	      "content": "$1",
+	      "example": "esta serie maravillosa"
+	    }
+	  }
+	},
+	"doNotDelete": {
+		"message": "no borrar"
+	},
+	"definitelyDelete": {
+		"message": "borrar definitivamente"
+	},
+	"cancel": {
+		"message": "Cancelar"
+	},
+	"yes": {
+		"message": "Sí"
+	},
+	// Edit
+	"editTitle": {
+		"message": "Titulo:"
+	},
+	"editURL": {
+		"message": "URL:"
+	},
+	"editSeason": {
+		"message": "Temporada:"
+	},
+	"editEpisode": {
+		"message": "Capítulo:"
+	},
+	"editIncognito": {
+		"message": "abrir incógnito"
+	},
+	"editCancel": {
+		"message": "CNL",
+		"description": "Should fit into popup besides \"Save\". (If it does not fit, use abbreviation.)"
+	},
+	"save": {
+		"message": "Guardar"
+	},
+	// AH
+	"choose": {
+		"message": "Elija:"
+	}
+}

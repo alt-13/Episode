@@ -1,5 +1,5 @@
 // Creates incognito window/tab of given url
-function open(url, incognito, close) {
+function openURL(url, incognito, close) {
   close = typeof close !== "undefined" ? close : false;
   chrome.extension.isAllowedIncognitoAccess(function(isAllowedAccess) {
     var ids = getTabID();
@@ -95,4 +95,20 @@ function parseURL(url) {
     searchObject: searchObject,
     hash: parser.hash
   };
+}
+// Localize by replacing __MSG_***__ meta tags
+function localizeHtmlPage()
+{
+  var objects = document.getElementsByTagName('html');
+  for (var j = 0; j < objects.length; j++)
+  {
+    var obj = objects[j];
+    var valStrH = obj.innerHTML.toString();
+    var valNewH = valStrH.replace(/__MSG_(\w+)__/g, function(match, v1) {
+      return v1 ? chrome.i18n.getMessage(v1) : "";
+    });
+    if(valNewH != valStrH) {
+      obj.innerHTML = valNewH;
+    }
+  }
 }

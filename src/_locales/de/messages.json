@@ -1,0 +1,80 @@
+{
+	// Manifest
+	"defaultTitle": {
+		"message": "Episode++\n\nDoppelklick zum Aktivieren des Popups!"
+	},
+	"description": {
+		"message": "Diese Erweiterung öffnet die aktuellste Episode, die Sie noch nicht gesehen haben in einem neuen Tab oder Inkognito-Fenster. Doppelklick um das Popup zu aktivieren!"
+	},
+	// Background
+	"notYetSupported": {
+		"message": "$details$ wird noch nicht unterstützt!",
+		"placeholders": {
+	    "details": {
+	      "content": "$1",
+	      "example": "serie.com"
+	    }
+	  }
+	},
+	// Popup
+	"addNewSeries": {
+		"message": "- neue Serie hinzufügen -"
+	},
+	"edit": {
+		"message": "Bearbeiten"
+	},
+	"delete": {
+		"message": "Löschen"
+	},
+	"select": {
+		"message": "Auswählen"
+	},
+	"confirmationMessage": {
+		"message": "Sind Sie sicher, dass Sie \"$details$\" löschen möchten?",
+		"placeholders": {
+	    "details": {
+	      "content": "$1",
+	      "example": "diese wunderbare Serie"
+	    }
+	  }
+	},
+	"doNotDelete": {
+		"message": "nicht löschen"
+	},
+	"definitelyDelete": {
+		"message": "entgültig löschen"
+	},
+	"cancel": {
+		"message": "Abbrechen"
+	},
+	"yes": {
+		"message": "Ja"
+	},
+	// Edit
+	"editTitle": {
+		"message": "Titel:"
+	},
+	"editURL": {
+		"message": "URL:"
+	},
+	"editSeason": {
+		"message": "Staffel:"
+	},
+	"editEpisode": {
+		"message": "Episode:"
+	},
+	"editIncognito": {
+		"message": "incognito öffnen"
+	},
+	"editCancel": {
+		"message": "Abbr.",
+		"description": "Sollte im Popup neben \"Speichern\" Platz haben. (Falls es sich nicht ausgeht, Abkürzung verwenden.)"
+	},
+	"save": {
+		"message": "Speichern"
+	},
+	// AH
+	"choose": {
+		"message": "Wählen:"
+	}
+}

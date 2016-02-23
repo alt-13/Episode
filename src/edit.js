@@ -1,12 +1,13 @@
 // Entry: look for series in storage and react accordingly
 window.onload = function() {
+  localizeHtmlPage();
   restore(ifListNotFoundSetupPlainEditPopup, ifListFoundSetupEditPopup);
 }
 // Store form content when popup closed
 window.addEventListener("unload", saveFormContent);
 // No series list found (empty storage): Save -> add series
 function ifListNotFoundSetupPlainEditPopup() {
-  document.getElementById("save").addEventListener("click", function(){editSeries(null);}, false);
+  document.getElementById("save").addEventListener("click", function(){editSeries(null);});
 }
 // User wants to edit series list entry: Save -> edit series
 function ifListFoundSetupEditPopup(seriesList) {
@@ -19,8 +20,8 @@ function ifListFoundSetupEditPopup(seriesList) {
       document.getElementById("epp_title").style.borderColor = "inherit";
   }, true);
   // editSeries with parameters edits series
-  document.getElementById("save").addEventListener("click", function(){editSeries(seriesList);}, false);
-  document.getElementById("cancel").addEventListener("click", removeFormContentFromStorage, false);
+  document.getElementById("save").addEventListener("click", function(){editSeries(seriesList);});
+  document.getElementById("cancel").addEventListener("click", removeFormContentFromStorage);
 }
 // Edits/adds series list entry
 function editSeries(seriesList) {

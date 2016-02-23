@@ -1,0 +1,80 @@
+{
+	// Manifest
+	"defaultTitle": {
+		"message": "Episode++\n\nDoubleclick to aktivate popup!"
+	},
+	"description": {
+		"message": "This extension opens the next to whatch episode in a new tab or incognito window. Doubleclick to aktivate popup!"
+	},
+	// Background
+	"notYetSupported": {
+		"message": "$details$ not yet supported!",
+		"placeholders": {
+	    "details": {
+	      "content": "$1",
+	      "example": "series.com"
+	    }
+	  }
+	},
+	// Popup
+	"addNewSeries": {
+		"message": "- add new series -"
+	},
+	"edit": {
+		"message": "Edit"
+	},
+	"delete": {
+		"message": "Delete"
+	},
+	"select": {
+		"message": "Select"
+	},
+	"confirmationMessage": {
+		"message": "Are you sure you want to delete \"$details$\"?",
+		"placeholders": {
+	    "details": {
+	      "content": "$1",
+	      "example": "this marvelous series"
+	    }
+	  }
+	},
+	"doNotDelete": {
+		"message": "do not delete"
+	},
+	"definitelyDelete": {
+		"message": "definitely delete"
+	},
+	"cancel": {
+		"message": "Cancel"
+	},
+	"yes": {
+		"message": "Yes"
+	},
+	// Edit
+	"editTitle": {
+		"message": "Title:"
+	},
+	"editURL": {
+		"message": "URL:"
+	},
+	"editSeason": {
+		"message": "Season:"
+	},
+	"editEpisode": {
+		"message": "Episode:"
+	},
+	"editIncognito": {
+		"message": "open incognito"
+	},
+	"editCancel": {
+		"message": "Cancel",
+		"description": "Should fit into popup besides \"Save\". (If it does not fit, use abbreviation.)"
+	},
+	"save": {
+		"message": "Save"
+	},
+	// AH
+	"choose": {
+		"message": "Choose:"
+	}
+}
