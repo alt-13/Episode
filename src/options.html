@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>__MSG_optionsTitle__</title>
+    <link rel="stylesheet" href="stylesheet.css">
+    <script src="utils.js"></script>
+    <script src="Sortable.min.js"></script>
+    <script src="options.js"></script>
+  </head>
+  <body>
+    <div class="options">
+      <div id="hostCol">
+        __MSG_hosts__
+        <ul id="hosts">
+          <li>&#10133;</li>
+        </ul>
+      </div>
+      <div id="mirrorCol">
+        __MSG_chooseMirrorOrder__
+        <ul id="mirrors">
+          <li data-id="1"><image src="img/icons/Vivo.ico"> Vivo</li>
+          <li data-id="2"><image src="img/icons/OpenLoad.ico"> OpenLoad</li>
+          <li data-id="3"><image src="img/icons/FlashX.ico"> FlashX</li>
+          <li data-id="4"><image src="img/icons/AuroraVid.ico"> AuroraVid</li>
+          <li data-id="5"><image src="img/icons/BitVID.ico"> BitVID</li>
+          <li data-id="6"><image src="img/icons/CloudTime.ico"> CloudTime</li>
+          <li data-id="7"><image src="img/icons/Shared.ico"> Shared</li>
+          <li data-id="8"><image src="img/icons/FileNuke.ico"> FileNuke</li>
+          <li data-id="9"><image src="img/icons/Streamcloud.ico"> Streamcloud</li>
+          <li data-id="10"><image src="img/icons/WholeCloud.ico"> WholeCloud</li>
+          <li data-id="11"><image src="img/icons/YouWatch.ico"> YouWatch</li>
+        </ul>
+      </div>
+      <p>
+        <input type="checkbox" id="defaultIncognito" name="incognito" value="incognito">
+        <label for="defaultIncognito">__MSG_defaultIncognito__</label><br>
+        <input type="checkbox" id="defaultPlainTextURL" name="plainTextURL" value="plainTextURL">
+        <label for="defaultPlainTextURL">__MSG_defaultPlainTextURL__</label>
+      </p><!--<p>__MSG_ownPlugin__
+      <textarea rows="4" cols="50" disabled>
+      </textarea>
+      </p>-->
+      <div class="left"><input type="submit" id="save" title="__MSG_save__" class="btn" value="__MSG_save__"></div>
+      <a id="status"></a>
+      <div class="dropDown">
+        <a class="btn left">__MSG_issue__</a>
+        <ul class="dropDownMenu">
+          <li><a class="btn" id="issueReported" href="https://github.com/alt-13/Episode/issues">__MSG_issueReported__</a></li>
+          <li><a class="btn-disabled" id="reportIssue" href="#" disabled>__MSG_reportIssue__</a></li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

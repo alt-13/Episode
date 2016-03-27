@@ -74,6 +74,10 @@ function fillInFormContent(series) {
     document.getElementById("epp_season").value = series.season;
     document.getElementById("epp_episode").value = series.episode;
     document.getElementById("epp_incognito").checked = series.incognito;
+  } else {
+    chrome.storage.sync.get(getDefaultOptions(), function(items) {
+      document.getElementById("epp_incognito").checked = items[storedOptions].defaultIncognito;
+    });
   }
 }
 // Remove form content from storage

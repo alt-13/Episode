@@ -20,9 +20,16 @@
   },
 
   "background": {
-    "scripts": [ "jquery.min.js", "series.js", "context_menus.js", "utils.js", "background.js" ],
+    "scripts": [ "jquery.min.js", "utils.js", "series.js", "context_menus.js", "background.js" ],
     "persistent": false
   },
-   
+
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
+  },
+
+  "minimum_chrome_version": "40",
+
   "permissions": [ "tabs", "storage", "notifications", "contextMenus", "http://*/*", "https://*/*" ]
 }

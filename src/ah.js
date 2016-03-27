@@ -27,7 +27,7 @@ function ifListFoundSetupAhPopup(seriesList) {
             var newPath = url.pathname.split("/");
             var ep = newPath[newPath.length-1].split("-");
             ep.splice((parseInt(selected.season)>1 || !isNaN(parseInt(ep[ep.length-2]))) ? ep.length-2 : ep.length-1, 1, selected.episode);
-            openURL(url.protocol + "//" + url.host + "/" + newPath.splice(1,1).join("/") + "/" + ep.join("-"), selected.incognito,true);
+            openURL(url.protocol + "//" + url.host + "/" + newPath.splice(1,1).join("/") + "/" + ep.join("-"), selected.incognito, seriesList, true);
             seriesList.edit(selected.name, links[1], selected.season, selected.episode, selected.incognito);
           }
         } else {
@@ -52,6 +52,6 @@ function setNewAhURL(seriesList, version) {
   var url = parseURL(s.url);
   var path = url.pathname.split("/");
   var newUrl = url.protocol + "//" + url.host + ((version === "subbed") ? "/subbed/" : "/dubbed/") + path[1] + "-episode-" + (s.episode != 0 ? s.episode : 1);
-  openURL(newUrl,s.incognito,true);
+  openURL(newUrl,s.incognito, seriesList, true);
   seriesList.edit(s.name, newUrl, s.season, parseInt(s.episode)+1, s.incognito);
 }

@@ -25,7 +25,7 @@ Series.prototype.edit = function(name, url, season, episode, incognito) {
     this.url = url;
   if(season >= 0)
     this.season = season;
-  if(episode > 0)
+  if(episode >= 0)
     this.episode = episode;
   this.incognito = incognito;
 };
@@ -46,8 +46,9 @@ Series.prototype.save = function(clone) {
 };
 
 // SeriesList ------------------------------------------------------------------
-function SeriesList(seriesList) {
+function SeriesList(seriesList, plainTextURL) {
   var fragments_ = 1;
+  var plainTextURL_ = plainTextURL !== "undefined" ? plainTextURL : false;
   // @return number of series (typeof series != "function") of @param seriesList
   var length = function(seriesList) {
     var numberOfSeries = 0;
@@ -63,7 +64,6 @@ function SeriesList(seriesList) {
     var seriesListToStore = {};
     var frags = 1;
     var storedSeriesPart = storedSeries;
-    // delete chunk if not needed anymore
     for(var series in this) {
       if(typeof this[series] !== "function") {
         var sListBytes = JSON.stringify(seriesListToStore).length;
@@ -80,9 +80,10 @@ function SeriesList(seriesList) {
           });
           seriesListToStore = {};
         }
-        seriesListToStore[series] = this[series].save();
+        seriesListToStore[series] = plainTextURL_ ? this[series].save(true) : this[series].save();
       }
     }
+    // delete chunk if not needed anymore
     while(frags < fragments_) {
       chrome.storage.sync.remove(storedSeries+fragments_.toString(), function(){if(chrome.runtime.lastError)console.error(chrome.runtime.lastError.message);});
       fragments_--;
@@ -174,6 +175,7 @@ function SeriesList(seriesList) {
     } else {
       this[name].edit(name, url, season, episode, incognito);
       this.save();
+      chrome.browserAction.setTitle({title:name+" - S"+season+"E"+episode});
       return true;
     }
   };
@@ -183,7 +185,8 @@ function SeriesList(seriesList) {
       for(var series in seriesList) {
         if(series !== "__fragments__") {
           var s = seriesList[series];
-          this.add(s.name, decodeURL(s.url), s.season, s.episode, s.incognito, s.selected, false);
+          var surl = (s.url.substring(0, 4) === "http") ? s.url : decodeURL(s.url);
+          this.add(s.name, surl, s.season, s.episode, s.incognito, s.selected, false);
         } else {
           fragments_ = seriesList[series];
         }
@@ -229,7 +232,8 @@ function SeriesList(seriesList) {
     for(var series in seriesList) {
       if(series !== "__fragments__") {
         var s = seriesList[series];
-        this.add(s.name, decodeURL(s.url), s.season, s.episode, s.incognito, s.selected, false);
+        var surl = (s.url.substring(0, 4) === "http") ? s.url : decodeURL(s.url);
+        this.add(s.name, surl, s.season, s.episode, s.incognito, s.selected, false);
       } else {
         fragments_ = seriesList[series];
       }
@@ -238,15 +242,17 @@ function SeriesList(seriesList) {
 }
 
 // Restore SeriesList from chrome sync storage ---------------------------------
+// @param ifListNotFound, ifListFound: necessary
+// @param frags, fragInProcess, seriesList: optional, list containing >1 frags
 function restore(ifListNotFound, ifListFound, frags, fragInProcess, seriesList) {
   frags = typeof frags !== "undefined" ? frags : 1;
   fragInProcess = typeof fragInProcess !== "undefined" ? fragInProcess : 1;
-  if(fragInProcess > 512) {
+  if(fragInProcess > 511) { // because options also stored in one mem fragment
     console.error("MAX_ITEMS for sync storage reached!");
     ifListNotFound();
   }
   var storedSeriesPart = frags === 1 ? storedSeries : storedSeries+fragInProcess.toString();
-  chrome.storage.sync.get(storedSeriesPart, function(items) {
+  chrome.storage.sync.get(getStorage(storedSeriesPart), function(items) {
     try {
       if(chrome.runtime.lastError) {
         console.warn(chrome.runtime.lastError.message);
@@ -256,7 +262,7 @@ function restore(ifListNotFound, ifListFound, frags, fragInProcess, seriesList) 
           ifListNotFound();
         } else {
           if(fragInProcess === 1) {
-            seriesList = new SeriesList(items[storedSeriesPart]);
+            seriesList = new SeriesList(items[storedSeriesPart], items[storedOptions].defaultPlainTextURL);
             frags = parseInt(items[storedSeriesPart].__fragments__);
           } else {
             seriesList.merge(items[storedSeriesPart]);

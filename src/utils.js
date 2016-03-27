@@ -1,5 +1,6 @@
+var storedOptions = "episode++Options"; // Options in sync storage
 // Creates incognito window/tab of given url
-function openURL(url, incognito, close) {
+function openURL(url, incognito, seriesList, close) {
   close = typeof close !== "undefined" ? close : false;
   chrome.extension.isAllowedIncognitoAccess(function(isAllowedAccess) {
     var ids = getTabID();
@@ -13,7 +14,17 @@ function openURL(url, incognito, close) {
     } else {
       if(incognito)
         createWindow(url, incognito, isAllowedAccess);
-      else
+      else if(isAllowedAccess && ids.incognito && !incognito) {
+        chrome.windows.getCurrent(function(window) {
+          if(window.incognito && !incognito) {
+            chrome.notifications.create("Episode++Notification", {type:"basic", iconUrl:"img/icon128.png", title:"Episode++", message:chrome.i18n.getMessage("nonIncognitoSeriesInIncognitoWindow")});
+            var selected = seriesList.getSelected();
+            seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)-1, selected.incognito);
+          } else {
+            createTab(url);
+          }
+        });
+      } else
         createTab(url);
     }
     if(close) {
@@ -111,4 +122,34 @@ function localizeHtmlPage()
       obj.innerHTML = valNewH;
     }
   }
+}
+// @return (chunk of) series list with options
+function getStorage(storedSeriesMemChunk) {
+  var storage = getDefaultOptions();
+  storage[storedSeriesMemChunk] = {};
+  return storage;
+}
+// @return default options
+function getDefaultOptions(order) {
+  order = order !== "undefined" ? order : [];
+  var defaultOptions = {};
+  defaultOptions[storedOptions] = {defaultOrder:order, defaultIncognito:true, defaultPlainTextURL:false};
+  return defaultOptions;
+}
+// @return default mirror order
+function getDefaultMirrorOrder() {
+  var mirrors = [
+    {Vivo:"Vivo-1"},
+    {OpenLoad:"OpenLoad-1"},
+    {FlashX:"FlashX-1"},
+    {AuroraVid:"AuroraVid-1"},
+    {BitVID:"BitVID-1"},
+    {CloudTime:"CloudTime-1"},
+    {Shared:"Shared-1"},
+    {FileNuke:"FileNuke-1"},
+    {Streamcloud:"Streamcloud-1"},
+    {WholeCloud:"WholeCloud-1"},
+    {YouWatch:"YouWatch-1"}
+  ];
+  return mirrors;
 }

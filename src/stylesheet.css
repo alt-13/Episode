@@ -1,8 +1,14 @@
 body {
   font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
   font-size: 100%;
-  margin:1em;
-  width:10em;
+}
+.popup {
+  margin: 1em 0.5em 1em 0.5em;
+  width: 10em;
+}
+.options {
+  width: 30em;
+  padding: 0 1em 2em 1em;
 }
 input {
   border-radius: 3px;
@@ -14,7 +20,7 @@ input {
 input[type="number"] {
   width: 94%;
 }
-input[type="checkbox"] {
+.popup input[type="checkbox"] {
   float: left;
   width: auto;
   margin-right: .7em;
@@ -25,8 +31,8 @@ input[type="checkbox"] + label {
 .right {
   float: right;
 }
-#editSeries {
-  float:left;
+.left {
+  float: left;
 }
 #selectSeries {
   font-size: 1em;
@@ -60,16 +66,18 @@ select {
   padding: 4px 8px;
   text-align: center;
   transition: all 200ms;
-  color: #F0F0F0;
+  color: #F1F1F1;
   text-decoration: none;
   font-weight: bold;
   font-size: 100%;
+  box-shadow: rgba(0, 0, 0, 0.0784314) 0px 1px 0px, rgba(255, 255, 255, 0.74902) 0px 1px 2px inset;
 }
 .btn:hover {
-  background: #808080;
-  color: white;
+  background: #F1F1F1;
+  color: buttontext;
+  border: grey solid 1px;
 }
-.btn:disabled {
+.btn-disabled {
   background: #FAFAFA;
   border: #F0F0F0 solid 1px;
   border-radius: 3px;
@@ -113,10 +121,63 @@ select {
   visibility: hidden;
   opacity: 0;
 }
-
 .dialog {
   padding: 1em;
   background: #fff;
   border-radius: 3px;
   transition: all 200ms ease-in-out;
+}
+ul#mirrors {
+  border: 1px solid grey;
+  list-style-type:none;
+  padding: 0;
+}
+ul#hosts {
+  list-style-type:none;
+  padding: 0;
+  margin: 2em 1em 0 0;
+}
+ul#mirrors li, ul#hosts li {
+  border: 1px solid black;
+  border-radius: 3px;
+  padding: 2px 4px;
+}
+ul#mirrors li {
+  margin: 4px 8px 4px 8px;
+}
+ul#mirrors li:active, ul#hosts li:active {
+  background-color: grey;
+  color: white;
+}
+ul#hosts li:target {
+  background-color: grey;
+  color: white;
+}
+div#hostCol {
+  width: 30%;
+  float: left;
+}
+div#mirrorCol {
+  width: 70%;
+  float: left;
+}
+#status {
+  color: green;
+  padding: 4px 8px;
+  text-align: center;
+  text-decoration: none;
+  margin-left: 1em;
+}
+.dropDown {
+  margin: 3em 0 5em 0;
+}
+.dropDown .dropDownMenu {
+  position: absolute;
+  display: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.dropDown:hover .dropDownMenu {
+  display: inline;
 }

@@ -16,6 +16,10 @@
 	    }
 	  }
 	},
+	// Utils openURL
+	"nonIncognitoSeriesInIncognitoWindow": {
+		"message": "¡Varios capítulos no incognitos (p.e. netflix) no funcionar en ventana de incógnito!\n¡Cambie en ventana normal, por favor!"
+	},
 	// Popup
 	"addNewSeries": {
 		"message": "- añadir serie nueva -"

@@ -2,10 +2,11 @@ var alreadyClicked = false;
 var timer;
 var funMap = {"proxer.me":buildProxerURL, "bs.to":findeEpisodeString,
               "animehaven.org":buildAnimehavenURL, "kinox":buildKinoxURL,
-              "91.202.61.170":buildKinoxURL, "netflix":buildNetflixURL};
+              "91.202.61.170":buildKinoxURL, "netflix":buildNetflixURL,
+              "youtube":buildYoutubeURL};
 
 // Entry: single/double click listener------------------------------------------
-chrome.browserAction.onClicked.addListener(function(tab) {
+chrome.browserAction.onClicked.addListener(function() {
   if (alreadyClicked) {
     clearTimeout(timer);
     setPopup(); // ----> Process double click <----
@@ -53,7 +54,7 @@ function ifListFoundOpenNewestEpisode(seriesList) {
   } else {
     var url = parseURL(selected.url);
     if(url.hostname !== "bs.to" && parseInt(selected.season) === 0) seriesList.edit(selected.name, selected.url, 1, selected.episode, selected.incognito);
-    if(parseInt(selected.episode) === 0) seriesList.edit(selected.name, selected.url, selected.season, 1, selected.incognito);
+    if(url.hostname !== "www.youtube.com" && parseInt(selected.episode) === 0) seriesList.edit(selected.name, selected.url, selected.season, 1, selected.incognito);
     updateURL(url, selected.save(true), seriesList);
     seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)+1, selected.incognito);
   }
@@ -63,7 +64,7 @@ function updateURL(url, series, seriesList) {
   var chosenFunction = funMap[url.hostname] ? funMap[url.hostname] : (funMap[url.hostname.split(".")[0]] ? funMap[url.hostname.split(".")[0]] : funMap[url.hostname.split(".")[1]]);
   if(!chosenFunction) {
     chrome.notifications.create("Episode++Notification", {type:"basic", iconUrl:"img/icon128.png", title:"Episode++", message:chrome.i18n.getMessage("notYetSupported",url.hostname)});
-    openURL(series.url, series.incognito);
+    openURL(series.url, series.incognito, seriesList);
   } else {
     chosenFunction(url, series, seriesList);
   }
@@ -72,24 +73,32 @@ function updateURL(url, series, seriesList) {
 function buildNetflixURL(url, series, seriesList) {
   var path = url.pathname.split("/");
   path.splice(2,1,(parseInt(path[2])+parseInt(series.episode)-1).toString());
-  openURL(url.protocol + "//" + url.host + path.join("/"), series.incognito);
+  openURL(url.protocol + "//" + url.host + path.join("/"), series.incognito, seriesList);
+}
+// The youtube way -------------------------------------------------------------
+function buildYoutubeURL(url, series, seriesList) {
+  if(url.searchObject.hasOwnProperty("list")) {
+    openURL(url.protocol + "//" + url.host + "/embed/videoseries?list=" + url.searchObject.list + "&index=" + series.episode, series.incognito, seriesList);
+  } else {
+    openURL(url.protocol + "//" + url.host + url.pathname + url.search, series.incognito, seriesList);
+  }
 }
 // The kinox way ---------------------------------------------------------------
 function buildKinoxURL(url, series, seriesList) {
-  openURL(url.protocol + "//" + url.host + url.pathname + ",s" + series.season + "e" + series.episode, series.incognito);
+  openURL(url.protocol + "//" + url.host + url.pathname + ",s" + series.season + "e" + series.episode, series.incognito, seriesList);
 }
 // The proxer way (no season support) ------------------------------------------
 function buildProxerURL(url, series, seriesList) {
   var path = url.pathname.split("/");
   path.splice(3,1,series.episode);
-  openURL(url.protocol + "//" + url.host + path.join("/"), series.incognito);
+  openURL(url.protocol + "//" + url.host + path.join("/"), series.incognito, seriesList);
 }
 // The animehaven way (experimental) -------------------------------------------
 function buildAnimehavenURL(url, series, seriesList) {
   var path = url.pathname.split("/");
   var ep = path[path.length-1].split("-");
   ep.splice((parseInt(series.season)>1 || !isNaN(parseInt(ep[ep.length-2]))) ? ep.length-2 : ep.length-1, 1, series.episode);
-  openURL(url.protocol + "//" + url.host + "/" + path.splice(1,1).join("/") + "/" + ep.join("-"), series.incognito);
+  openURL(url.protocol + "//" + url.host + "/" + path.splice(1,1).join("/") + "/" + ep.join("-"), series.incognito, seriesList);
 }
 // The bs way ------------------------------------------------------------------
 function findeEpisodeString(url, series, seriesList) {
@@ -109,7 +118,7 @@ function findeEpisodeString(url, series, seriesList) {
       if(links.length) {
         var link = links[0].href.split("/");
         link.pop();
-        buildBsURL(url, series.season, link.pop(), series.incognito);
+        buildBsURL(url, series.season, link.pop(), series.incognito, seriesList);
       } else {
         if(nextSeasonFound(newPath, response)) {
           series.season++;
@@ -148,12 +157,12 @@ function getBeginningSelector(url, season, episode) {
   return newPath;
 }
 // Callback function for request processing
-function buildBsURL(url, season, episode, incognito) {
+function buildBsURL(url, season, episode, incognito, seriesList) {
   var path = url.pathname.split("/");
   if(path.length < 6) {
     path.splice(3,2,season+"/"+episode+"/Streamcloud-1");
   } else {
     path.splice(4,1,episode);
   }
-  openURL(url.protocol + "//" + url.host + path.join("/"), incognito);
+  openURL(url.protocol + "//" + url.host + path.join("/"), incognito, seriesList);
 }

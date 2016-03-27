@@ -16,6 +16,10 @@
 	    }
 	  }
 	},
+	// Utils openURL
+	"nonIncognitoSeriesInIncognitoWindow": {
+		"message": "Some non incognito series (e.g. netflix) do not work in incognito window!\nPlease switch to normal window!"
+	},
 	// Popup
 	"addNewSeries": {
 		"message": "- add new series -"
@@ -76,5 +80,36 @@
 	// AH
 	"choose": {
 		"message": "Choose:"
+	},
+	// Options
+	"optionsTitle": {
+		"message": "Episode++ Options"
+	},
+	"chooseMirrorOrder": {
+		"message": "Mirror order depending on your preference (drag & drop):"
+	},
+	"hosts": {
+		"message": "Hosts:"
+	},
+	"defaultIncognito": {
+		"message": "Open series in incognito window by default"
+	},
+	"defaultPlainTextURL": {
+		"message": "Store URLs in plain text"
+	},
+	"ownPlugin": {
+		"message": "Define your own Plugins:"
+	},
+	"optionsSaved": {
+		"message": "Options saved."
+	},
+	"issue": {
+		"message": "Found issue?"
+	},
+	"issueReported": {
+		"message": "Issue already reported?"
+	},
+	"reportIssue": {
+		"message": "If not report issue."
 	}
 }

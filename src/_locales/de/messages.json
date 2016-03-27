@@ -16,6 +16,10 @@
 	    }
 	  }
 	},
+	// Utils openURL
+	"nonIncognitoSeriesInIncognitoWindow": {
+		"message": "Manche nicht incognito Serien (z.B. netflix) funktionieren im Incognito-Fenster nicht!\nBitte wechseln Sie zum normalen Fenster!"
+	},
 	// Popup
 	"addNewSeries": {
 		"message": "- neue Serie hinzufügen -"
@@ -76,5 +80,9 @@
 	// AH
 	"choose": {
 		"message": "Wählen:"
+	},
+	// Options
+	"chooseMirrorOrder": {
+		"message": "Mirror Reihenfolge nach eigener Vorliebe (drag & drop):"
 	}
 }
