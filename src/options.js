@@ -3,9 +3,10 @@ document.addEventListener("DOMContentLoaded", restoreOptions);
 function saveOptions(sortable) {
   var options = {};
   options[storedOptions] = {
-    defaultOrder:sortable.toArray(),
-    defaultIncognito:document.getElementById("defaultIncognito").checked,
-    defaultPlainTextURL:document.getElementById("defaultPlainTextURL").checked
+    order:sortable.toArray(),
+    incognito:document.getElementById("incognito").checked,
+    plainTextURL:document.getElementById("plainTextURL").checked,
+    showUnknownHostNotification:document.getElementById("showUnknownHostNotification").checked
   };
   chrome.storage.sync.set(options, function() { // show user save status
     var status = document.getElementById("status");
@@ -21,12 +22,14 @@ function restoreOptions() {
   for(var i=1; i<=document.getElementById("mirrors").getElementsByTagName("li").length; i++) { defaultOrder.push(i.toString()); }
   var defaultOptions = getDefaultOptions(defaultOrder);
   chrome.storage.sync.get(defaultOptions, function(items) {
-    var order = items[storedOptions].defaultOrder;
+    var options = items[storedOptions];
+    var order = options.order;
     var el = document.getElementById("mirrors");
     var sortable = Sortable.create(el, {store:{get:function(sortable){return order?order:[];},set:function(sortable){}}});
     document.getElementById("save").addEventListener("click", function(){saveOptions(sortable);});
-    document.getElementById("defaultIncognito").checked = items[storedOptions].defaultIncognito;
-    document.getElementById("defaultPlainTextURL").checked = items[storedOptions].defaultPlainTextURL;
+    document.getElementById("incognito").checked = options.incognito;
+    document.getElementById("plainTextURL").checked = options.plainTextURL;
+    document.getElementById("showUnknownHostNotification").checked = options.showUnknownHostNotification;
   });
 }
 function enableIssueReport() {

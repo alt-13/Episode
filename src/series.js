@@ -269,7 +269,7 @@ function restore(ifListNotFound, ifListFound, frags, fragInProcess, seriesList) 
             frags = parseInt(items[storedSeriesPart].__fragments__);
           }
           if(frags - fragInProcess === 0) {
-            ifListFound(seriesList);
+            ifListFound(seriesList, items[storedOptions]);
           } else {
             restore(ifListNotFound, ifListFound, frags, fragInProcess+1, seriesList);
           }

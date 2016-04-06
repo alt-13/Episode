@@ -6,7 +6,7 @@
 	"description": {
 		"message": "This extension opens the next to whatch episode in a new tab or incognito window. Doubleclick to aktivate popup!"
 	},
-	// Background
+	// Background (notification)
 	"notYetSupported": {
 		"message": "$details$ not yet supported!",
 		"placeholders": {
@@ -16,7 +16,10 @@
 	    }
 	  }
 	},
-	// Utils openURL
+	"disableNotification": {
+		"message": "Disable this notification"
+	},
+	// Utils openURL (notification)
 	"nonIncognitoSeriesInIncognitoWindow": {
 		"message": "Some non incognito series (e.g. netflix) do not work in incognito window!\nPlease switch to normal window!"
 	},
@@ -91,11 +94,14 @@
 	"hosts": {
 		"message": "Hosts:"
 	},
-	"defaultIncognito": {
+	"incognito": {
 		"message": "Open series in incognito window by default"
 	},
-	"defaultPlainTextURL": {
+	"plainTextURL": {
 		"message": "Store URLs in plain text"
+	},
+	"showUnknownHostNotification": {
+		"message": "Show notification opening URL of unknown host"
 	},
 	"ownPlugin": {
 		"message": "Define your own Plugins:"

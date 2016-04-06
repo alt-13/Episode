@@ -45,7 +45,7 @@ addStorageOnChangedListenerForContexMenu();
 // Process double click: setPopup (see utils) ----------------------------------
 
 // Process single click --------------------------------------------------------
-function ifListFoundOpenNewestEpisode(seriesList) {
+function ifListFoundOpenNewestEpisode(seriesList, options) {
   var selected = seriesList.getSelected();
   if(selected === null) {
     setPopup();
@@ -55,28 +55,42 @@ function ifListFoundOpenNewestEpisode(seriesList) {
     var url = parseURL(selected.url);
     if(url.hostname !== "bs.to" && parseInt(selected.season) === 0) seriesList.edit(selected.name, selected.url, 1, selected.episode, selected.incognito);
     if(url.hostname !== "www.youtube.com" && parseInt(selected.episode) === 0) seriesList.edit(selected.name, selected.url, selected.season, 1, selected.incognito);
-    updateURL(url, selected.save(true), seriesList);
+    updateURL(url, selected.save(true), seriesList, options);
     seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)+1, selected.incognito);
   }
 }
 
-function updateURL(url, series, seriesList) {
+function updateURL(url, series, seriesList, options) {
   var chosenFunction = funMap[url.hostname] ? funMap[url.hostname] : (funMap[url.hostname.split(".")[0]] ? funMap[url.hostname.split(".")[0]] : funMap[url.hostname.split(".")[1]]);
   if(!chosenFunction) {
-    chrome.notifications.create("Episode++Notification", {type:"basic", iconUrl:"img/icon128.png", title:"Episode++", message:chrome.i18n.getMessage("notYetSupported",url.hostname)});
+    if(options.showUnknownHostNotification) {
+      var myNotificationID = null;
+      chrome.notifications.create("Episode++Notification", {
+        type:"basic",
+        iconUrl:"img/icon128.png",
+        title:"Episode++",
+        message:chrome.i18n.getMessage("notYetSupported",url.hostname),
+        buttons:[{title:chrome.i18n.getMessage("disableNotification")}]
+      }, function(id) { myNotificationID = id; });
+      chrome.notifications.onButtonClicked.addListener(function(notifId, btnIdx) {
+        if(notifId === myNotificationID) {
+          chrome.runtime.openOptionsPage();
+        }
+      });
+    }
     openURL(series.url, series.incognito, seriesList);
   } else {
-    chosenFunction(url, series, seriesList);
+    chosenFunction(url, series, seriesList, options);
   }
 }
 // The netflix way (no season support) -----------------------------------------
-function buildNetflixURL(url, series, seriesList) {
+function buildNetflixURL(url, series, seriesList, options) {
   var path = url.pathname.split("/");
   path.splice(2,1,(parseInt(path[2])+parseInt(series.episode)-1).toString());
   openURL(url.protocol + "//" + url.host + path.join("/"), series.incognito, seriesList);
 }
 // The youtube way -------------------------------------------------------------
-function buildYoutubeURL(url, series, seriesList) {
+function buildYoutubeURL(url, series, seriesList, options) {
   if(url.searchObject.hasOwnProperty("list")) {
     openURL(url.protocol + "//" + url.host + "/embed/videoseries?list=" + url.searchObject.list + "&index=" + series.episode, series.incognito, seriesList);
   } else {
@@ -84,24 +98,24 @@ function buildYoutubeURL(url, series, seriesList) {
   }
 }
 // The kinox way ---------------------------------------------------------------
-function buildKinoxURL(url, series, seriesList) {
+function buildKinoxURL(url, series, seriesList, options) {
   openURL(url.protocol + "//" + url.host + url.pathname + ",s" + series.season + "e" + series.episode, series.incognito, seriesList);
 }
 // The proxer way (no season support) ------------------------------------------
-function buildProxerURL(url, series, seriesList) {
+function buildProxerURL(url, series, seriesList, options) {
   var path = url.pathname.split("/");
   path.splice(3,1,series.episode);
   openURL(url.protocol + "//" + url.host + path.join("/"), series.incognito, seriesList);
 }
 // The animehaven way (experimental) -------------------------------------------
-function buildAnimehavenURL(url, series, seriesList) {
+function buildAnimehavenURL(url, series, seriesList, options) {
   var path = url.pathname.split("/");
   var ep = path[path.length-1].split("-");
   ep.splice((parseInt(series.season)>1 || !isNaN(parseInt(ep[ep.length-2]))) ? ep.length-2 : ep.length-1, 1, series.episode);
   openURL(url.protocol + "//" + url.host + "/" + path.splice(1,1).join("/") + "/" + ep.join("-"), series.incognito, seriesList);
 }
 // The bs way ------------------------------------------------------------------
-function findeEpisodeString(url, series, seriesList) {
+function findeEpisodeString(url, series, seriesList, options) {
   var path = url.pathname.split("/");
   if(path[3] != series.season) {
     path.splice(3,path.length-3,series.season);
@@ -118,7 +132,7 @@ function findeEpisodeString(url, series, seriesList) {
       if(links.length) {
         var link = links[0].href.split("/");
         link.pop();
-        buildBsURL(url, series.season, link.pop(), series.incognito, seriesList);
+        buildBsURL(url, series, link.pop(), seriesList, options);
       } else {
         if(nextSeasonFound(newPath, response)) {
           series.season++;
@@ -157,12 +171,12 @@ function getBeginningSelector(url, season, episode) {
   return newPath;
 }
 // Callback function for request processing
-function buildBsURL(url, season, episode, incognito, seriesList) {
+function buildBsURL(url, series, episode, seriesList, options) {
   var path = url.pathname.split("/");
   if(path.length < 6) {
-    path.splice(3,2,season+"/"+episode+"/Streamcloud-1");
+    path.splice(3,2,series.season+"/"+episode+"/Streamcloud-1");
   } else {
     path.splice(4,1,episode);
   }
-  openURL(url.protocol + "//" + url.host + path.join("/"), incognito, seriesList);
+  openURL(url.protocol + "//" + url.host + path.join("/"), series.incognito, seriesList);
 }

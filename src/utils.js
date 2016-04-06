@@ -16,10 +16,13 @@ function openURL(url, incognito, seriesList, close) {
         createWindow(url, incognito, isAllowedAccess);
       else if(isAllowedAccess && ids.incognito && !incognito) {
         chrome.windows.getCurrent(function(window) {
-          if(window.incognito && !incognito) {
+          if(window.incognito && !incognito && ids.srcWindowID == 0) {
             chrome.notifications.create("Episode++Notification", {type:"basic", iconUrl:"img/icon128.png", title:"Episode++", message:chrome.i18n.getMessage("nonIncognitoSeriesInIncognitoWindow")});
             var selected = seriesList.getSelected();
             seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)-1, selected.incognito);
+          } else if(window.incognito && !incognito && ids.srcWindowID != 0) {
+            chrome.windows.update(parseInt(ids.srcWindowID), {focused:true});
+            createTab(url, ids.srcWindowID);
           } else {
             createTab(url);
           }
@@ -51,9 +54,10 @@ function getTabID() {
   var tabInfo = {};
   if(ids != null && ids !== "0") {
     var idsarr = ids.split("|");
-    tabInfo.windowID = idsarr[0];
-    tabInfo.tabID = idsarr[1];
-    tabInfo.incognito = idsarr.length == 3 ? true : false;
+    tabInfo.srcWindowID = idsarr[0];
+    tabInfo.windowID = idsarr[1];
+    tabInfo.tabID = idsarr[2];
+    tabInfo.incognito = idsarr.length == 4 ? true : false;
   } else return null;
   return tabInfo;
 }
@@ -62,17 +66,26 @@ function setTabID(tabID) {
   localStorage.setItem("episode++TabID", tabID);
 }
 // Creates new tab
-function createTab(url) {
-  chrome.tabs.create({url:url}, function(tab){
-    setTabID(tab.windowId+"|"+tab.id);
+function createTab(url, srcWindowID) {
+  srcWindowID = typeof srcWindowID !== "undefined" ? parseInt(srcWindowID) : null;
+  chrome.tabs.create(srcWindowID === null ? {url:url} : {windowId:srcWindowID, url:url}, function(tab){
+    setTabID((srcWindowID===null?tab.windowId:srcWindowID)+"|"+tab.windowId+"|"+tab.id);
   });
 }
 // Creates new window
 function createWindow(url, incognito, isAllowedAccess) {
-  chrome.windows.create({url:url, incognito:incognito, state:"maximized"}, function(window) {
-    if(isAllowedAccess) {
-      setTabID(window.id+"|"+window.tabs[0].id+"|incognito");
-    }
+  chrome.windows.getCurrent(function(srcWindow) {
+    chrome.windows.create({url:url, incognito:incognito, state:"maximized"}, function(window) {
+      if(isAllowedAccess) {
+        setTabID(srcWindow.id+"|"+window.id+"|"+window.tabs[0].id+"|incognito");
+      }
+    });
+    chrome.windows.onRemoved.addListener(function(windowId){
+      if(windowId === srcWindow.id && isAllowedAccess) {
+        var tabID = getTabID();
+        setTabID(0+"|"+tabID.windowID+"|"+tabID.tabID+"|incognito");
+      }
+    });
   });
 }
 // Updates tab
@@ -133,7 +146,7 @@ function getStorage(storedSeriesMemChunk) {
 function getDefaultOptions(order) {
   order = order !== "undefined" ? order : [];
   var defaultOptions = {};
-  defaultOptions[storedOptions] = {defaultOrder:order, defaultIncognito:true, defaultPlainTextURL:false};
+  defaultOptions[storedOptions] = {order:order, incognito:true, plainTextURL:false, showUnknownHostNotification:true};
   return defaultOptions;
 }
 // @return default mirror order
