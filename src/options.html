@@ -3,21 +3,22 @@
   <head>
     <title>__MSG_optionsTitle__</title>
     <link rel="stylesheet" href="stylesheet.css">
-    <script src="utils.js"></script>
     <script src="Sortable.min.js"></script>
+    <script src="utils.js"></script>
     <script src="options.js"></script>
   </head>
   <body>
     <div class="options">
-      <div id="hostCol">
-        __MSG_hosts__
-        <ul id="hosts">
-          <li>&#10133;</li>
+      <div id="domainCol">
+        __MSG_domains__
+        <ul id="domains">
         </ul>
       </div>
       <div id="mirrorCol">
         __MSG_chooseMirrorOrder__
         <ul id="mirrors">
+        </ul>
+        <!--<ul id="mirrors">
           <li data-id="1"><image src="img/icons/Vivo.ico"> Vivo</li>
           <li data-id="2"><image src="img/icons/OpenLoad.ico"> OpenLoad</li>
           <li data-id="3"><image src="img/icons/FlashX.ico"> FlashX</li>
@@ -29,22 +30,24 @@
           <li data-id="9"><image src="img/icons/Streamcloud.ico"> Streamcloud</li>
           <li data-id="10"><image src="img/icons/WholeCloud.ico"> WholeCloud</li>
           <li data-id="11"><image src="img/icons/YouWatch.ico"> YouWatch</li>
-        </ul>
+        </ul>-->
       </div>
       <p>
         <input type="checkbox" id="incognito" name="incognito" value="incognito">
         <label for="incognito">__MSG_incognito__</label><br>
         <input type="checkbox" id="plainTextURL" name="plainTextURL" value="plainTextURL">
         <label for="plainTextURL">__MSG_plainTextURL__</label><br>
-        <input type="checkbox" id="showUnknownHostNotification" name="showUnknownHostNotification" value="showUnknownHostNotification">
-        <label for="showUnknownHostNotification">__MSG_showUnknownHostNotification__</label>
+        <input type="checkbox" id="showUnknownDomainNotification" name="showUnknownDomainNotification" value="showUnknownDomainNotification">
+        <label for="showUnknownDomainNotification">__MSG_showUnknownDomainNotification__</label><br>
+        <label for="iconColor">__MSG_iconColor__</label>
+        <input type="color" id="iconColor" name="iconColor" value="#000000">
       </p><!--<p>__MSG_ownPlugin__
       <textarea rows="4" cols="50" disabled>
       </textarea>
       </p>-->
       <div class="left"><input type="submit" id="save" title="__MSG_save__" class="btn" value="__MSG_save__"></div>
       <a id="status"></a>
-      <div class="dropDown">
+      <div class="issueDropDown">
         <a class="btn left">__MSG_issue__</a>
         <ul class="dropDownMenu">
           <li><a class="btn" id="issueReported" href="https://github.com/alt-13/Episode/issues">__MSG_issueReported__</a></li>

@@ -37,8 +37,12 @@ chrome.windows.onRemoved.addListener(function(windowId) {
   }
 });
 
-// Create context menus (limited to 6) -----------------------------------------
-chrome.runtime.onInstalled.addListener(function(){restore(createContextMenu, createContextMenu);});
+// On installation: set icon color and create context menus (limited to 6) -----
+chrome.runtime.onInstalled.addListener(function(){restore(onInstall, onInstall);});
+function onInstall(seriesList, options) {
+  createContextMenu(seriesList);
+  setIconColor(options.iconColor);
+}
 restore(setPopup, ifListFoundAddContextMenuOnClickedListeners);
 addStorageOnChangedListenerForContexMenu();
 
@@ -55,19 +59,19 @@ function ifListFoundOpenNewestEpisode(seriesList, options) {
     var url = parseURL(selected.url);
     if(url.hostname !== "bs.to" && parseInt(selected.season) === 0) seriesList.edit(selected.name, selected.url, 1, selected.episode, selected.incognito);
     if(url.hostname !== "www.youtube.com" && parseInt(selected.episode) === 0) seriesList.edit(selected.name, selected.url, selected.season, 1, selected.incognito);
-    updateURL(url, selected.save(true), seriesList, options);
+    selectService(url, selected.save(true), seriesList, options);
     seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)+1, selected.incognito);
   }
 }
 
-function updateURL(url, series, seriesList, options) {
+function selectService(url, series, seriesList, options) {
   var chosenFunction = funMap[url.hostname] ? funMap[url.hostname] : (funMap[url.hostname.split(".")[0]] ? funMap[url.hostname.split(".")[0]] : funMap[url.hostname.split(".")[1]]);
   if(!chosenFunction) {
     if(options.showUnknownHostNotification) {
       var myNotificationID = null;
       chrome.notifications.create("Episode++Notification", {
         type:"basic",
-        iconUrl:"img/icon128.png",
+        iconUrl:"img/b/icon128.png",
         title:"Episode++",
         message:chrome.i18n.getMessage("notYetSupported",url.hostname),
         buttons:[{title:chrome.i18n.getMessage("disableNotification")}]

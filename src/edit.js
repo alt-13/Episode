@@ -10,9 +10,9 @@ function ifListNotFoundSetupPlainEditPopup() {
   document.getElementById("save").addEventListener("click", function(){editSeries(null);});
 }
 // User wants to edit series list entry: Save -> edit series
-function ifListFoundSetupEditPopup(seriesList) {
+function ifListFoundSetupEditPopup(seriesList, options) {
   var selected = seriesList.getSelected();
-  fillInFormContent(selected);
+  fillInFormContent(selected, options);
   document.getElementById("epp_title").addEventListener("input", function(event) {
     if(!seriesList.checkNameOK(event.target.value))
       document.getElementById("epp_title").style.borderColor = "red";
@@ -64,7 +64,7 @@ function saveFormContent() {
   return null;
 }
 // Restores form content
-function fillInFormContent(series) {
+function fillInFormContent(series, options) {
   var content = localStorage.getItem("episode++FormContent");
   if(content != null)
     series = JSON.parse(content);
@@ -75,9 +75,7 @@ function fillInFormContent(series) {
     document.getElementById("epp_episode").value = series.episode;
     document.getElementById("epp_incognito").checked = series.incognito;
   } else {
-    chrome.storage.sync.get(getDefaultOptions(), function(items) {
-      document.getElementById("epp_incognito").checked = items[storedOptions].defaultIncognito;
-    });
+    document.getElementById("epp_incognito").checked = options.incognito;
   }
 }
 // Remove form content from storage

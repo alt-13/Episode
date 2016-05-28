@@ -17,7 +17,7 @@ function openURL(url, incognito, seriesList, close) {
       else if(isAllowedAccess && ids.incognito && !incognito) {
         chrome.windows.getCurrent(function(window) {
           if(window.incognito && !incognito && ids.srcWindowID == 0) {
-            chrome.notifications.create("Episode++Notification", {type:"basic", iconUrl:"img/icon128.png", title:"Episode++", message:chrome.i18n.getMessage("nonIncognitoSeriesInIncognitoWindow")});
+            chrome.notifications.create("Episode++Notification", {type:"basic", iconUrl:"img/b/icon128.png", title:"Episode++", message:chrome.i18n.getMessage("nonIncognitoSeriesInIncognitoWindow")});
             var selected = seriesList.getSelected();
             seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)-1, selected.incognito);
           } else if(window.incognito && !incognito && ids.srcWindowID != 0) {
@@ -143,15 +143,17 @@ function getStorage(storedSeriesMemChunk) {
   return storage;
 }
 // @return default options
-function getDefaultOptions(order) {
-  order = order !== "undefined" ? order : [];
+function getDefaultOptions() {
+  var defaultDomains = getDefaultMirrorDomainList();
+  var defaultOrder = []; // chang "bs.to" to Default
+  for(var i=1; i<=defaultDomains["bs.to"].length; i++) { defaultOrder.push(i.toString()); }
   var defaultOptions = {};
-  defaultOptions[storedOptions] = {order:order, incognito:true, plainTextURL:false, showUnknownHostNotification:true};
+  defaultOptions[storedOptions] = {order:defaultOrder, domains:defaultDomains, incognito:true, plainTextURL:false, showUnknownDomainNotification:true, iconColor:"#000000"};
   return defaultOptions;
 }
 // @return default mirror order
-function getDefaultMirrorOrder() {
-  var mirrors = [
+function getDefaultMirrorDomainList() {
+  var defaultMirrors = [
     {Vivo:"Vivo-1"},
     {OpenLoad:"OpenLoad-1"},
     {FlashX:"FlashX-1"},
@@ -164,5 +166,70 @@ function getDefaultMirrorOrder() {
     {WholeCloud:"WholeCloud-1"},
     {YouWatch:"YouWatch-1"}
   ];
-  return mirrors;
+  defaultDomains = {"bs.to":defaultMirrors};
+  return defaultDomains;
+}
+// Draws icon with selected color
+// http://demo.qunee.com/svg2canvas/
+function setIconColor(color) {
+  color = typeof color !== "undefined" ? color : document.getElementById("iconColor").value;
+  var canvas = document.createElement("canvas");
+  canvas.width = 19;
+  canvas.height = 19;
+
+  var ctx = canvas.getContext("2d");
+  ctx.save();
+  ctx.transform(0.07422,0,0,0.07422,0.03977875,0.03876088);
+  ctx.save();
+  ctx.fillStyle=color;
+  ctx.beginPath();
+  ctx.moveTo(68.5,14);
+  ctx.bezierCurveTo(37.848198,14,13,38.848197,13,69.5);
+  ctx.bezierCurveTo(13,80.061488,15.941425,89.93939,21.0625,98.34375);
+  ctx.bezierCurveTo(35.553604,126.77567,67.826155,151.43267,91.28125,169.09375);
+  ctx.bezierCurveTo(94.800384,125.38361,131.38383,91,176,91);
+  ctx.bezierCurveTo(189.996,91,203.20087,94.382553,214.84375,100.375);
+  ctx.bezierCurveTo(215.17866,99.758537,215.49424,99.151307,215.8125,98.53125);
+  ctx.bezierCurveTo(221.00621,90.085259,224,80.142317,224,69.5);
+  ctx.bezierCurveTo(224,38.848197,199.1518,14,168.5,14);
+  ctx.bezierCurveTo(146.49383,14,127.47584,26.807096,118.5,45.375);
+  ctx.bezierCurveTo(109.52416,26.807096,90.506168,14,68.5,14);
+  ctx.closePath();
+  ctx.fill("nonzero");
+  ctx.stroke();
+  ctx.restore();
+  ctx.restore();
+  ctx.save();
+  ctx.transform(0.07422,0,0,0.07422,0.03977875,0.03876088);
+  ctx.save();
+  ctx.fillStyle=color;
+  ctx.beginPath();
+  ctx.moveTo(176,110);
+  ctx.bezierCurveTo(139.54921,110,110,139.54921,110,176);
+  ctx.bezierCurveTo(110,212.45079,139.54921,242,176,242);
+  ctx.bezierCurveTo(212.45079,242,242,212.45079,242,176);
+  ctx.bezierCurveTo(242,139.54921,212.45079,110,176,110);
+  ctx.closePath();
+  ctx.moveTo(162,133);
+  ctx.lineTo(190,133);
+  ctx.lineTo(190,162);
+  ctx.lineTo(219,162);
+  ctx.lineTo(219,190);
+  ctx.lineTo(190,190);
+  ctx.lineTo(190,219);
+  ctx.lineTo(162,219);
+  ctx.lineTo(162,190);
+  ctx.lineTo(133,190);
+  ctx.lineTo(133,162);
+  ctx.lineTo(162,162);
+  ctx.lineTo(162,133);
+  ctx.closePath();
+  ctx.fill("nonzero");
+  ctx.stroke();
+  ctx.restore();
+  ctx.restore();
+
+  chrome.browserAction.setIcon({
+    imageData: ctx.getImageData(0, 0, 19, 19)
+  });
 }

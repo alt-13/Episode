@@ -35,7 +35,7 @@ Series.prototype.save = function(clone) {
   clone = typeof clone !== "undefined" ? clone : false;
   var seriesToStore = {};
   for(var property in this) {
-    if(typeof this[property] !== "function"){
+    if(typeof this[property] !== "function") {
       if(property == "url")
         seriesToStore[property] = clone ? this[property] : encodeURL(this[property]);
       else
@@ -165,7 +165,7 @@ function SeriesList(seriesList, plainTextURL) {
   // @return true on success, false otherwise (e.g.: existing rename name)
   this.edit = function(name, url, season, episode, incognito) {
     if(!this[name] || typeof this[name] === "function") { // name not in list
-      var s = this.getSelected();
+      var s = this.getSelected(); // add new series deselects all
       if(s !== null) // rename
         delete this[s.name];        
       this.add(name, url, season, episode, incognito);

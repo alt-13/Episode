@@ -91,8 +91,8 @@
 	"chooseMirrorOrder": {
 		"message": "Mirror order depending on your preference (drag & drop):"
 	},
-	"hosts": {
-		"message": "Hosts:"
+	"domains": {
+		"message": "Domains:"
 	},
 	"incognito": {
 		"message": "Open series in incognito window by default"
@@ -100,8 +100,11 @@
 	"plainTextURL": {
 		"message": "Store URLs in plain text"
 	},
-	"showUnknownHostNotification": {
+	"showUnknownDomainNotification": {
 		"message": "Show notification opening URL of unknown host"
+	},
+	"iconColor": {
+		"message": "Choose icon color:"
 	},
 	"ownPlugin": {
 		"message": "Define your own Plugins:"
@@ -117,5 +120,11 @@
 	},
 	"reportIssue": {
 		"message": "If not report issue."
+	},
+	"name": {
+		"message": "name"
+	},
+	"substitutionString": {
+		"message": "substitution string"
 	}
 }
