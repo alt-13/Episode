@@ -24,12 +24,14 @@
     "persistent": false
   },
 
+  "homepage_url": "https://github.com/alt-13/Episode",
+
+  "minimum_chrome_version": "40",
+
   "options_ui": {
     "page": "options.html",
     "chrome_style": true
   },
-
-  "minimum_chrome_version": "40",
 
   "permissions": [ "tabs", "storage", "notifications", "contextMenus", "http://*/*", "https://*/*" ]
 }

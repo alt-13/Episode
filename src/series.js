@@ -268,10 +268,10 @@ function restore(ifListNotFound, ifListFound, frags, fragInProcess, seriesList) 
             seriesList.merge(items[storedSeriesPart]);
             frags = parseInt(items[storedSeriesPart].__fragments__);
           }
-          if(frags - fragInProcess === 0) {
-            ifListFound(seriesList, items[storedOptions]);
-          } else {
+          if(frags - fragInProcess > 0) {
             restore(ifListNotFound, ifListFound, frags, fragInProcess+1, seriesList);
+          } else {
+            ifListFound(seriesList, items[storedOptions]);
           }
         }
       }

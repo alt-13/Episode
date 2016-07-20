@@ -96,9 +96,9 @@ function buildNetflixURL(url, series, seriesList, options) {
 // The youtube way -------------------------------------------------------------
 function buildYoutubeURL(url, series, seriesList, options) {
   if(url.searchObject.hasOwnProperty("list")) {
-    openURL(url.protocol + "//" + url.host + "/embed/videoseries?list=" + url.searchObject.list + "&index=" + series.episode, series.incognito, seriesList);
+    openURL(url.protocol + "//" + url.host + "/embed/videoseries?list=" + url.searchObject.list + "&index=" + series.episode + (options.youtubeAutoplay ? "&autoplay=1" : ""), series.incognito, seriesList);
   } else {
-    openURL(url.protocol + "//" + url.host + url.pathname + url.search, series.incognito, seriesList);
+    openURL(url.protocol + "//" + url.host + url.pathname + url.search + (options.youtubeAutoplay ? "&autoplay=1" : ""), series.incognito, seriesList);
   }
 }
 // The kinox way ---------------------------------------------------------------

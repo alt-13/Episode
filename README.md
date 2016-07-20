@@ -27,6 +27,8 @@ Please make sure that the usage of the supported web sites is allowed in your co
 -->
 
 ---
+![Tutorial](https://raw.githubusercontent.com/alt-13/Episode/master/Tutorial.gif)
+---
 
 Sorted by priority:
 <!--
@@ -45,20 +47,23 @@ Sorted by priority:
 -->
 
 #### Features:
-* options page:
-  * preferred host (streamcloud, ..)
-  * select 5 series which are shown in browser action context menu
-  * do it yourselfe episode link builder
-  * theme chooser (dark/light)
-  *	icon colour picker [DONE]
-  * standard incognito/ or not [DONE]
-  * urls stored plain text (faster) [DONE])
-* proxer.me generalisation
-* movie4k
-* tubeplus.is
-* availability for link-building sites to season loop (as in bs.to)
-* PORT FOR FIREFOX
-* end of series hint
+* [ ] options page:
+  * [ ] preferred host (streamcloud, ..)
+  * [ ] select 5 series which are shown in browser action context menu
+  * [x] standard incognito/ or not
+  * [x] urls stored plain text (faster)
+  * [x] show notification opening URL of unknown host
+  * [x] enable autoplay for youtube playlists
+  *	[x] icon colour picker
+  * [ ] theme chooser (dark/light)
+  * [ ] do it yourselfe episode link builder
+* [ ] proxer.me generalisation
+* [ ] open link to stream directly (bs.to, kinox.tv, ...)
+* [ ] movie4k
+* [ ] tubeplus.is
+* [ ] availability for link-building sites to season loop (as in bs.to)
+* [ ] PORT FOR FIREFOX
+* [ ] end of series hint
 
 <!--
 * folder structure and play with embeded web player for *.<video-format> files

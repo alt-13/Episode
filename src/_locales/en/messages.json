@@ -103,6 +103,9 @@
 	"showUnknownDomainNotification": {
 		"message": "Show notification opening URL of unknown host"
 	},
+	"youtubeAutoplay": {
+		"message": "Enable autoplay for youtube playlists"
+	},
 	"iconColor": {
 		"message": "Choose icon color:"
 	},

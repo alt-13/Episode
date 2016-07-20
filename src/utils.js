@@ -148,7 +148,15 @@ function getDefaultOptions() {
   var defaultOrder = []; // chang "bs.to" to Default
   for(var i=1; i<=defaultDomains["bs.to"].length; i++) { defaultOrder.push(i.toString()); }
   var defaultOptions = {};
-  defaultOptions[storedOptions] = {order:defaultOrder, domains:defaultDomains, incognito:true, plainTextURL:false, showUnknownDomainNotification:true, iconColor:"#000000"};
+  defaultOptions[storedOptions] = {
+    order:defaultOrder,
+    domains:defaultDomains,
+    incognito:true,
+    plainTextURL:false,
+    youtubeAutoplay:true,
+    showUnknownDomainNotification:true,
+    iconColor:"#000000"
+  };
   return defaultOptions;
 }
 // @return default mirror order

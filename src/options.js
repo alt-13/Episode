@@ -8,6 +8,7 @@ function saveOptions(order, domainList) {
     incognito:document.getElementById("incognito").checked,
     plainTextURL:document.getElementById("plainTextURL").checked,
     showUnknownDomainNotification:document.getElementById("showUnknownDomainNotification").checked,
+    youtubeAutoplay:document.getElementById("youtubeAutoplay").checked,
     iconColor:document.getElementById("iconColor").value
   };
   chrome.storage.sync.set(options, function() { // show user save status
@@ -31,6 +32,7 @@ function restoreOptions() {
     document.getElementById("incognito").checked = options.incognito;
     document.getElementById("plainTextURL").checked = options.plainTextURL;
     document.getElementById("showUnknownDomainNotification").checked = options.showUnknownDomainNotification;
+    document.getElementById("youtubeAutoplay").checked = options.youtubeAutoplay;
     document.getElementById("iconColor").value = options.iconColor;
     // add button listeners
     document.getElementById("iconColor").addEventListener("input", function(){setIconColor();});
