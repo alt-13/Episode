@@ -48,8 +48,9 @@ Sorted by priority:
 
 #### Features:
 * [ ] options page:
-  * [ ] preferred host (streamcloud, ..)
+  * [x] preferred host (streamcloud, ..)
   * [ ] select 5 series which are shown in browser action context menu
+  * [x] open link to stream page directly (bs.to)
   * [x] standard incognito/ or not
   * [x] urls stored plain text (faster)
   * [x] show notification opening URL of unknown host
@@ -58,7 +59,6 @@ Sorted by priority:
   * [ ] theme chooser (dark/light)
   * [ ] do it yourselfe episode link builder
 * [ ] proxer.me generalisation
-* [ ] open link to stream directly (bs.to, kinox.tv, ...)
 * [ ] movie4k
 * [ ] tubeplus.is
 * [ ] availability for link-building sites to season loop (as in bs.to)

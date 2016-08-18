@@ -7,7 +7,7 @@ body {
   width: 10em;
 }
 .options {
-  width: 30em;
+  width: 40em;
   padding: 0 1em 2em 1em;
 }
 input {
@@ -186,4 +186,10 @@ div#mirrorCol {
 .activeDomain {
   background-color: grey;
   color: white;
+}
+[draggable] {
+    user-select: none;
+}
+#domainMirrorOptions {
+  overflow:auto;
 }

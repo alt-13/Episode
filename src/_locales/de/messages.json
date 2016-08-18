@@ -6,7 +6,7 @@
 	"description": {
 		"message": "Diese Erweiterung öffnet die aktuellste Episode, die Sie noch nicht gesehen haben in einem neuen Tab oder Inkognito-Fenster. Doppelklick um das Popup zu aktivieren!"
 	},
-	// Background
+	// Background (notification)
 	"notYetSupported": {
 		"message": "$details$ wird noch nicht unterstützt!",
 		"placeholders": {
@@ -16,7 +16,10 @@
 	    }
 	  }
 	},
-	// Utils openURL
+	"disableNotification": {
+		"message": "Diese Meldung nicht mehr anzeigen"
+	},
+	// Utils openURL (notification)
 	"nonIncognitoSeriesInIncognitoWindow": {
 		"message": "Manche nicht incognito Serien (z.B. netflix) funktionieren im Incognito-Fenster nicht!\nBitte wechseln Sie zum normalen Fenster!"
 	},
@@ -82,7 +85,55 @@
 		"message": "Wählen:"
 	},
 	// Options
+	"optionsTitle": {
+		"message": "Episode++ Optionen"
+	},
+	"domainMirrorSummary": {
+		"message": "Bevorzugte Mirrors für Domains"
+	},
 	"chooseMirrorOrder": {
 		"message": "Mirror Reihenfolge nach eigener Vorliebe (drag & drop):"
+	},
+	"domains": {
+		"message": "Domains:"
+	},
+	"incognito": {
+		"message": "Serien standardmäßig im Incognito-Fenster öffnen"
+	},
+	"plainTextURL": {
+		"message": "URLs als Klartext speichern"
+	},
+	"showUnknownDomainNotification": {
+		"message": "Benachrichtigung beim Öffnen einer URL eines unbekannten Hosts anzeigen"
+	},
+	"youtubeAutoplay": {
+		"message": "Autoplay für Youtube-Playlists einschalten"
+	},
+	"directLink": {
+		"message": "Link zur Stream-Seite direkt öffnen (bs.to)"
+	},
+	"iconColor": {
+		"message": "Farbe des Icons wählen:"
+	},
+	"ownPlugin": {
+		"message": "Definiere Deine eigenen Plugins:"
+	},
+	"optionsSaved": {
+		"message": "Optionen gespeichert."
+	},
+	"issue": {
+		"message": "Problem gefunden?"
+	},
+	"issueReported": {
+		"message": "Problem bereits gemeldet?"
+	},
+	"reportIssue": {
+		"message": "Wenn nicht, melde das Problem."
+	},
+	"name": {
+		"message": "Name"
+	},
+	"substitutionString": {
+		"message": "Ersetzungszeichenkette"
 	}
 }

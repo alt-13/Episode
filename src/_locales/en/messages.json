@@ -88,6 +88,9 @@
 	"optionsTitle": {
 		"message": "Episode++ Options"
 	},
+	"domainMirrorSummary": {
+		"message": "Preferred mirrors for domains"
+	},
 	"chooseMirrorOrder": {
 		"message": "Mirror order depending on your preference (drag & drop):"
 	},
@@ -105,6 +108,9 @@
 	},
 	"youtubeAutoplay": {
 		"message": "Enable autoplay for youtube playlists"
+	},
+	"directLink": {
+		"message": "Open link to stream page directly (bs.to)"
 	},
 	"iconColor": {
 		"message": "Choose icon color:"

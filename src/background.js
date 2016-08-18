@@ -132,17 +132,17 @@ function findeEpisodeString(url, series, seriesList, options) {
     success  : function(data) {
       var newPath = getBeginningSelector(url, series.season, series.episode);
       var response = $('<html />').html(data);
-      var links = $(response).find("a[href^='"+newPath+"'][href$='/Streamcloud-1']");
-      if(links.length) {
+      var links = findLinkToFavouriteMirror(newPath, options, response);
+      if(typeof links !== "undefined") {
         var link = links[0].href.split("/");
-        link.pop();
-        buildBsURL(url, series, link.pop(), seriesList, options);
+        var mirror = link.pop();
+        buildBsURL(url, series, link.pop(), mirror, seriesList, options);
       } else {
         if(nextSeasonFound(newPath, response)) {
           series.season++;
           series.episode = 1;
           seriesList.edit(series.name, series.url, series.season, 2, series.incognito);
-          findeEpisodeString(url, series, seriesList);
+          findeEpisodeString(url, series, seriesList, options);
         } else {
           setPopup();
         }
@@ -150,7 +150,20 @@ function findeEpisodeString(url, series, seriesList, options) {
     }
   });
 }
-
+// @return link with preferential mirror
+function findLinkToFavouriteMirror(newPath, options, response) {
+  var mirrors = options.domains["bs.to"].mirrorList;
+  var mirror;
+  var links;
+  for(var m = 0; m < mirrors.length; m++) {
+    mirror = mirrors[m][Object.keys(mirrors[m])[0]];
+    links = $(response).find("a[href^='"+newPath+"'][href$='/"+mirror+"']");
+    if(links.length) {
+      return links;
+    }
+  }
+}
+// @return true there is another season, false otherwise
 function nextSeasonFound(newPath, response) {
   var path = newPath.split("/");
   path.splice(2,2,(parseInt(path[2])+1).toString());
@@ -161,7 +174,7 @@ function nextSeasonFound(newPath, response) {
   else
     return false;
 }
-
+// @return string for finding the correct href
 function getBeginningSelector(url, season, episode) {
   var pathname = url.pathname;
   var path = pathname.split("/");
@@ -174,13 +187,22 @@ function getBeginningSelector(url, season, episode) {
   var newPath = path.slice(1,path.length).join("/");
   return newPath;
 }
-// Callback function for request processing
-function buildBsURL(url, series, episode, seriesList, options) {
+// opens bs url or the link to the mirror directly
+function buildBsURL(url, series, episode, mirror, seriesList, options) {
   var path = url.pathname.split("/");
-  if(path.length < 6) {
-    path.splice(3,2,series.season+"/"+episode+"/Streamcloud-1");
+  var newPath = path[0]+"/"+path[1]+"/"+path[2]+"/"+series.season+"/"+episode+"/"+mirror;
+  var newURL = url.protocol + "//" + url.host + newPath;
+  if(options.directLink) {
+    $.ajax({
+      url      : newURL,
+      dataType : 'html',
+      success  : function(data) {
+        var response = $('<html />').html(data);
+        var directLink = $(response).find("a").filter(":contains('Link zum Originalvideo')")[0].href;
+        openURL(directLink, series.incognito, seriesList);
+      }
+    });
   } else {
-    path.splice(4,1,episode);
+    openURL(newURL, series.incognito, seriesList);
   }
-  openURL(url.protocol + "//" + url.host + path.join("/"), series.incognito, seriesList);
 }

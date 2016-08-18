@@ -3,35 +3,28 @@
   <head>
     <title>__MSG_optionsTitle__</title>
     <link rel="stylesheet" href="stylesheet.css">
-    <script src="Sortable.min.js"></script>
     <script src="utils.js"></script>
+    <script src="mirror.js"></script>
     <script src="options.js"></script>
   </head>
   <body>
     <div class="options">
-      <div id="domainCol">
-        __MSG_domains__
-        <ul id="domains">
-        </ul>
-      </div>
-      <div id="mirrorCol">
-        __MSG_chooseMirrorOrder__
-        <ul id="mirrors">
-        </ul>
-        <!--<ul id="mirrors">
-          <li data-id="1"><image src="img/icons/Vivo.ico"> Vivo</li>
-          <li data-id="2"><image src="img/icons/OpenLoad.ico"> OpenLoad</li>
-          <li data-id="3"><image src="img/icons/FlashX.ico"> FlashX</li>
-          <li data-id="4"><image src="img/icons/AuroraVid.ico"> AuroraVid</li>
-          <li data-id="5"><image src="img/icons/BitVID.ico"> BitVID</li>
-          <li data-id="6"><image src="img/icons/CloudTime.ico"> CloudTime</li>
-          <li data-id="7"><image src="img/icons/Shared.ico"> Shared</li>
-          <li data-id="8"><image src="img/icons/FileNuke.ico"> FileNuke</li>
-          <li data-id="9"><image src="img/icons/Streamcloud.ico"> Streamcloud</li>
-          <li data-id="10"><image src="img/icons/WholeCloud.ico"> WholeCloud</li>
-          <li data-id="11"><image src="img/icons/YouWatch.ico"> YouWatch</li>
-        </ul>-->
-      </div>
+      <p>
+        <details id="mirrorDetails"><summary>__MSG_domainMirrorSummary__</summary>
+          <p><div id="domainMirrorOptions">
+            <div id="domainCol">
+              __MSG_domains__
+              <ul id="domains">
+              </ul>
+            </div>
+            <div id="mirrorCol">
+              __MSG_chooseMirrorOrder__
+              <ul id="mirrors">
+              </ul>
+            </div>
+          </div></p>
+        </details>
+      </p>
       <p>
         <input type="checkbox" id="incognito" name="incognito" value="incognito">
         <label for="incognito">__MSG_incognito__</label><br>
@@ -41,6 +34,8 @@
         <label for="showUnknownDomainNotification">__MSG_showUnknownDomainNotification__</label><br>
         <input type="checkbox" id="youtubeAutoplay" name="youtubeAutoplay" value="youtubeAutoplay">
         <label for="youtubeAutoplay">__MSG_youtubeAutoplay__</label><br>
+        <input type="checkbox" id="directLink" name="directLink" value="directLink">
+        <label for="directLink">__MSG_directLink__</label><br>
         <label for="iconColor">__MSG_iconColor__</label>
         <input type="color" id="iconColor" name="iconColor" value="#000000">
       </p><!--<p>__MSG_ownPlugin__

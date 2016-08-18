@@ -1,14 +1,15 @@
 document.addEventListener("DOMContentLoaded", restoreOptions);
 // Saves options to sync storage
-function saveOptions(order, domainList) {
+function saveOptions(domainList) {
   var options = {};
   options[storedOptions] = {
-    order:order,
-    domains:domainList,
+    domains:getDomainList(domainList),
+    mirrorDetails:document.getElementById("mirrorDetails").open,
     incognito:document.getElementById("incognito").checked,
     plainTextURL:document.getElementById("plainTextURL").checked,
     showUnknownDomainNotification:document.getElementById("showUnknownDomainNotification").checked,
     youtubeAutoplay:document.getElementById("youtubeAutoplay").checked,
+    directLink:document.getElementById("directLink").checked,
     iconColor:document.getElementById("iconColor").value
   };
   chrome.storage.sync.set(options, function() { // show user save status
@@ -25,138 +26,296 @@ function restoreOptions() {
   chrome.storage.sync.get(defaultOptions, function(items) {
     var options = items[storedOptions];
     // set options in option page
-    addDomainsAndMirrors(options.domains);
-    var el = document.getElementById("mirrors");
-    var sortable = Sortable.create(el);
-    sortable.sort(options.order);
+    var domainList = new DomainList(options.domains, true);
+    fillInDomainsAndMirrors(domainList);
+    document.getElementById("mirrorDetails").open = options.mirrorDetails;
     document.getElementById("incognito").checked = options.incognito;
     document.getElementById("plainTextURL").checked = options.plainTextURL;
     document.getElementById("showUnknownDomainNotification").checked = options.showUnknownDomainNotification;
     document.getElementById("youtubeAutoplay").checked = options.youtubeAutoplay;
+    document.getElementById("directLink").checked = options.directLink;
     document.getElementById("iconColor").value = options.iconColor;
     // add button listeners
     document.getElementById("iconColor").addEventListener("input", function(){setIconColor();});
-    document.getElementById("addMirror").addEventListener("click", function(){openAddEditMirrorDialog();});
-    document.getElementById("addDomain").addEventListener("click", openAddDomainDialog);
-    document.getElementById("save").addEventListener("click", function(){saveOptions(sortable.toArray(), options.domains);});
+    document.getElementById("save").addEventListener("click", function(){saveOptions(domainList);});
   });
 }
 // Dropdown option to report issue is activated
-function enableIssueReport() {
+function enableIssueReport(domainList) {
   document.getElementById("reportIssue").className = "btn";
-  document.getElementById("reportIssue").href = "mailto:alt13@gmx.at?subject=[Issue]";
+  document.getElementById("reportIssue").href = "mailto:episode_issue@fantasymail.de?subject=[Issue]";
 }
-// Adds stored mirrors to the option page
-function addDomainsAndMirrors(domains) {
-  var domainList = document.getElementById("domains");
-  var domain_i = true;
+//------------------------------------------------------------------------------
+// Domain and Mirror list handling ---------------------------------------------
+function fillInDomainsAndMirrors(domainList) {
+  var domainListElement = document.getElementById("domains");
+  var domains = domainList.save();
   for(var domain in domains) {
-    var domainEl = document.createElement("li");
-    domainEl.innerHTML = domain;
-    domainEl.setAttribute("id", domain);
-    if(domain_i) {
-      domainEl.setAttribute("class", "activeDomain");
-      addMirrors(domains[domain]);
-      domain_i = false;
-    }
-    domainList.appendChild(domainEl);
+    var domainEl = createDomainElement(domainList, domain);
+    domainListElement.appendChild(domainEl);
   }
-  var addDomain = document.createElement("li");
-  addDomain.setAttribute("id", "addDomain");
-  addDomain.innerHTML = "&#10133;";
-  domainList.appendChild(addDomain);
+  domainListElement.appendChild(createAddElement(domainList));
 }
-// Adds stored mirrors to the option page
-function addMirrors(mirrors) {
-  var mirrorList = document.getElementById("mirrors");
-  for(var mirror_i = 0; mirror_i < mirrors.length; mirror_i++) {
-    var mirrorName = Object.keys(mirrors[mirror_i])[0];
-    var mirrorEl = document.createElement("li");
-    mirrorEl.setAttribute("data-id", mirror_i);
-    var icon = document.createElement("img");
-    icon.setAttribute("src", "img/icons/" + mirrorName + ".ico");
-    icon.addEventListener("error", function(){this.src="img/icons/default.ico";});
-    mirrorEl.appendChild(icon);
-    mirrorEl.appendChild(document.createTextNode(" " + mirrorName));
-    mirrorEl.addEventListener("click", function(){openAddEditMirrorDialog(mirrorName, mirrors[mirrorName], mirror_i);});
-    mirrorList.appendChild(mirrorEl);
+// Adds stored mirrors of selected domain to the option page
+function fillInMirrors(domainList, mirrors) {
+  clearMirrorList();
+  var list = document.getElementById("mirrors");
+  var mirror_i = 0
+  if(mirrors != null) {
+    for(mirror_i = 0; mirror_i < mirrors.length; mirror_i++) {
+      var mirrorName = Object.keys(mirrors[mirror_i])[0];
+      var mirrorSString = (mirrors[mirror_i])[mirrorName];
+      var mirrorEl = createMirrorElement(domainList, mirrorName, mirrorSString, mirror_i);
+      list.appendChild(mirrorEl);
+    }
   }
-  var addMirror = document.createElement("li");
-  addMirror.setAttribute("id", "addMirror");
-  addMirror.setAttribute("data-id", mirror_i+1);
-  addMirror.innerHTML = "&#10133;";
-  mirrorList.appendChild(addMirror);
+  list.appendChild(createAddElement(domainList, mirror_i));
+}
+// @return one mirror element with given parameters
+function createMirrorElement(domainList, mirrorName, mirrorSString, dataID) {
+  var mirrorEl = document.createElement("li");
+  mirrorEl.setAttribute("data-id", dataID);
+  mirrorEl.setAttribute("id", mirrorName);
+  mirrorEl.setAttribute("draggable", true);
+  var icon = document.createElement("img");
+  icon.setAttribute("src", "img/icons/" + mirrorName + ".ico");
+  icon.addEventListener("error", function(){this.src="img/icons/default.ico";});
+  mirrorEl.appendChild(icon);
+  mirrorEl.appendChild(document.createTextNode(" " + mirrorName));
+  (function(domainList, dataID, mirrorName, mirrorSString) {
+    mirrorEl.addEventListener("click", function(){openAddEditMirrorDialog(domainList, dataID, mirrorName, mirrorSString);});
+  })(domainList, dataID, mirrorName, mirrorSString);
+  mirrorEl.addEventListener("dragstart", function(e){dragStart(e);});
+  mirrorEl.addEventListener("dragenter", function(e){dragEnter(e);});
+  return mirrorEl;
+}
+// @return add-domain/mirror element
+function createAddElement(domainList, dataID) {
+  dataID = typeof dataID !== "undefined" ? dataID : null;
+  var addEl = document.createElement("li");
+  addEl.style.textAlign = "center";
+  addEl.innerHTML = "&#10133;"
+  if(dataID === null) { //add domain element
+    addEl.setAttribute("id", "addDomain");
+    addEl.addEventListener("click", function(){openAddEditDomainDialog(domainList, "addDomain");});
+  } else { //add mirror element
+    addEl.setAttribute("data-id", dataID);
+    addEl.setAttribute("id", "addMirror");;
+    addEl.addEventListener("click", function(){openAddEditMirrorDialog(domainList, dataID, "addMirror");});
+  }
+  return addEl;
 }
 // Clears mirror list in option page
-function clearMirrors() {
+function clearMirrorList () {
   var mirrors = document.getElementById("mirrors");
   while (mirrors.firstChild) {
-      mirrors.removeChild(mirrors.firstChild);
+    mirrors.removeChild(mirrors.firstChild);
   }
 }
-// Add/edit mirror
-function openAddEditMirrorDialog(mirrorName, sSString, dataID) {
-  mirrorName = typeof mirrorName != "undefined" ? mirrorName : null;
-  if(mirrorName == null) { // Add
-    var mirrorListLength = document.getElementById("mirrors").getElementsByTagName("li").length;
-    var mirrorEl = document.createElement("li");
-    mirrorEl.setAttribute("id", mirrorListLength-1);
-    var inputName = document.createElement("input");
-    inputName.type = "text";
-    inputName.id = "mirrorName";
-    inputName.placeholder = chrome.i18n.getMessage("name");
-    mirrorEl.appendChild(inputName);
-    var inputSSString = document.createElement("input");
-    inputSSString.type = "text";
-    inputSSString.id = "mirrorSSString";
-    inputSSString.placeholder = chrome.i18n.getMessage("substitutionString");
-    mirrorEl.appendChild(inputSSString);
-    var addMirror = document.getElementById("addMirror");
-    addMirror.setAttribute("data-id", mirrorListLength);
-    addMirror.parentNode.insertBefore(mirrorEl, addMirror);
-  } else { // Edit
-    var editMirror = document.getElementById(dataID);
-    var mirrorEl = document.createElement("li");
-    mirrorEl.setAttribute("data-id", dataID);
-    // substitute mirror with edit window.
+// @return domain element
+function createDomainElement(domainList, domain) {
+  var domainEl = document.createElement("li");
+  domainEl.innerHTML = domain;
+  domainEl.setAttribute("id", domain);
+  var domains = domainList.save();
+  if(domains[domain].selected) {
+    domainEl.setAttribute("class", "activeDomain");
+    fillInMirrors(domainList, domains[domain].mirrorList);
+  }
+  domainEl.addEventListener("click", function(){openAddEditDomainDialog(domainList, domain);});
+  return domainEl;
+}
+// Add/edit domain ui
+function openAddEditDomainDialog(domainList, domainName) {
+  var add = domainName === "addDomain" ? true : false;
+  if(domainList.getSelected().name === domainName || add) {
+    var domainEl = document.createElement("li");
+    domainEl.setAttribute("id", domainName);
+    var inputName = createInput(domainList, "domainName-"+domainName , domainName, add, false, false);
+    domainEl.appendChild(inputName);
+    var deleteDomainEl = createDeleteButton(domainList, deleteDomain, domainName, false);
+    domainEl.appendChild(deleteDomainEl);
+    var submitDomain = createSubmitButton(domainList, addEditDomain, domainName, false);
+    domainEl.appendChild(submitDomain);
+    if(add) { // Add
+      var addDomainEl = document.getElementById("addDomain");
+      addDomainEl.parentNode.replaceChild(domainEl, addDomainEl);
+      selectDomain(domainList); // deselect all
+    } else { // Edit
+      var editDomainEl = document.getElementById(domainName);
+      editDomainEl.parentNode.replaceChild(domainEl, editDomainEl);
+    }
+    document.getElementById("domainName-"+domainName).focus();
+  } else { // select other domain
+    selectDomain(domainList, domainName);
   }
 }
-// Add/edit domain
-function openAddDomainDialog() {
-
+// Selects clicked domain
+function selectDomain(domainList, domainName) {
+  domainList.select(domainName);
+  clearMirrorList();
+  if(domainName != null) { // select other domain
+    fillInMirrors(domainList, domainList.getSelected().mirrorList.save());
+  }
 }
-// Adds mirror to the stored data and to the option page
-function addToMirrorList(mirrors, name, substitutionString) {
-  for(var i = 0; i < mirrors.length; i++) {
-    if(Object.keys(mirrors[mirror_i])[0] == name) {
-      return false;
+// Creates button for input ui
+function createButton(domainList, text, title, clickFun, name, right) {
+  right = typeof right !== "undefined" ? right : true;
+  var button = document.createElement("a");
+  button.innerHTML = text;
+  if(right)
+    button.className = "btn right";
+  else
+    button.className = "btn";
+  button.title = title;
+  button.addEventListener("click", function(){clickFun(domainList, name);});
+  return button;
+}
+// Creates delete button
+function createDeleteButton(domainList, deleteFun, name, right) {
+  return createButton(domainList, "&#x2718;", chrome.i18n.getMessage("delete"), deleteFun, name, right);
+}
+// Creates submit button
+function createSubmitButton(domainList, submitFun, name, right) {
+  return createButton(domainList, "&#x2714;", chrome.i18n.getMessage("save"), submitFun, name, right);
+}
+// Replaces mirror/addMirror element with input ui
+function createInput(domainList, id, name, add, mirror, substitution) {
+  add = typeof add !== "undefined" ? add : false;
+  mirror = typeof mirror !== "undefined" ? mirror : false;
+  substitution = typeof substitution !== "undefined" ? substitution : false;
+  var inputElement = document.createElement("input");
+  inputElement.type = "text";
+  inputElement.id = id; // "mirrorName-"+name / "domainName-"+name
+  if(!substitution) {
+    inputElement.name = name; // mirrorName/domainName
+    if(mirror) {
+      inputElement.addEventListener("input", function(event){
+        if(domainList.checkMirrorExists(event.target.value, event.target.name)) {
+          document.getElementById("mirrorName-"+event.target.name).style.borderColor = "red";
+        } else {
+          document.getElementById("mirrorName-"+event.target.name).style.borderColor = "inherit";
+        }
+      }, true);
+    } else {
+      inputElement.addEventListener("input", function(event){
+        if(domainList.checkDomainNameOK(event.target.value)) {
+          document.getElementById("domainName-"+event.target.name).style.borderColor = "inherit";
+        } else {
+          document.getElementById("domainName-"+event.target.name).style.borderColor = "red";
+        }
+      }, true);
     }
   }
-  document.getElementById("mirrors").removeChild(document.getElementById(mirrors.length));
-  var mirrorEl = document.createElement("li");
-  mirrorEl.setAttribute("data-id", mirrors.length);
-  mirrorEl.appendChild(document.createTextNode(" " + name));
-  mirror = {};
-  mirror[name] = substitutionString;
-  mirrors.push(mirror);
-  var addMirror = document.getElementById("addMirror");
-  addMirror.parentNode.insertBefore(mirrorEl, addMirror);
-  return mirrors;
-}
-// Adds domain to the stored data and to the option page
-function addToDomainList(domains, name) {
-  if(typeof domains[name] !== "undefined") {
-    document.getElementsByClassName("activeDomain").className = "";
-    document.getElementById(name).className = "activeDomain";
-    clearMirrors();
-    addMirrors(domains[name]);
-    return false;
+  if(add) {
+    if(!substitution)
+      inputElement.placeholder = chrome.i18n.getMessage("name");
+    else
+      inputElement.placeholder = chrome.i18n.getMessage("substitutionString");
+  } else {
+    inputElement.value = name;
   }
-  domains[name] = [];
-  var domainEl = document.createElement("li");
-  domainEl.innerHTML = name;
-  domainEl.setAttribute("id", name);
-  var addDomain = document.getElementById("addDomain");
-  addDomain.parentNode.insertBefore(domainEl, addDomain);
-  return domains;
+  return inputElement;
+}
+// Add/edit mirror ui
+function openAddEditMirrorDialog(domainList, dataID, mirrorName, mirrorSString) {
+  var add = typeof mirrorSString !== "undefined" ? false : true;
+  var mirrorEl = document.createElement("li");
+  mirrorEl.setAttribute("data-id", dataID);
+  mirrorEl.setAttribute("id", mirrorName);
+  var deleteMirrorEl = createDeleteButton(domainList, deleteMirror, mirrorName);
+  mirrorEl.appendChild(deleteMirrorEl);
+  var divEl = document.createElement("div");
+  divEl.style.overflow = "hidden";
+  var inputName = createInput(domainList, "mirrorName-"+mirrorName , mirrorName, add, true, false);
+  divEl.appendChild(inputName);
+  mirrorEl.appendChild(divEl);
+  var submitMirror = createSubmitButton(domainList, addEditMirror, mirrorName);
+  mirrorEl.appendChild(submitMirror);
+  var divEl = document.createElement("div");
+  divEl.style.overflow = "hidden";
+  var inputSString = createInput(domainList, "mirrorSString-"+mirrorName, mirrorSString, add, true, true);
+  divEl.appendChild(inputSString);
+  mirrorEl.appendChild(divEl);
+  if(add) { // Add
+    var addMirrorEl = document.getElementById("addMirror");
+    addMirrorEl.parentNode.replaceChild(mirrorEl, addMirrorEl);
+  } else { // Edit
+    var editMirrorEl = document.getElementById(mirrorName);
+    editMirrorEl.parentNode.replaceChild(mirrorEl, editMirrorEl);
+  }
+  document.getElementById("mirrorName-"+mirrorName).focus();
+}
+// Handles domain-submit button click
+function addEditDomain(domainList, oldDomainName) {
+  var domainName = document.getElementById("domainName-"+oldDomainName).value;
+  var oldDomain = document.getElementById(oldDomainName);
+  if(oldDomainName === "addDomain") { // add new
+    if(domainList.add(domainName, [])) {
+      var domainEl = createDomainElement(domainList, domainName);
+      oldDomain.parentNode.replaceChild(domainEl, oldDomain);
+      document.getElementById("domains").appendChild(createAddElement(domainList));
+    }
+  } else {
+    if(domainList.edit(domainName)) {
+      var domainEl = createDomainElement(domainList, domainName);
+      oldDomain.parentNode.replaceChild(domainEl, oldDomain);
+    }
+  }
+}
+// Handles mirror-submit button click
+function addEditMirror(domainList, oldMirrorName) {
+  var mirrorName = document.getElementById("mirrorName-"+oldMirrorName).value;
+  var mirrorSString = document.getElementById("mirrorSString-"+oldMirrorName).value;
+  var oldMirror = document.getElementById(oldMirrorName);
+  var dataID = oldMirror.getAttribute("data-id");
+  if(oldMirrorName === "addMirror") { // add new
+    if(domainList.addMirror(oldMirrorName, mirrorName, mirrorSString)) {
+      var mirrorEl = createMirrorElement(domainList, mirrorName, mirrorSString, dataID);
+      oldMirror.parentNode.replaceChild(mirrorEl, oldMirror);
+      document.getElementById("mirrors").appendChild(createAddElement(domainList, parseInt(dataID)+1));
+    }
+  } else { // edit
+    if(domainList.editMirror(oldMirrorName, mirrorName, mirrorSString)) {
+      var mirrorEl = createMirrorElement(domainList, mirrorName, mirrorSString, dataID);
+      oldMirror.parentNode.replaceChild(mirrorEl, oldMirror);
+    }
+  }
+}
+// Handles domain-delete button click
+function deleteDomain(domainList, domainName) {
+  var domain = document.getElementById(domainName);
+  var selectDomain = domainList.delete(domainName);
+  if(domainName === "addDomain") {
+    domain.parentNode.replaceChild(createAddElement(domainList), domain);
+  } else {
+    domain.parentNode.removeChild(domain);
+  }
+  clearMirrorList();
+  if(selectDomain != null) { // select other domain
+    fillInMirrors(domainList, domainList.getSelected().mirrorList.save());
+  }
+  getDomainList(domainList);
+}
+// Handles mirror-delete button click
+function deleteMirror(domainList, mirrorName) {
+  var mirror = document.getElementById(mirrorName);
+  var dataID = mirror.getAttribute("data-id");
+  if(mirrorName === "addMirror") {
+    mirror.parentNode.replaceChild(createAddElement(domainList, dataID), mirror);
+  } else {
+    mirror.parentNode.removeChild(mirror);
+  }
+  getDomainList(domainList);
+}
+// @return domain list with reordered mirrorlist
+function getDomainList(domainList) {
+  var mirrors = document.getElementById("mirrors").getElementsByTagName("li");
+  var mirrorOrder = [];
+  for(var mirror_i = 0; mirror_i < mirrors.length; mirror_i++) {
+    if(mirrors[mirror_i].id !== "addMirror") {
+      mirrorOrder.push(parseInt(mirrors[mirror_i].getAttribute("data-id")));
+    }
+  }
+  return domainList.save(mirrorOrder);
 }

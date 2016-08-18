@@ -112,7 +112,7 @@ function SeriesList(seriesList, plainTextURL) {
         if(series == name) {
           sname = name + " ";
         }
-      } else if(save) {
+      } else if(save) { // deselects all others (except new one)
         this[series].selected = false;
       }
     }
@@ -195,7 +195,7 @@ function SeriesList(seriesList, plainTextURL) {
   };
   // checks if name is available while editing
   this.checkNameOK = function(name) {
-    if(name === "undefined" || name === "")
+    if(typeof name === "undefined" || name === "")
       return false;
     else if(!this[name])
       return true;
@@ -262,7 +262,7 @@ function restore(ifListNotFound, ifListFound, frags, fragInProcess, seriesList) 
           ifListNotFound();
         } else {
           if(fragInProcess === 1) {
-            seriesList = new SeriesList(items[storedSeriesPart], items[storedOptions].defaultPlainTextURL);
+            seriesList = new SeriesList(items[storedSeriesPart], items[storedOptions].plainTextURL);
             frags = parseInt(items[storedSeriesPart].__fragments__);
           } else {
             seriesList.merge(items[storedSeriesPart]);

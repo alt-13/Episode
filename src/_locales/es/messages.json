@@ -6,7 +6,7 @@
 	"description": {
 		"message": "Esta extensión abre el capítulo inadvertido más acutal en un nuevo tab o ventana de incógnito. ¡Activar la ventana emergente con doble clic!"
 	},
-	// Background
+	// Background (notification)
 	"notYetSupported": {
 		"message": "¡$details$ aún no soportado!",
 		"placeholders": {
@@ -16,7 +16,10 @@
 	    }
 	  }
 	},
-	// Utils openURL
+	"disableNotification": {
+		"message": "No volver a mostrar este mensaje"
+	},
+	// Utils openURL (notification)
 	"nonIncognitoSeriesInIncognitoWindow": {
 		"message": "¡Varios capítulos no incognitos (p.e. netflix) no funcionar en ventana de incógnito!\n¡Cambie en ventana normal, por favor!"
 	},
@@ -80,5 +83,57 @@
 	// AH
 	"choose": {
 		"message": "Elija:"
+	},
+	// Options
+	"optionsTitle": {
+		"message": "Episode++ Opciónes"
+	},
+	"domainMirrorSummary": {
+		"message": "Mirrors preferidos por domains"
+	},
+	"chooseMirrorOrder": {
+		"message": "Orden de mirrors según sus preferencias (drag & drop):"
+	},
+	"domains": {
+		"message": "Domains:"
+	},
+	"incognito": {
+		"message": "Abrir serie en ventana de incógnito según estándar"
+	},
+	"plainTextURL": {
+		"message": "Guardar URLs en texto sin encriptación"
+	},
+	"showUnknownDomainNotification": {
+		"message": "Indicar una notificación al abrir de una URL de host desconocido"
+	},
+	"youtubeAutoplay": {
+		"message": "Poner autoplay para youtube playlists"
+	},
+	"directLink": {
+		"message": "Abrir el enlace a la pagina del streaming directamente (bs.to)"
+	},
+	"iconColor": {
+		"message": "Elija color del icon:"
+	},
+	"ownPlugin": {
+		"message": "Define plug-ins propios:"
+	},
+	"optionsSaved": {
+		"message": "Opciónes guardado."
+	},
+	"issue": {
+		"message": "¿Encontrado problema?"
+	},
+	"issueReported": {
+		"message": "¿Problema ya se informó?"
+	},
+	"reportIssue": {
+		"message": "Si no, indique el problema."
+	},
+	"name": {
+		"message": "nombre"
+	},
+	"substitutionString": {
+		"message": "frase de sustitución"
 	}
 }
