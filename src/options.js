@@ -10,6 +10,7 @@ function saveOptions(domainList) {
     showUnknownDomainNotification:document.getElementById("showUnknownDomainNotification").checked,
     youtubeAutoplay:document.getElementById("youtubeAutoplay").checked,
     directLink:document.getElementById("directLink").checked,
+    darkTheme:document.getElementById("darkTheme").checked,
     iconColor:document.getElementById("iconColor").value
   };
   chrome.storage.sync.set(options, function() { // show user save status
@@ -34,10 +35,14 @@ function restoreOptions() {
     document.getElementById("showUnknownDomainNotification").checked = options.showUnknownDomainNotification;
     document.getElementById("youtubeAutoplay").checked = options.youtubeAutoplay;
     document.getElementById("directLink").checked = options.directLink;
+    document.getElementById("darkTheme").checked = options.darkTheme;
     document.getElementById("iconColor").value = options.iconColor;
     // add button listeners
     document.getElementById("iconColor").addEventListener("input", function(){setIconColor();});
     document.getElementById("save").addEventListener("click", function(){saveOptions(domainList);});
+    if(options.darkTheme) {
+      document.getElementById("options").className = "dark";
+    }
   });
 }
 // Dropdown option to report issue is activated

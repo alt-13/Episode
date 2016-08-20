@@ -2,6 +2,10 @@ body {
   font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
   font-size: 100%;
 }
+.dark {
+  background-color: rgb(51, 51, 51);
+  color: white;
+}
 .popup {
   margin: 1em 0.5em 1em 0.5em;
   width: 10em;
@@ -31,6 +35,10 @@ input[type="checkbox"] + label, input[type="color"] + label {
 input[type="color"] {
   width: 5em;
 }
+.dark input:not(#save) {
+  background-color: rgb(51, 51, 51);
+  color: white;
+}
 .right {
   float: right;
 }
@@ -42,6 +50,10 @@ input[type="color"] {
   text-decoration: none;
   background: none;
   border-style: none;
+}
+.dark select option{
+  background-color: rgb(51, 51, 51);
+  color: white;
 }
 select {
   width: 100%;
@@ -60,6 +72,12 @@ select {
 .edit a:hover, .edit span:hover {
   background: #F8F8F8;
   border-radius: 10px;
+}
+.dark .edit a, .dark .edit span {
+  color: white;
+}
+.dark .edit a:hover, .dark .edit span:hover {
+  background: #A1A1A1;
 }
 .btn {
   background: #A0A0A0;
@@ -129,6 +147,9 @@ select {
   background: #fff;
   border-radius: 3px;
   transition: all 200ms ease-in-out;
+}
+.dark .dialog {
+  background: rgb(51, 51, 51);
 }
 ul#mirrors {
   border: 1px solid grey;

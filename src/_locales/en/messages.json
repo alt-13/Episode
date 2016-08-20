@@ -73,6 +73,9 @@
 	"editIncognito": {
 		"message": "open incognito"
 	},
+	"editContextMenu": {
+		"message": "context menu"
+	},
 	"editCancel": {
 		"message": "Cancel",
 		"description": "Should fit into popup besides \"Save\". (If it does not fit, use abbreviation.)"
@@ -104,13 +107,16 @@
 		"message": "Store URLs in plain text"
 	},
 	"showUnknownDomainNotification": {
-		"message": "Show notification opening URL of unknown host"
+		"message": "Show notification opening URL of unknown domain"
 	},
 	"youtubeAutoplay": {
 		"message": "Enable autoplay for youtube playlists"
 	},
 	"directLink": {
 		"message": "Open link to stream page directly (bs.to)"
+	},
+	"darkTheme": {
+		"message": "Use dark theme"
 	},
 	"iconColor": {
 		"message": "Choose icon color:"

@@ -49,15 +49,15 @@ Sorted by priority:
 #### Features:
 * [ ] options page:
   * [x] preferred host (streamcloud, ..)
-  * [ ] select 5 series which are shown in browser action context menu
   * [x] open link to stream page directly (bs.to)
   * [x] standard incognito/ or not
   * [x] urls stored plain text (faster)
   * [x] show notification opening URL of unknown host
   * [x] enable autoplay for youtube playlists
   *	[x] icon colour picker
-  * [ ] theme chooser (dark/light)
+  * [x] theme chooser (dark/light)
   * [ ] do it yourselfe episode link builder
+* [x] select series which are shown in browser action context menu
 * [ ] proxer.me generalisation
 * [ ] movie4k
 * [ ] tubeplus.is

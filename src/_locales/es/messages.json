@@ -73,6 +73,9 @@
 	"editIncognito": {
 		"message": "abrir incógnito"
 	},
+	"editContextMenu": {
+		"message": "menú contextual"
+	},
 	"editCancel": {
 		"message": "CNL",
 		"description": "Should fit into popup besides \"Save\". (If it does not fit, use abbreviation.)"
@@ -104,13 +107,16 @@
 		"message": "Guardar URLs en texto sin encriptación"
 	},
 	"showUnknownDomainNotification": {
-		"message": "Indicar una notificación al abrir de una URL de host desconocido"
+		"message": "Indicar una notificación al abrir de una URL de domain desconocido"
 	},
 	"youtubeAutoplay": {
 		"message": "Poner autoplay para youtube playlists"
 	},
 	"directLink": {
 		"message": "Abrir el enlace a la pagina del streaming directamente (bs.to)"
+	},
+	"darkTheme": {
+		"message": "Utilizar el tema oscuro"
 	},
 	"iconColor": {
 		"message": "Elija color del icon:"

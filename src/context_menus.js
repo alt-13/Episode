@@ -9,7 +9,7 @@ function createContextMenu(seriesList) {
   if(seriesList !== "undefined") {
     for(var series in seriesList) {
       var s = seriesList[series];
-      if(typeof s !== "function") {
+      if(typeof s !== "function" && s.contextMenu) {
         addContextMenu(s);
       }
     }
@@ -34,7 +34,7 @@ function ifListFoundAddContextMenuOnClickedListeners(seriesList) {
   });
   for(var series in seriesList) {
     var s = seriesList[series];
-    if(typeof s !== "function") {
+    if(typeof s !== "function" && s.contextMenu) {
       addContextMenuOnClickedListener(s);
     }
   }
@@ -53,7 +53,7 @@ function ifListFoundDecrement(seriesList) {
   if(selected === null) {
     setPopup();
   } else if(selected.episode > 0) {
-    seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)-1, selected.incognito);
+    seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)-1, selected.incognito, selected.contextMenu);
   }
 }
 // Series is selected in context menu -> changes selected property in storage
@@ -66,41 +66,9 @@ function addStorageOnChangedListenerForContexMenu() {
     chrome.storage.onChanged.addListener(function(changes, namespace) {
     if(namespace === "sync" && changes !== null) {
       if(storedSeries in changes){
-        var oldKeys;
-        if(changes[storedSeries].hasOwnProperty("oldValue")) {
-          oldKeys = Object.keys(changes[storedSeries].oldValue);
-        } else { // First added series after installation (also adds -- CM)
-          oldKeys = [];
-          chrome.contextMenus.onClicked.addListener(function(info, tab) {
-            if(info.menuItemId === contextMenuIDBeginning + "Decrement") {
-              restore(setPopup, ifListFoundDecrement);
-            }
-          });
-        }
-        var seriesList = changes[storedSeries].newValue;
-        var newKeys = Object.keys(seriesList);
-        var less = oldKeys.diff(newKeys);
-        var more = newKeys.diff(oldKeys);
-        if(less.length || more.length) {
-          if(less.length) {
-            chrome.contextMenus.remove(contextMenuIDBeginning + less[0]);
-          }
-          if(more.length) {
-            addContextMenu(seriesList[more[0]]);
-            addContextMenuOnClickedListener(seriesList[more[0]]);
-          }
-        } else {
-          for(var series in seriesList) {
-            var s = seriesList[series];
-            if(series !== "__fragments__")
-              chrome.contextMenus.update(contextMenuIDBeginning + s.name, {checked:s.selected});
-          }
-        }
+        chrome.contextMenus.removeAll();
+        createContextMenu(changes[storedSeries].newValue);
       }
     }
   });
 }
-// Difference[] of arr1.diff(arr2) where arr1.length > arr2.length
-Array.prototype.diff = function(a) {
-    return this.filter(function(i) {return a.indexOf(i) < 0;});
-};

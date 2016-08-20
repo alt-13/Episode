@@ -19,7 +19,7 @@ function openURL(url, incognito, seriesList, close) {
           if(window.incognito && !incognito && ids.srcWindowID == 0) {
             chrome.notifications.create("Episode++Notification", {type:"basic", iconUrl:"img/b/icon128.png", title:"Episode++", message:chrome.i18n.getMessage("nonIncognitoSeriesInIncognitoWindow")});
             var selected = seriesList.getSelected();
-            seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)-1, selected.incognito);
+            seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)-1, selected.incognito, selected.contextMenu);
           } else if(window.incognito && !incognito && ids.srcWindowID != 0) {
             chrome.windows.update(parseInt(ids.srcWindowID), {focused:true});
             createTab(url, ids.srcWindowID);
@@ -155,6 +155,7 @@ function getDefaultOptions() {
     youtubeAutoplay:true,
     showUnknownDomainNotification:true,
     directLink:false,
+    darkTheme:false,
     iconColor:"#000000"
   };
   return defaultOptions;

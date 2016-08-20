@@ -1,7 +1,7 @@
 var iconPath = "img/icons/";
 // MirrorList ------------------------------------------------------------------
 function MirrorList(mirrorList) {
-  var mirrors = typeof mirrorList !== "undefined" ? mirrorList : [];
+  var mirrors = typeof mirrorList !== "undefined" ? mirrorList : []; // TODO rename mirrors to mirrors_
   // @return true added successfully else (tried to add existing) false
   this.add = function(oldMirror, name, sString) {
     if(this.checkMirrorExists(name, oldMirror)) {

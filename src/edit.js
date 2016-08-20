@@ -6,13 +6,19 @@ window.onload = function() {
 // Store form content when popup closed
 window.addEventListener("unload", saveFormContent);
 // No series list found (empty storage): Save -> add series
-function ifListNotFoundSetupPlainEditPopup() {
+function ifListNotFoundSetupPlainEditPopup(options) {
+  if(options.darkTheme) {
+    document.getElementById("edit").className = "dark";
+  }
   document.getElementById("save").addEventListener("click", function(){editSeries(null);});
 }
 // User wants to edit series list entry: Save -> edit series
 function ifListFoundSetupEditPopup(seriesList, options) {
   var selected = seriesList.getSelected();
   fillInFormContent(selected, options);
+  if(options.darkTheme) {
+    document.getElementById("edit").className = "dark";
+  }
   document.getElementById("epp_title").addEventListener("input", function(event) {
     if(!seriesList.checkNameOK(event.target.value))
       document.getElementById("epp_title").style.borderColor = "red";
@@ -32,13 +38,15 @@ function editSeries(seriesList) {
                    document.getElementById("epp_url").value,
                    document.getElementById("epp_season").value,
                    document.getElementById("epp_episode").value,
-                   document.getElementById("epp_incognito").checked);
+                   document.getElementById("epp_incognito").checked,
+                   document.getElementById("epp_contextMenu").checked);
   } else { // edit series
     ok = seriesList.edit(document.getElementById("epp_title").value,
                     document.getElementById("epp_url").value,
                     document.getElementById("epp_season").value,
                     document.getElementById("epp_episode").value,
-                    document.getElementById("epp_incognito").checked);
+                    document.getElementById("epp_incognito").checked,
+                    document.getElementById("epp_contextMenu").checked);
   }
   if(ok) {
     removeFormContentFromStorage();
@@ -58,7 +66,8 @@ function saveFormContent() {
     url: document.getElementById("epp_url").value,
     season: document.getElementById("epp_season").value,
     episode: document.getElementById("epp_episode").value,
-    incognito: document.getElementById("epp_incognito").checked
+    incognito: document.getElementById("epp_incognito").checked,
+    contextMenu: document.getElementById("epp_contextMenu").checked
   };
   localStorage.setItem("episode++FormContent", JSON.stringify(formContent));
   return null;
@@ -74,8 +83,10 @@ function fillInFormContent(series, options) {
     document.getElementById("epp_season").value = series.season;
     document.getElementById("epp_episode").value = series.episode;
     document.getElementById("epp_incognito").checked = series.incognito;
+    document.getElementById("epp_contextMenu").checked = series.contextMenu;
   } else {
     document.getElementById("epp_incognito").checked = options.incognito;
+    document.getElementById("epp_contextMenu").checked = true;
   }
 }
 // Remove form content from storage

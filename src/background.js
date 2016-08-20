@@ -57,17 +57,18 @@ function ifListFoundOpenNewestEpisode(seriesList, options) {
     setPopupTo("edit.html");
   } else {
     var url = parseURL(selected.url);
-    if(url.hostname !== "bs.to" && parseInt(selected.season) === 0) seriesList.edit(selected.name, selected.url, 1, selected.episode, selected.incognito);
-    if(url.hostname !== "www.youtube.com" && parseInt(selected.episode) === 0) seriesList.edit(selected.name, selected.url, selected.season, 1, selected.incognito);
+    if(url.hostname !== "bs.to" && parseInt(selected.season) === 0) seriesList.edit(selected.name, selected.url, 1, selected.episode, selected.incognito, selected.contextMenu);
+    if(url.hostname !== "www.youtube.com" && parseInt(selected.episode) === 0) seriesList.edit(selected.name, selected.url, selected.season, 1, selected.incognito, selected.contextMenu);
     selectService(url, selected.save(true), seriesList, options);
-    seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)+1, selected.incognito);
+    seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)+1, selected.incognito, selected.contextMenu);
   }
 }
 
 function selectService(url, series, seriesList, options) {
   var chosenFunction = funMap[url.hostname] ? funMap[url.hostname] : (funMap[url.hostname.split(".")[0]] ? funMap[url.hostname.split(".")[0]] : funMap[url.hostname.split(".")[1]]);
   if(!chosenFunction) {
-    if(options.showUnknownHostNotification) {
+    if(options.showUnknownDomainNotification) {
+      console.log("yeah wtf");
       var myNotificationID = null;
       chrome.notifications.create("Episode++Notification", {
         type:"basic",
@@ -141,7 +142,7 @@ function findeEpisodeString(url, series, seriesList, options) {
         if(nextSeasonFound(newPath, response)) {
           series.season++;
           series.episode = 1;
-          seriesList.edit(series.name, series.url, series.season, 2, series.incognito);
+          seriesList.edit(series.name, series.url, series.season, 2, series.incognito, series.contextMenu);
           findeEpisodeString(url, series, seriesList, options);
         } else {
           setPopup();

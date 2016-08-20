@@ -73,6 +73,9 @@
 	"editIncognito": {
 		"message": "incognito öffnen"
 	},
+	"editContextMenu": {
+		"message": "Context Menü"
+	},
 	"editCancel": {
 		"message": "Abbr.",
 		"description": "Sollte im Popup neben \"Speichern\" Platz haben. (Falls es sich nicht ausgeht, Abkürzung verwenden.)"
@@ -104,13 +107,16 @@
 		"message": "URLs als Klartext speichern"
 	},
 	"showUnknownDomainNotification": {
-		"message": "Benachrichtigung beim Öffnen einer URL eines unbekannten Hosts anzeigen"
+		"message": "Benachrichtigung beim Öffnen einer URL einer unbekannten Domain anzeigen"
 	},
 	"youtubeAutoplay": {
 		"message": "Autoplay für Youtube-Playlists einschalten"
 	},
 	"directLink": {
 		"message": "Link zur Stream-Seite direkt öffnen (bs.to)"
+	},
+	"darkTheme": {
+		"message": "Das dunkle Farbthema verwenden"
 	},
 	"iconColor": {
 		"message": "Farbe des Icons wählen:"

@@ -1,11 +1,12 @@
 var storedSeries = "episode++Series"; // SeriesList in sync storage
 // Series ----------------------------------------------------------------------
-function Series(name, url, season, episode, incognito, selected) {
+function Series(name, url, season, episode, incognito, contextMenu, selected) {
   this.name = name;
   this.url = url;
   this.season = season;
   this.episode = episode;
   this.incognito = incognito;
+  this.contextMenu = contextMenu;
   this.selected = selected;
 }
 // logs series content to console
@@ -18,7 +19,7 @@ Series.prototype.log = function() {
   console.log(properties);
 };
 // edits series
-Series.prototype.edit = function(name, url, season, episode, incognito) {
+Series.prototype.edit = function(name, url, season, episode, incognito, contextMenu) {
   if(name != null)
     this.name = name;
   if(url != null)
@@ -28,6 +29,7 @@ Series.prototype.edit = function(name, url, season, episode, incognito) {
   if(episode >= 0)
     this.episode = episode;
   this.incognito = incognito;
+  this.contextMenu = contextMenu;
 };
 // @return trimmed series (only non-function properties)
 // @param true: can be abused as clone function
@@ -103,7 +105,7 @@ function SeriesList(seriesList, plainTextURL) {
   // @param selected (optional), default true
   // @param save (optional), default true
   //                         false: less storage access in constructor
-  this.add = function(name, url, season, episode, incognito, selected, save) {
+  this.add = function(name, url, season, episode, incognito, contextMenu, selected, save) {
     selected = typeof selected !== "undefined" ? selected : true;
     save = typeof save !== "undefined" ? save : true;
     var sname = name;
@@ -116,7 +118,7 @@ function SeriesList(seriesList, plainTextURL) {
         this[series].selected = false;
       }
     }
-    this[sname] = new Series(sname, url, season, episode, incognito, selected);
+    this[sname] = new Series(sname, url, season, episode, incognito, contextMenu, selected);
     if(save) {
       this.save();
     }
@@ -163,17 +165,17 @@ function SeriesList(seriesList, plainTextURL) {
     return selected;
   };
   // @return true on success, false otherwise (e.g.: existing rename name)
-  this.edit = function(name, url, season, episode, incognito) {
+  this.edit = function(name, url, season, episode, incognito, contextMenu) {
     if(!this[name] || typeof this[name] === "function") { // name not in list
       var s = this.getSelected(); // add new series deselects all
       if(s !== null) // rename
         delete this[s.name];        
-      this.add(name, url, season, episode, incognito);
+      this.add(name, url, season, episode, incognito, contextMenu);
       return true;
     } else if(!this[name].selected) { // name not selected (wants to rename to
       return false;                   // existing name -> bad idea)
     } else {
-      this[name].edit(name, url, season, episode, incognito);
+      this[name].edit(name, url, season, episode, incognito, contextMenu);
       this.save();
       chrome.browserAction.setTitle({title:name+" - S"+season+"E"+episode});
       return true;
@@ -186,7 +188,7 @@ function SeriesList(seriesList, plainTextURL) {
         if(series !== "__fragments__") {
           var s = seriesList[series];
           var surl = (s.url.substring(0, 4) === "http") ? s.url : decodeURL(s.url);
-          this.add(s.name, surl, s.season, s.episode, s.incognito, s.selected, false);
+          this.add(s.name, surl, s.season, s.episode, s.incognito, s.contextMenu, s.selected, false);
         } else {
           fragments_ = seriesList[series];
         }
@@ -233,7 +235,7 @@ function SeriesList(seriesList, plainTextURL) {
       if(series !== "__fragments__") {
         var s = seriesList[series];
         var surl = (s.url.substring(0, 4) === "http") ? s.url : decodeURL(s.url);
-        this.add(s.name, surl, s.season, s.episode, s.incognito, s.selected, false);
+        this.add(s.name, surl, s.season, s.episode, s.incognito, s.contextMenu, s.selected, false);
       } else {
         fragments_ = seriesList[series];
       }
@@ -259,7 +261,7 @@ function restore(ifListNotFound, ifListFound, frags, fragInProcess, seriesList) 
       } else {
         if(items[storedSeriesPart] == null) {
           console.info("No series found!");
-          ifListNotFound();
+          ifListNotFound(items[storedOptions]);
         } else {
           if(fragInProcess === 1) {
             seriesList = new SeriesList(items[storedSeriesPart], items[storedOptions].plainTextURL);
@@ -278,7 +280,7 @@ function restore(ifListNotFound, ifListFound, frags, fragInProcess, seriesList) 
     } catch(e) {
       if(e.message == "items is not defined") {
         console.warn("No series found!");
-        ifListNotFound();
+        ifListNotFound(items[storedOptions]);
       } else {
         console.error((new Date()).toJSON(), "exception.stack:", e.stack);
       }

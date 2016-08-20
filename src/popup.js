@@ -8,8 +8,11 @@ function ifListNotFoundGoToEdit() {
   document.location.href = "edit.html";
 }
 // Fill series list entries into dropdown select and react to buttons
-function ifListFoundSetupPopup(seriesList) {
+function ifListFoundSetupPopup(seriesList, options) {
   setPopupTo("popup.html");
+  if(options.darkTheme) {
+    document.getElementById("popup").className = "dark";
+  }
   var select = document.getElementById("select_series");
   seriesList.fillInSelectOptions(select);
   document.getElementById("editSeries").addEventListener("click", function() {selectSeries(seriesList,false);});

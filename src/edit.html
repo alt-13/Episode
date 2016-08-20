@@ -7,7 +7,7 @@
     <script src="series.js"></script>
     <script src="edit.js"></script>
   </head>
-  <body>
+  <body id="edit">
     <div class="popup">
       <form name="editSeasonEpisodeURL" id="epp_edit_form">
         <table>
@@ -35,6 +35,12 @@
             <td colspan="2">
               <input type="checkbox" id="epp_incognito" name="incognito" value="incognito">
               <label for="epp_incognito">__MSG_editIncognito__</label>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <input type="checkbox" id="epp_contextMenu" name="contextMenu" value="contextMenu">
+              <label for="epp_contextMenu">__MSG_editContextMenu__</label>
             </td>
           </tr>
         </table>
