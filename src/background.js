@@ -1,7 +1,7 @@
 var alreadyClicked = false;
 var timer;
 var funMap = {"proxer.me":buildProxerURL, "bs.to":findeEpisodeString,
-              "animehaven.org":buildAnimehavenURL, "kinox":buildKinoxURL,
+              "animehaven.to":buildAnimehavenURL, "kinox":buildKinoxURL,
               "91.202.61.170":buildKinoxURL, "netflix":buildNetflixURL,
               "youtube":buildYoutubeURL};
 
@@ -68,11 +68,11 @@ function selectService(url, series, seriesList, options) {
   var chosenFunction = funMap[url.hostname] ? funMap[url.hostname] : (funMap[url.hostname.split(".")[0]] ? funMap[url.hostname.split(".")[0]] : funMap[url.hostname.split(".")[1]]);
   if(!chosenFunction) {
     if(options.showUnknownDomainNotification) {
-      console.log("yeah wtf");
+      console.log("yeah wtf: "+url.hostname);
       var myNotificationID = null;
       chrome.notifications.create("Episode++Notification", {
         type:"basic",
-        iconUrl:"img/b/icon128.png",
+        iconUrl:"img/icon128.png",
         title:"Episode++",
         message:chrome.i18n.getMessage("notYetSupported",url.hostname),
         buttons:[{title:chrome.i18n.getMessage("disableNotification")}]

@@ -4,7 +4,7 @@
 		"message": "Episode++\n\nDoppelklick zum Aktivieren des Popups!"
 	},
 	"description": {
-		"message": "Diese Erweiterung öffnet die aktuellste Episode, die Sie noch nicht gesehen haben in einem neuen Tab oder Inkognito-Fenster. Doppelklick um das Popup zu aktivieren!"
+		"message": "Diese Erweiterung öffnet die aktuellste Folge, die Sie noch nicht gesehen haben in einem neuen Tab oder Inkognito-Fenster. Doppelklick um das Popup zu aktivieren!"
 	},
 	// Background (notification)
 	"notYetSupported": {
@@ -68,13 +68,13 @@
 		"message": "Staffel:"
 	},
 	"editEpisode": {
-		"message": "Episode:"
+		"message": "Folge:"
 	},
 	"editIncognito": {
 		"message": "incognito öffnen"
 	},
 	"editContextMenu": {
-		"message": "Context Menü"
+		"message": "Kontext Menü"
 	},
 	"editCancel": {
 		"message": "Abbr.",

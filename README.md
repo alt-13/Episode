@@ -56,7 +56,7 @@ Sorted by priority:
   * [x] enable autoplay for youtube playlists
   *	[x] icon colour picker
   * [x] theme chooser (dark/light)
-  * [ ] do it yourselfe episode link builder
+  * [ ] do it yourself episode link builder
 * [x] select series which are shown in browser action context menu
 * [ ] proxer.me generalisation
 * [ ] movie4k

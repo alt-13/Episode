@@ -17,7 +17,7 @@ function openURL(url, incognito, seriesList, close) {
       else if(isAllowedAccess && ids.incognito && !incognito) {
         chrome.windows.getCurrent(function(window) {
           if(window.incognito && !incognito && ids.srcWindowID == 0) {
-            chrome.notifications.create("Episode++Notification", {type:"basic", iconUrl:"img/b/icon128.png", title:"Episode++", message:chrome.i18n.getMessage("nonIncognitoSeriesInIncognitoWindow")});
+            chrome.notifications.create("Episode++Notification", {type:"basic", iconUrl:"img/icon128.png", title:"Episode++", message:chrome.i18n.getMessage("nonIncognitoSeriesInIncognitoWindow")});
             var selected = seriesList.getSelected();
             seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)-1, selected.incognito, selected.contextMenu);
           } else if(window.incognito && !incognito && ids.srcWindowID != 0) {

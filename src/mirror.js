@@ -1,7 +1,7 @@
 var iconPath = "img/icons/";
 // MirrorList ------------------------------------------------------------------
 function MirrorList(mirrorList) {
-  var mirrors = typeof mirrorList !== "undefined" ? mirrorList : []; // TODO rename mirrors to mirrors_
+  var mirrors_ = typeof mirrorList !== "undefined" ? mirrorList : [];
   // @return true added successfully else (tried to add existing) false
   this.add = function(oldMirror, name, sString) {
     if(this.checkMirrorExists(name, oldMirror)) {
@@ -9,7 +9,7 @@ function MirrorList(mirrorList) {
     } else {
       var newMirror = {};
       newMirror[name] = sString;
-      mirrors.push(newMirror);
+      mirrors_.push(newMirror);
       return true;
     }
   };
@@ -20,9 +20,9 @@ function MirrorList(mirrorList) {
     } else {
       var editMirror = {};
       editMirror[newMirror] = sString;
-      for(var mirror_i = 0; mirror_i < mirrors.length; mirror_i++) {
-        if(Object.keys(mirrors[mirror_i])[0] == oldMirror) {
-          mirrors[mirror_i] = editMirror;
+      for(var mirror_i = 0; mirror_i < mirrors_.length; mirror_i++) {
+        if(Object.keys(mirrors_[mirror_i])[0] == oldMirror) {
+          mirrors_[mirror_i] = editMirror;
         }
       }
       return true;
@@ -34,8 +34,8 @@ function MirrorList(mirrorList) {
       return true; // bad mirror name
     oldMirror = typeof oldMirror !== "undefined" ? oldMirror : null;
     var instances = 0;
-    for(var mirror_i = 0; mirror_i < mirrors.length; mirror_i++) {
-      if(Object.keys(mirrors[mirror_i])[0] == mirror) {
+    for(var mirror_i = 0; mirror_i < mirrors_.length; mirror_i++) {
+      if(Object.keys(mirrors_[mirror_i])[0] == mirror) {
         instances++;
       }
     }
@@ -59,11 +59,11 @@ function MirrorList(mirrorList) {
     var newMirrorList = [];
     if(typeof mirrorOrder !== "undefined") {
       for(var i = 0; i < mirrorOrder.length; i++) {
-        newMirrorList[i] = mirrors[mirrorOrder[i]];
+        newMirrorList[i] = mirrors_[mirrorOrder[i]];
       }
-      mirrors = newMirrorList;
+      mirrors_ = newMirrorList;
     }
-    return mirrors;
+    return mirrors_;
   };
 }
 
