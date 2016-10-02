@@ -1,20 +1,20 @@
 ######(Chrome-Extension)
 # Episode++
 
-Episode++ lets you open the latest unwatched episode of a series.
+Episode++ lets you open the latest episode of a series you have not yet watched.
 <!-- detailed description
 that can be found on one of the following supported domains:
 * netflix (experimental: enter url from first episode)
 * youtube playlists
 * kinox
 * bs.to
-* animehaven.org (experimental)
+* animehaven.to (experimental)
 * proxer.me
 -->
 
 To edit/add/delete/select a series you have to activate the popup first by double clicking on the extension's icon.
 
-To choose between added series you also can use the dropdown selection in the context menu (rightclick on the extension's icon).
+To choose between added series you also can use the dropdown selection in the context menu (right click on the extension's icon).
 (Context menu selection only supports 5 series.)
 
 The "Episode — —" option (see context menu) allows you to decrement the episode number of the selected series.

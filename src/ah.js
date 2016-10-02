@@ -6,7 +6,7 @@ window.onload = function() {
 // No series list found (empty storage)
 function ifListNotFoundWarn() {console.warn("Should have never happened!");}
 // User has to choose between Subbed or Dubbed if possible
-function ifListFoundSetupAhPopup(seriesList) {
+function ifListFoundSetupAhPopup(seriesList, options) {
   var selected = seriesList.getSelected();
   if(selected.url === "") {
     setPopupTo("edit.html");
@@ -27,19 +27,19 @@ function ifListFoundSetupAhPopup(seriesList) {
             var newPath = url.pathname.split("/");
             var ep = newPath[newPath.length-1].split("-");
             ep.splice((parseInt(selected.season)>1 || !isNaN(parseInt(ep[ep.length-2]))) ? ep.length-2 : ep.length-1, 1, selected.episode);
-            openURL(url.protocol + "//" + url.host + "/" + newPath.splice(1,1).join("/") + "/" + ep.join("-"), selected.incognito, seriesList, true);
+            openURL(url.protocol + "//" + url.host + "/" + newPath.splice(1,1).join("/") + "/" + ep.join("-"), selected.incognito, seriesList, options, true);
             seriesList.edit(selected.name, links[1], selected.season, selected.episode, selected.incognito);
           }
         } else {
           var subbed = $(response).find("a:contains('English Sub')");
           var dubbed = $(response).find("a:contains('English Dub')");
           if(subbed.length !== 0 && dubbed.length === 0) {
-            setNewAhURL(seriesList, "subbed");
+            setNewAhURL(seriesList, options, "subbed");
           } else if(subbed.length === 0 && dubbed.length !== 0) {
-            setNewAhURL(seriesList, "dubbed");
+            setNewAhURL(seriesList, options, "dubbed");
           } else {
-            document.getElementById("subbed").addEventListener("click", function(){restore(ifListNotFoundWarn, function(seriesList){setNewAhURL(seriesList, "subbed");});});
-            document.getElementById("dubbed").addEventListener("click", function(){restore(ifListNotFoundWarn, function(seriesList){setNewAhURL(seriesList, "dubbed");});});
+            document.getElementById("subbed").addEventListener("click", function(){restore(ifListNotFoundWarn, function(seriesList, options){setNewAhURL(seriesList, options, "subbed");});});
+            document.getElementById("dubbed").addEventListener("click", function(){restore(ifListNotFoundWarn, function(seriesList, options){setNewAhURL(seriesList, options, "dubbed");});});
           }
         }
       }
@@ -47,11 +47,11 @@ function ifListFoundSetupAhPopup(seriesList) {
   }
 }
 // Modifies the URL to chosen version (dubbed/subbed)
-function setNewAhURL(seriesList, version) {
+function setNewAhURL(seriesList, options, version) {
   var s = seriesList.getSelected();
   var url = parseURL(s.url);
   var path = url.pathname.split("/");
   var newUrl = url.protocol + "//" + url.host + ((version === "subbed") ? "/subbed/" : "/dubbed/") + path[1] + "-episode-" + (s.episode != 0 ? s.episode : 1);
-  openURL(newUrl,s.incognito, seriesList, true);
+  openURL(newUrl, s.incognito, seriesList, options, true);
   seriesList.edit(s.name, newUrl, s.season, parseInt(s.episode)+1, s.incognito);
 }

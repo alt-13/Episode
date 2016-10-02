@@ -1,10 +1,21 @@
+// Content:
+// public:  openURL, setPopup, unsetPopup, setPopupTo, getTabID, setTabID,
+//          parseURL, localizeHtmlPage, getStorage, getDefaultOptions,
+//          getDefaultMirrorDomainList, setIconColor, dragEnter, dragStart,
+//          playSound
+// private: createTab, createWindow, updateTab, isBefore
 var storedOptions = "episode++Options"; // Options in sync storage
 // Creates incognito window/tab of given url
-function openURL(url, incognito, seriesList, close) {
+// @param url - url to open in window/tab
+// @param incognito - open in incognito window/tab
+// @param seriesList - list containing all series
+// @param options - contains replace tab option
+// @param close - close animehaven selection popup (usage: ah.js)
+function openURL(url, incognito, seriesList, options, close) {
   close = typeof close !== "undefined" ? close : false;
   chrome.extension.isAllowedIncognitoAccess(function(isAllowedAccess) {
     var ids = getTabID();
-    if(ids === null) { // create
+    if(!options.replaceTab || ids === null) { // create
       if(incognito)
         createWindow(url, incognito, isAllowedAccess);
       else
@@ -17,9 +28,30 @@ function openURL(url, incognito, seriesList, close) {
       else if(isAllowedAccess && ids.incognito && !incognito) {
         chrome.windows.getCurrent(function(window) {
           if(window.incognito && !incognito && ids.srcWindowID == 0) {
-            chrome.notifications.create("Episode++Notification", {type:"basic", iconUrl:"img/icon128.png", title:"Episode++", message:chrome.i18n.getMessage("nonIncognitoSeriesInIncognitoWindow")});
-            var selected = seriesList.getSelected();
-            seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)-1, selected.incognito, selected.contextMenu);
+            var myNotificationID = null;
+            chrome.notifications.create("Episode++Notification", {
+              type:"basic",
+              iconUrl:"img/icon128.png",
+              title:"Episode++",
+              message:chrome.i18n.getMessage("nonIncognitoSeriesInIncognitoWindow"),
+              buttons:[
+                {title:chrome.i18n.getMessage("openInNormalWindow")},
+                {title:chrome.i18n.getMessage("openInIncognitoWindow")}
+              ]
+            }, function(id) { myNotificationID = id; });
+            chrome.notifications.onButtonClicked.addListener(function(notifId, btnIdx) {
+              if(notifId === myNotificationID) {
+                if(btnIdx === 0) // normal window
+                  createWindow(url, incognito, isAllowedAccess);
+                else if(btnIdx === 1) // incognito window
+                  updateTab(ids.tabID, url);
+                chrome.notifications.clear(myNotificationID);
+              }
+            });
+            chrome.notifications.onClosed.addListener(function(){
+              var selected = seriesList.getSelected();
+              seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)-1, selected.incognito, selected.contextMenu);
+            });
           } else if(window.incognito && !incognito && ids.srcWindowID != 0) {
             chrome.windows.update(parseInt(ids.srcWindowID), {focused:true});
             createTab(url, ids.srcWindowID);
@@ -150,6 +182,7 @@ function getDefaultOptions() {
   defaultOptions[storedOptions] = {
     domains:defaultDomains,
     mirrorDetails:false,
+    replaceTab:true,
     incognito:true,
     plainTextURL:false,
     youtubeAutoplay:true,

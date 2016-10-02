@@ -83,7 +83,7 @@ function selectService(url, series, seriesList, options) {
         }
       });
     }
-    openURL(series.url, series.incognito, seriesList);
+    openURL(series.url, series.incognito, seriesList, options);
   } else {
     chosenFunction(url, series, seriesList, options);
   }
@@ -92,32 +92,32 @@ function selectService(url, series, seriesList, options) {
 function buildNetflixURL(url, series, seriesList, options) {
   var path = url.pathname.split("/");
   path.splice(2,1,(parseInt(path[2])+parseInt(series.episode)-1).toString());
-  openURL(url.protocol + "//" + url.host + path.join("/"), series.incognito, seriesList);
+  openURL(url.protocol + "//" + url.host + path.join("/"), series.incognito, seriesList, options);
 }
 // The youtube way -------------------------------------------------------------
 function buildYoutubeURL(url, series, seriesList, options) {
   if(url.searchObject.hasOwnProperty("list")) {
-    openURL(url.protocol + "//" + url.host + "/embed/videoseries?list=" + url.searchObject.list + "&index=" + series.episode + (options.youtubeAutoplay ? "&autoplay=1" : ""), series.incognito, seriesList);
+    openURL(url.protocol + "//" + url.host + "/embed/videoseries?list=" + url.searchObject.list + "&index=" + series.episode + (options.youtubeAutoplay ? "&autoplay=1" : ""), series.incognito, seriesList, options);
   } else {
-    openURL(url.protocol + "//" + url.host + url.pathname + url.search + (options.youtubeAutoplay ? "&autoplay=1" : ""), series.incognito, seriesList);
+    openURL(url.protocol + "//" + url.host + url.pathname + url.search + (options.youtubeAutoplay ? "&autoplay=1" : ""), series.incognito, seriesList, options);
   }
 }
 // The kinox way ---------------------------------------------------------------
 function buildKinoxURL(url, series, seriesList, options) {
-  openURL(url.protocol + "//" + url.host + url.pathname + ",s" + series.season + "e" + series.episode, series.incognito, seriesList);
+  openURL(url.protocol + "//" + url.host + url.pathname + ",s" + series.season + "e" + series.episode, series.incognito, seriesList, options);
 }
 // The proxer way (no season support) ------------------------------------------
 function buildProxerURL(url, series, seriesList, options) {
   var path = url.pathname.split("/");
   path.splice(3,1,series.episode);
-  openURL(url.protocol + "//" + url.host + path.join("/"), series.incognito, seriesList);
+  openURL(url.protocol + "//" + url.host + path.join("/"), series.incognito, seriesList, options);
 }
 // The animehaven way (experimental) -------------------------------------------
 function buildAnimehavenURL(url, series, seriesList, options) {
   var path = url.pathname.split("/");
   var ep = path[path.length-1].split("-");
   ep.splice((parseInt(series.season)>1 || !isNaN(parseInt(ep[ep.length-2]))) ? ep.length-2 : ep.length-1, 1, series.episode);
-  openURL(url.protocol + "//" + url.host + "/" + path.splice(1,1).join("/") + "/" + ep.join("-"), series.incognito, seriesList);
+  openURL(url.protocol + "//" + url.host + "/" + path.splice(1,1).join("/") + "/" + ep.join("-"), series.incognito, seriesList, options);
 }
 // The bs way ------------------------------------------------------------------
 function findeEpisodeString(url, series, seriesList, options) {
@@ -139,7 +139,10 @@ function findeEpisodeString(url, series, seriesList, options) {
         var mirror = link.pop();
         buildBsURL(url, series, link.pop(), mirror, seriesList, options);
       } else {
-        if(nextSeasonFound(newPath, response)) {
+        if(nextEpisodeFound(url, series, seriesList, options, response)) {
+          series.episode++;
+          seriesList.edit(series.name, series.url, series.season, series.episode, series.incognito, series.contextMenu);
+        } else if(nextSeasonFound(newPath, response)) {
           series.season++;
           series.episode = 1;
           seriesList.edit(series.name, series.url, series.season, 2, series.incognito, series.contextMenu);
@@ -162,6 +165,21 @@ function findLinkToFavouriteMirror(newPath, options, response) {
     if(links.length) {
       return links;
     }
+  }
+}
+// @return true there is another episode in this season, false otherwise
+function nextEpisodeFound(url, series, seriesList, options, response) {
+  series.episode++;
+  var newPath = getBeginningSelector(url, series.season, series.episode);
+  var links = findLinkToFavouriteMirror(newPath, options, response);
+  console.log("links: "+newPath);
+  if(typeof links !== "undefined") {
+    var link = links[0].href.split("/");
+    var mirror = link.pop();
+    buildBsURL(url, series, link.pop(), mirror, seriesList, options);
+    return true;
+  } else {
+    return false;
   }
 }
 // @return true there is another season, false otherwise
@@ -200,10 +218,10 @@ function buildBsURL(url, series, episode, mirror, seriesList, options) {
       success  : function(data) {
         var response = $('<html />').html(data);
         var directLink = $(response).find("a").filter(":contains('Link zum Originalvideo')")[0].href;
-        openURL(directLink, series.incognito, seriesList);
+        openURL(directLink, series.incognito, seriesList, options);
       }
     });
   } else {
-    openURL(newURL, series.incognito, seriesList);
+    openURL(newURL, series.incognito, seriesList, options);
   }
 }

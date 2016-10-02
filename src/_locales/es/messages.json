@@ -21,7 +21,13 @@
 	},
 	// Utils openURL (notification)
 	"nonIncognitoSeriesInIncognitoWindow": {
-		"message": "¡Varios capítulos no incognitos (p.e. netflix) no funcionar en ventana de incógnito!\n¡Cambie en ventana normal, por favor!"
+		"message": "¡Varios capítulos no incógnitos (p.e. netflix) no funcionar en ventana de incógnito!"
+	},
+	"openInNormalWindow": {
+		"message": "Abrir en ventana normal"
+	},
+	"openInIncognitoWindow": {
+		"message": "Abrir en esta ventana"
 	},
 	// Popup
 	"addNewSeries": {
@@ -99,6 +105,9 @@
 	},
 	"domains": {
 		"message": "Domains:"
+	},
+	"replaceTab": {
+		"message": "Reutilizar tabs abiertos"
 	},
 	"incognito": {
 		"message": "Abrir serie en ventana de incógnito según estándar"

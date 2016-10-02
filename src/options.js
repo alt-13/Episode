@@ -5,6 +5,7 @@ function saveOptions(domainList) {
   options[storedOptions] = {
     domains:getDomainList(domainList),
     mirrorDetails:document.getElementById("mirrorDetails").open,
+    replaceTab:document.getElementById("replaceTab").checked,
     incognito:document.getElementById("incognito").checked,
     plainTextURL:document.getElementById("plainTextURL").checked,
     showUnknownDomainNotification:document.getElementById("showUnknownDomainNotification").checked,
@@ -30,6 +31,7 @@ function restoreOptions() {
     var domainList = new DomainList(options.domains, true);
     fillInDomainsAndMirrors(domainList);
     document.getElementById("mirrorDetails").open = options.mirrorDetails;
+    document.getElementById("replaceTab").checked = options.replaceTab;
     document.getElementById("incognito").checked = options.incognito;
     document.getElementById("plainTextURL").checked = options.plainTextURL;
     document.getElementById("showUnknownDomainNotification").checked = options.showUnknownDomainNotification;

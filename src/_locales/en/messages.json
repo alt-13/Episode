@@ -4,7 +4,7 @@
 		"message": "Episode++\n\nDoubleclick to aktivate popup!"
 	},
 	"description": {
-		"message": "This extension opens the next to whatch episode in a new tab or incognito window. Doubleclick to aktivate popup!"
+		"message": "This extension opens the next episode you have not yet watched in a new tab or incognito window. Doubleclick to aktivate popup!"
 	},
 	// Background (notification)
 	"notYetSupported": {
@@ -21,7 +21,13 @@
 	},
 	// Utils openURL (notification)
 	"nonIncognitoSeriesInIncognitoWindow": {
-		"message": "Some non incognito series (e.g. netflix) do not work in incognito window!\nPlease switch to normal window!"
+		"message": "Some non incognito series (e.g. netflix) do not work in incognito window!"
+	},
+	"openInNormalWindow": {
+		"message": "Open in normal window"
+	},
+	"openInIncognitoWindow": {
+		"message": "Open in this window"
 	},
 	// Popup
 	"addNewSeries": {
@@ -99,6 +105,9 @@
 	},
 	"domains": {
 		"message": "Domains:"
+	},
+	"replaceTab": {
+		"message": "Reuse opened tabs"
 	},
 	"incognito": {
 		"message": "Open series in incognito window by default"
