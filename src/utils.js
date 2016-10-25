@@ -5,6 +5,8 @@
 //          playSound
 // private: createTab, createWindow, updateTab, isBefore
 var storedOptions = "episode++Options"; // Options in sync storage
+var hostNames = ["proxer.me", "bs.to", "animehaven.to", "kinox", "91.202.61.170",
+                "netflix.com", "www.youtube.com"];
 // Creates incognito window/tab of given url
 // @param url - url to open in window/tab
 // @param incognito - open in incognito window/tab
@@ -196,15 +198,18 @@ function getDefaultOptions() {
 // @return default mirror order
 function getDefaultMirrorDomainList() {
   var defaultMirrors = [
-    {Vivo:"Vivo-1"},
-    {OpenLoad:"OpenLoad-1"},
-    {FlashX:"FlashX-1"},
     {AuroraVid:"AuroraVid-1"},
     {BitVID:"BitVID-1"},
     {CloudTime:"CloudTime-1"},
-    {Shared:"Shared-1"},
     {FileNuke:"FileNuke-1"},
+    {FlashX:"FlashX-1"},
+    {OpenLoad:"OpenLoad-1"},
+    {OpenLoadHD:"OpenLoadHD-1"},
+    {PowerWatch:"PowerWatch-1"},
+    {Shared:"Shared-1"},
     {Streamcloud:"Streamcloud-1"},
+    {Vidto:"Vidto-1"},
+    {Vivo:"Vivo-1"},
     {WholeCloud:"WholeCloud-1"},
     {YouWatch:"YouWatch-1"}
   ];

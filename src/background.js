@@ -57,8 +57,8 @@ function ifListFoundOpenNewestEpisode(seriesList, options) {
     setPopupTo("edit.html");
   } else {
     var url = parseURL(selected.url);
-    if(url.hostname !== "bs.to" && parseInt(selected.season) === 0) seriesList.edit(selected.name, selected.url, 1, selected.episode, selected.incognito, selected.contextMenu);
-    if(url.hostname !== "www.youtube.com" && parseInt(selected.episode) === 0) seriesList.edit(selected.name, selected.url, selected.season, 1, selected.incognito, selected.contextMenu);
+    if(url.hostname !== hostNames[1] && url.hostname !== hostNames[2] && parseInt(selected.season) === 0) seriesList.edit(selected.name, selected.url, 1, selected.episode, selected.incognito, selected.contextMenu);
+    if(url.hostname !== hostNames[6] && parseInt(selected.episode) === 0) seriesList.edit(selected.name, selected.url, selected.season, 1, selected.incognito, selected.contextMenu);
     selectService(url, selected.save(true), seriesList, options);
     seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)+1, selected.incognito, selected.contextMenu);
   }
@@ -68,7 +68,6 @@ function selectService(url, series, seriesList, options) {
   var chosenFunction = funMap[url.hostname] ? funMap[url.hostname] : (funMap[url.hostname.split(".")[0]] ? funMap[url.hostname.split(".")[0]] : funMap[url.hostname.split(".")[1]]);
   if(!chosenFunction) {
     if(options.showUnknownDomainNotification) {
-      console.log("yeah wtf: "+url.hostname);
       var myNotificationID = null;
       chrome.notifications.create("Episode++Notification", {
         type:"basic",
@@ -115,9 +114,12 @@ function buildProxerURL(url, series, seriesList, options) {
 // The animehaven way (experimental) -------------------------------------------
 function buildAnimehavenURL(url, series, seriesList, options) {
   var path = url.pathname.split("/");
-  var ep = path[path.length-1].split("-");
-  ep.splice((parseInt(series.season)>1 || !isNaN(parseInt(ep[ep.length-2]))) ? ep.length-2 : ep.length-1, 1, series.episode);
-  openURL(url.protocol + "//" + url.host + "/" + path.splice(1,1).join("/") + "/" + ep.join("-"), series.incognito, seriesList, options);
+  var se = path[path.length-1].split("-");
+  var sIndex = se.indexOf("season");
+  var eIndex = se.indexOf("episode");
+  if(sIndex !== -1) se[parseInt(sIndex)+1] = series.season;
+  if(eIndex !== -1) se[parseInt(eIndex)+1] = series.episode;
+  openURL(url.protocol + "//" + url.host + "/" + path.splice(1,1).join("/") + "/" + se.join("-"), series.incognito, seriesList, options);
 }
 // The bs way ------------------------------------------------------------------
 function findeEpisodeString(url, series, seriesList, options) {
@@ -172,7 +174,6 @@ function nextEpisodeFound(url, series, seriesList, options, response) {
   series.episode++;
   var newPath = getBeginningSelector(url, series.season, series.episode);
   var links = findLinkToFavouriteMirror(newPath, options, response);
-  console.log("links: "+newPath);
   if(typeof links !== "undefined") {
     var link = links[0].href.split("/");
     var mirror = link.pop();
@@ -211,7 +212,7 @@ function buildBsURL(url, series, episode, mirror, seriesList, options) {
   var path = url.pathname.split("/");
   var newPath = path[0]+"/"+path[1]+"/"+path[2]+"/"+series.season+"/"+episode+"/"+mirror;
   var newURL = url.protocol + "//" + url.host + newPath;
-  if(options.directLink) {
+  if(options.directLink && mirror !== "OpenLoad-1" && mirror !== "OpenLoadHD-1") {
     $.ajax({
       url      : newURL,
       dataType : 'html',

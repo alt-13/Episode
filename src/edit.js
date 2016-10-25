@@ -102,11 +102,11 @@ function setPopupTo(popup) {
 function isCorrectAhURL() {
   var parser = document.createElement('a');
   parser.href = document.getElementById("epp_url").value;;
-  if(parser.hostname === "animehaven.org") {
+  if(parser.hostname === hostNames[2]) {
     var path = parser.pathname.split("/");
     if(path.length < 3) {
       return false;
-    } else if(path[1] === "episodes" || (path[1] !== "subbed" && path[1] !== "dubbed")) {
+    } else if(path[1] === "episodes" || (path[1] !== "subbed" && path[1] !== "dubbed" && path[1] !== "western-cartoons")) {
       return false;
     }
   } else return true; // no ah url -> don't care
