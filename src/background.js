@@ -212,13 +212,13 @@ function buildBsURL(url, series, episode, mirror, seriesList, options) {
   var path = url.pathname.split("/");
   var newPath = path[0]+"/"+path[1]+"/"+path[2]+"/"+series.season+"/"+episode+"/"+mirror;
   var newURL = url.protocol + "//" + url.host + newPath;
-  if(options.directLink && mirror !== "OpenLoad-1" && mirror !== "OpenLoadHD-1") {
+  if(options.directLink && mirror !== "OpenLoad" && mirror !== "OpenLoadHD") {
     $.ajax({
       url      : newURL,
       dataType : 'html',
       success  : function(data) {
         var response = $('<html />').html(data);
-        var directLink = $(response).find("a").filter(":contains('Link zum Originalvideo')")[0].href;
+        var directLink = $(response).find("a[href^='https://bs.to/out/']")[0].href;
         openURL(directLink, series.incognito, seriesList, options);
       }
     });

@@ -41,6 +41,7 @@ Sorted by priority:
 #### Known Bugs:
 <!--
 #### Issues:
+* BS.TO direct link to stream hoster NOT WORKING ANYMORE
 * test fragments with options
 * context menu update too often?
 * storage access reduction?
@@ -58,6 +59,7 @@ Sorted by priority:
   * [x] theme chooser (dark/light)
   * [ ] do it yourself episode link builder
 * [x] select series which are shown in browser action context menu
+  *[ ] more than 5 (context menu entries) warning
 * [ ] proxer.me generalisation
 * [ ] movie4k
 * [ ] tubeplus.is

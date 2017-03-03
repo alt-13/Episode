@@ -198,20 +198,20 @@ function getDefaultOptions() {
 // @return default mirror order
 function getDefaultMirrorDomainList() {
   var defaultMirrors = [
-    {AuroraVid:"AuroraVid-1"},
-    {BitVID:"BitVID-1"},
-    {CloudTime:"CloudTime-1"},
-    {FileNuke:"FileNuke-1"},
-    {FlashX:"FlashX-1"},
-    {OpenLoad:"OpenLoad-1"},
-    {OpenLoadHD:"OpenLoadHD-1"},
-    {PowerWatch:"PowerWatch-1"},
-    {Shared:"Shared-1"},
-    {Streamcloud:"Streamcloud-1"},
-    {Vidto:"Vidto-1"},
-    {Vivo:"Vivo-1"},
-    {WholeCloud:"WholeCloud-1"},
-    {YouWatch:"YouWatch-1"}
+    {AuroraVid:"AuroraVid"},
+    {BitVID:"BitVID"},
+    {CloudTime:"CloudTime"},
+    {FileNuke:"FileNuke"},
+    {FlashX:"FlashX"},
+    {OpenLoad:"OpenLoad"},
+    {OpenLoadHD:"OpenLoadHD"},
+    {PowerWatch:"PowerWatch"},
+    {Shared:"Shared"},
+    {Streamcloud:"Streamcloud"},
+    {Vidto:"Vidto"},
+    {Vivo:"Vivo"},
+    {WholeCloud:"WholeCloud"},
+    {YouWatch:"YouWatch"}
   ];
   defaultDomains = {"bs.to":{"mirrorList":defaultMirrors, "selected":true}};
   return defaultDomains;
