@@ -41,7 +41,7 @@ Sorted by priority:
 #### Known Bugs:
 <!--
 #### Issues:
-* BS.TO direct link to stream hoster NOT WORKING ANYMORE
+* BS.TO direct link to stream hoster only working if no captcha
 * test fragments with options
 * context menu update too often?
 * storage access reduction?

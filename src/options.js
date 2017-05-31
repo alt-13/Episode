@@ -84,9 +84,9 @@ function createMirrorElement(domainList, mirrorName, mirrorSString, dataID) {
   mirrorEl.setAttribute("data-id", dataID);
   mirrorEl.setAttribute("id", mirrorName);
   mirrorEl.setAttribute("draggable", true);
-  var icon = document.createElement("img");
-  icon.setAttribute("src", "img/icons/" + mirrorName + ".ico");
-  icon.addEventListener("error", function(){this.src="img/icons/default.ico";});
+  var icon = document.createElement("a");
+  icon.setAttribute("class", "v-centered icon " + mirrorName);
+  icon.addEventListener("error", function(){this.class="v-centered icon MyVideo";});
   mirrorEl.appendChild(icon);
   mirrorEl.appendChild(document.createTextNode(" " + mirrorName));
   (function(domainList, dataID, mirrorName, mirrorSString) {

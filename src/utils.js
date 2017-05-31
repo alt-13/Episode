@@ -199,18 +199,32 @@ function getDefaultOptions() {
 function getDefaultMirrorDomainList() {
   var defaultMirrors = [
     {AuroraVid:"AuroraVid"},
+    {BitShare:"BitShare"},
     {BitVID:"BitVID"},
     {CloudTime:"CloudTime"},
+    {Dailymotion:"Dailymotion"},
+    {Ecostream:"Ecostream"},
     {FileNuke:"FileNuke"},
+    {Firedrive:"Firedrive"},
     {FlashX:"FlashX"},
+    {MySpass:"MySpass"},
+    {NOSVideo:"NOSVideo"},
+    {NowVideo:"NowVideo"},
     {OpenLoad:"OpenLoad"},
     {OpenLoadHD:"OpenLoadHD"},
     {PowerWatch:"PowerWatch"},
+    {Primeshare:"Primeshare"},
+    {RapidVideo:"RapidVideo"},
+    {Sockshare:"Sockshare"},
     {Shared:"Shared"},
+    {Streamango:"Streamango"},
     {Streamcloud:"Streamcloud"},
+    {TheVideo:"TheVideo"},
+    {UploadC:"UploadC"},
     {Vidto:"Vidto"},
     {Vivo:"Vivo"},
     {WholeCloud:"WholeCloud"},
+    {YouTube:"YouTube"},
     {YouWatch:"YouWatch"}
   ];
   defaultDomains = {"bs.to":{"mirrorList":defaultMirrors, "selected":true}};

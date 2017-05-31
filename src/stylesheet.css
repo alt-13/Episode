@@ -214,3 +214,65 @@ div#mirrorCol {
 #domainMirrorOptions {
   overflow:auto;
 }
+/*bs.to icon styles*/
+.icon {
+  width:16px;
+  height:16px;
+  display:inline-block;
+  background:url(img/icons.v33.png) no-repeat;
+  text-indent:-9999px
+}
+.v-centered.icon {
+  position:relative;
+  top:2px
+}
+/*.icon.add{background-position:0 0}  <-- is used as default icon ¯\_(ツ)_/¯
+.icon.arrow_redo{background-position:-16px 0}
+.icon.arrow_refresh{background-position:-32px 0}
+.icon.bug{background-position:-48px 0}
+.icon.bug_delete{background-position:-64px 0}
+.icon.cog{background-position:-80px 0}
+.icon.crossed_eye{background-position:-96px 0}
+.icon.delete{background-position:-112px 0}
+.icon.email_add{background-position:-128px 0}
+.icon.email_go{background-position:-144px 0}
+.icon.exclamation{background-position:-160px 0}
+.icon.eye{background-position:-176px 0}
+.icon.lightning{background-position:-192px 0}
+.icon.link_go{background-position:-208px 0}
+.icon.lock{background-position:-224px 0}
+.icon.lock_open{background-position:-240px 0}
+.icon.medal_bronze{background-position:-256px 0}
+.icon.medal_gold{background-position:-272px 0}
+.icon.medal_silver{background-position:-288px 0}
+.icon.MyVideo{background-position:-304px 0}
+.icon.page_white_edit{background-position:-320px 0}
+.icon.page_white_wrench{background-position:-336px 0}*/
+.icon.Firedrive{background-position:-352px 0}
+.icon.RapidVideo{background-position:-368px 0}
+.icon.YouTube{background-position:-384px 0}
+.icon.MySpass{background-position:-400px 0}
+.icon.Sockshare{background-position:-416px 0}
+.icon.Ecostream{background-position:-432px 0}
+.icon.BitShare{background-position:-448px 0}
+.icon.BitVID{background-position:-464px 0}
+.icon.UploadC{background-position:-480px 0}
+.icon.Streamcloud{background-position:-496px 0}
+.icon.Dailymotion{background-position:-512px 0}
+.icon.PowerWatch{background-position:-528px 0}
+.icon.CloudTime{background-position:-544px 0}
+.icon.Primeshare{background-position:-560px 0}
+.icon.NowVideo{background-position:-592px 0}
+.icon.AuroraVid{background-position:-608px 0}
+.icon.WholeCloud{background-position:-624px 0}
+.icon.YouWatch{background-position:-640px 0}
+.icon.Shared{background-position:-656px 0}
+.icon.FlashX{background-position:-672px 0}
+.icon.Vivo{background-position:-688px 0}
+.icon.FileNuke{background-position:-704px 0}
+.icon.OpenLoad{background-position:-720px 0}
+.icon.NOSVideo{background-position:-736px 0}
+.icon.Vidto{background-position:-752px 0}
+.icon.OpenLoadHD{background-position:-768px 0}
+.icon.TheVideo{background-position:-784px 0}
+.icon.Streamango{background-position:-800px 0}
