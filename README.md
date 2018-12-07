@@ -59,7 +59,9 @@ Sorted by priority:
   * [x] theme chooser (dark/light)
   * [ ] do it yourself episode link builder
 * [x] select series which are shown in browser action context menu
-  *[ ] more than 5 (context menu entries) warning
+  * [ ] more than 5 (context menu entries) warning
+* [x] "<1st_URL> | <2nd_URL>" support for opening 2 taps simultaneously
+<!-- TODO: open piped urls in order (promise at the end of openURL); test all tab ids stuff; chrome.windows.onRemoved; openURL ids stuff-->
 * [ ] proxer.me generalisation
 * [ ] movie4k
 * [ ] tubeplus.is

@@ -24,16 +24,74 @@ chrome.browserAction.onClicked.addListener(function() {
 
 // Check tabs/windows removed --------------------------------------------------
 chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
-  var ids = getTabID();
-  if(ids !== null && ids.windowID == removeInfo.windowId && ids.tabID == tabId) {
-    setTabID(0);
+  var ids = getTabIDs();
+  var tabIdRemoved = false;
+  var rIds = []; // remaining ids
+  for(i = 0; ids !== null && i < ids.length; i++) {
+    if(ids[i].tabID == tabId)
+      tabIdRemoved = true;
+    else
+      rIds.push(ids[i]);
+  }
+  if(ids !== null && ids[0].windowID == removeInfo.windowId && tabIdRemoved) {
+    if(rIds.length < 1)
+      setTabIDs(0);
+    else {
+      var ids_str = "";
+      for(i = 0; i < rIds.length; i++) {
+        ids_str += (i>1?"|":"")+rIds[i].srcWindowID+"|"+rIds[i].windowID+"|"+rIds[i].tabID+(rIds[i].incognito?"|i":"|n")+(i<rIds.length-1?"|":"");
+      }
+      setTabIDs(ids_str, true);
+    }
   }
 });
 
 chrome.windows.onRemoved.addListener(function(windowId) {
-  var ids = getTabID();
-  if(ids !== null && ids.windowID == windowId) {
-    setTabID(0);
+  var ids = getTabIDs();
+  if(ids !== null && ids[0].windowID == windowId) {
+    setTabIDs(0);
+  }
+});
+
+// Check tab detached from window ----------------------------------------------
+chrome.tabs.onDetached.addListener(function(tabId, detachInfo) {
+  var ids = getTabIDs();
+  var tabIdDetached = false;
+  var rIds = []; // remaining ids
+  for(i = 0; ids !== null && i < ids.length; i++) {
+    if(ids[i].tabID == tabId) {
+      ids[i].windowID = "detached"
+      tabIdDetached = true;
+    }
+    rIds.push(ids[i]);
+  }
+  if(ids !== null && tabIdDetached) {
+    var ids_str = "";
+    for(i = 0; i < rIds.length; i++) {
+      ids_str += (i>1?"|":"")+rIds[i].srcWindowID+"|"+rIds[i].windowID+"|"+rIds[i].tabID+(rIds[i].incognito?"|i":"|n")+(i<rIds.length-1?"|":"");
+    }
+    setTabIDs(ids_str, true);
+  }
+});
+
+// Check tab attached to window ------------------------------------------------
+chrome.tabs.onAttached.addListener(function(tabId, attachInfo) {
+  var ids = getTabIDs();
+  var tabIdAttached = false;
+  var rIds = []; // remaining ids
+  for(i = 0; ids !== null && i < ids.length; i++) {
+    if(ids[i].tabID == tabId && ids[i].windowID == "detached") {
+      ids[i].windowID = attachInfo.newWindowId;
+      tabIdAttached = true;
+    }
+    rIds.push(ids[i]);
+  }
+  if(ids !== null && tabIdAttached) {
+    var ids_str = "";
+    for(i = 0; i < rIds.length; i++) {
+      ids_str += (i>1?"|":"")+rIds[i].srcWindowID+"|"+rIds[i].windowID+"|"+rIds[i].tabID+(rIds[i].incognito?"|i":"|n")+(i<rIds.length-1?"|":"");
+    }
+    setTabIDs(ids_str, true);
   }
 });
 
@@ -51,15 +109,19 @@ addStorageOnChangedListenerForContexMenu();
 // Process single click --------------------------------------------------------
 function ifListFoundOpenNewestEpisode(seriesList, options) {
   var selected = seriesList.getSelected();
+  var urls = [];
   if(selected === null) {
     setPopup();
   } else if(selected.url === "") {
     setPopupTo("edit.html");
   } else {
-    var url = parseURL(selected.url);
-    if(url.hostname !== hostNames[1] && url.hostname !== hostNames[2] && parseInt(selected.season) === 0) seriesList.edit(selected.name, selected.url, 1, selected.episode, selected.incognito, selected.contextMenu);
-    if(url.hostname !== hostNames[6] && parseInt(selected.episode) === 0) seriesList.edit(selected.name, selected.url, selected.season, 1, selected.incognito, selected.contextMenu);
-    selectService(url, selected.save(true), seriesList, options);
+    urls = selected.url.split(" | ");
+    for(i = 0; i < urls.length; i++) {
+      var url = parseURL(urls[i]);
+      if(url.hostname !== hostNames[1] && url.hostname !== hostNames[2] && parseInt(selected.season) === 0) seriesList.edit(selected.name, selected.url, 1, selected.episode, selected.incognito, selected.contextMenu);
+      if(url.hostname !== hostNames[6] && parseInt(selected.episode) === 0) seriesList.edit(selected.name, selected.url, selected.season, 1, selected.incognito, selected.contextMenu);
+      selectService(url, selected.save(true), seriesList, options);
+    }
     seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)+1, selected.incognito, selected.contextMenu);
   }
 }
@@ -139,7 +201,9 @@ function findeEpisodeString(url, series, seriesList, options) {
       if(typeof links !== "undefined") {
         var link = links[0].href.split("/");
         var mirror = link.pop();
-        buildBsURL(url, series, link.pop(), mirror, seriesList, options);
+        var language = link.pop();
+        var episode = link.pop();
+        buildBsURL(url, series, episode, mirror, seriesList, options);
       } else {
         if(nextEpisodeFound(url, series, seriesList, options, response)) {
           series.episode++;
@@ -163,7 +227,7 @@ function findLinkToFavouriteMirror(newPath, options, response) {
   var links;
   for(var m = 0; m < mirrors.length; m++) {
     mirror = mirrors[m][Object.keys(mirrors[m])[0]];
-    links = $(response).find("a[href^='"+newPath+"'][href$='/"+mirror+"']");
+    links = $(response).find("a[href^='"+newPath+"'][href$='/de/"+mirror+"']");
     if(links.length) {
       return links;
     }
@@ -210,7 +274,7 @@ function getBeginningSelector(url, season, episode) {
 // opens bs url or the link to the mirror directly
 function buildBsURL(url, series, episode, mirror, seriesList, options) {
   var path = url.pathname.split("/");
-  var newPath = path[0]+"/"+path[1]+"/"+path[2]+"/"+series.season+"/"+episode+"/"+mirror;
+  var newPath = path[0]+"/"+path[1]+"/"+path[2]+"/"+series.season+"/"+episode+"/de/"+mirror;
   var newURL = url.protocol + "//" + url.host + newPath;
   if(options.directLink && mirror !== "OpenLoad" && mirror !== "OpenLoadHD") {
     $.ajax({

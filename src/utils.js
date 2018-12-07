@@ -7,6 +7,7 @@
 var storedOptions = "episode++Options"; // Options in sync storage
 var hostNames = ["proxer.me", "bs.to", "animehaven.to", "kinox", "91.202.61.170",
                 "netflix.com", "www.youtube.com"];
+var openURLCallCount = 0;
 // Creates incognito window/tab of given url
 // @param url - url to open in window/tab
 // @param incognito - open in incognito window/tab
@@ -16,20 +17,29 @@ var hostNames = ["proxer.me", "bs.to", "animehaven.to", "kinox", "91.202.61.170"
 function openURL(url, incognito, seriesList, options, close) {
   close = typeof close !== "undefined" ? close : false;
   chrome.extension.isAllowedIncognitoAccess(function(isAllowedAccess) {
-    var ids = getTabID();
+    var ids = getTabIDs();
     if(!options.replaceTab || ids === null) { // create
       if(incognito)
         createWindow(url, incognito, isAllowedAccess);
       else
         createTab(url);
-    } else if((ids.incognito && incognito) || !(ids.incognito || incognito)) { // update
-      updateTab(ids.tabID, url);
+    } else if((ids[0].incognito && incognito) || !(ids[0].incognito || incognito)) { // update
+      var pipe_count = (seriesList.getSelected().url.match(/\s\|\s/g) || []).length;
+      if(pipe_count >= ids.length) {
+        addTab(ids[0].windowID, url);
+      }
+      else {
+        if(openURLCallCount >= ids.length)
+          openURLCallCount = 0;
+        updateTab(ids[openURLCallCount].tabID, url);
+        openURLCallCount++;
+      }
     } else {
       if(incognito)
         createWindow(url, incognito, isAllowedAccess);
-      else if(isAllowedAccess && ids.incognito && !incognito) {
+      else if(isAllowedAccess && ids[0].incognito && !incognito) {
         chrome.windows.getCurrent(function(window) {
-          if(window.incognito && !incognito && ids.srcWindowID == 0) {
+          if(window.incognito && !incognito && ids[0].srcWindowID == 0) {
             var myNotificationID = null;
             chrome.notifications.create("Episode++Notification", {
               type:"basic",
@@ -46,7 +56,7 @@ function openURL(url, incognito, seriesList, options, close) {
                 if(btnIdx === 0) // normal window
                   createWindow(url, incognito, isAllowedAccess);
                 else if(btnIdx === 1) // incognito window
-                  updateTab(ids.tabID, url);
+                  updateTab(ids[0].tabID, url);
                 chrome.notifications.clear(myNotificationID);
               }
             });
@@ -54,9 +64,9 @@ function openURL(url, incognito, seriesList, options, close) {
               var selected = seriesList.getSelected();
               seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)-1, selected.incognito, selected.contextMenu);
             });
-          } else if(window.incognito && !incognito && ids.srcWindowID != 0) {
-            chrome.windows.update(parseInt(ids.srcWindowID), {focused:true});
-            createTab(url, ids.srcWindowID);
+          } else if(window.incognito && !incognito && ids[0].srcWindowID != 0) {
+            chrome.windows.update(parseInt(ids[0].srcWindowID), {focused:true});
+            createTab(url, ids[0].srcWindowID);
           } else {
             createTab(url);
           }
@@ -83,27 +93,36 @@ function setPopupTo(popup) {
   chrome.browserAction.setPopup({popup:popup});
 }
 // Fretches ID of tab in use
-function getTabID() {
-  var ids = localStorage.getItem("episode++TabID");
-  var tabInfo = {};
+function getTabIDs() {
+  var ids = localStorage.getItem("episode++TabIDs");
+  var tabInfos = [];
   if(ids != null && ids !== "0") {
     var idsarr = ids.split("|");
-    tabInfo.srcWindowID = idsarr[0];
-    tabInfo.windowID = idsarr[1];
-    tabInfo.tabID = idsarr[2];
-    tabInfo.incognito = idsarr.length == 4 ? true : false;
+    for(i = 0; i < idsarr.length; i += 4) {
+      var tabInfo = {};
+      tabInfo.srcWindowID = idsarr[i+0];
+      tabInfo.windowID = idsarr[i+1];
+      tabInfo.tabID = idsarr[i+2];
+      tabInfo.incognito = idsarr[i+3] == "i" ? true : false;
+      tabInfos.push(tabInfo);
+    }
   } else return null;
-  return tabInfo;
+  return tabInfos;
 }
 // Sets ID of tab in use
-function setTabID(tabID) {
-  localStorage.setItem("episode++TabID", tabID);
+function setTabIDs(tabIDs, replace) {
+  replace = typeof replace !== "undefined" ? replace : false;
+  var ids = localStorage.getItem("episode++TabIDs");
+  if(ids != null && ids !== "0" && tabIDs !== 0 && !replace) {
+    tabIDs = ids+"|"+tabIDs;
+  }
+  localStorage.setItem("episode++TabIDs", tabIDs);
 }
 // Creates new tab
 function createTab(url, srcWindowID) {
   srcWindowID = typeof srcWindowID !== "undefined" ? parseInt(srcWindowID) : null;
   chrome.tabs.create(srcWindowID === null ? {url:url} : {windowId:srcWindowID, url:url}, function(tab){
-    setTabID((srcWindowID===null?tab.windowId:srcWindowID)+"|"+tab.windowId+"|"+tab.id);
+    setTabIDs((srcWindowID===null?tab.windowId:srcWindowID)+"|"+tab.windowId+"|"+tab.id+"|n");
   });
 }
 // Creates new window
@@ -111,13 +130,13 @@ function createWindow(url, incognito, isAllowedAccess) {
   chrome.windows.getCurrent(function(srcWindow) {
     chrome.windows.create({url:url, incognito:incognito, state:"maximized"}, function(window) {
       if(isAllowedAccess) {
-        setTabID(srcWindow.id+"|"+window.id+"|"+window.tabs[0].id+"|incognito");
+        setTabIDs(srcWindow.id+"|"+window.id+"|"+window.tabs[0].id+(incognito?"|i":"|n"));
       }
     });
     chrome.windows.onRemoved.addListener(function(windowId){
       if(windowId === srcWindow.id && isAllowedAccess) {
-        var tabID = getTabID();
-        setTabID(0+"|"+tabID.windowID+"|"+tabID.tabID+"|incognito");
+        var tabID = getTabIDs();
+        setTabIDs(0+"|"+tabID.windowID+"|"+tabID.tabID+(incognito?"|i":"|n"));
       }
     });
   });
@@ -129,6 +148,13 @@ function updateTab(tabID, url) {
       console.warn(chrome.runtime.lastError.message);
       createTab(url);
     }
+  });
+}
+// Add tab (for urls concatenated with " | ")
+function addTab(windowID, url) {
+  windowID = typeof windowID !== "undefined" ? parseInt(windowID) : null;
+  chrome.tabs.create(windowID === null ? {url:url} : {windowId:windowID, url:url, active:false}, function(tab){
+    setTabIDs((windowID===null?tab.windowId:windowID)+"|"+tab.windowId+"|"+tab.id+(tab.incognito?"|i":"|n"));
   });
 }
 // Parses a given URL
