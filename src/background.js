@@ -203,7 +203,7 @@ function findeEpisodeString(url, series, seriesList, options) {
         var mirror = link.pop();
         var language = link.pop();
         var episode = link.pop();
-        buildBsURL(url, series, episode, mirror, seriesList, options);
+        buildBsURL(url, series, episode, language, mirror, seriesList, options);
       } else {
         if(nextEpisodeFound(url, series, seriesList, options, response)) {
           series.episode++;
@@ -227,7 +227,7 @@ function findLinkToFavouriteMirror(newPath, options, response) {
   var links;
   for(var m = 0; m < mirrors.length; m++) {
     mirror = mirrors[m][Object.keys(mirrors[m])[0]];
-    links = $(response).find("a[href^='"+newPath+"'][href$='/de/"+mirror+"']");
+    links = $(response).find("a[href^='"+newPath+"'][href$='/"+mirror+"']");
     if(links.length) {
       return links;
     }
@@ -241,7 +241,9 @@ function nextEpisodeFound(url, series, seriesList, options, response) {
   if(typeof links !== "undefined") {
     var link = links[0].href.split("/");
     var mirror = link.pop();
-    buildBsURL(url, series, link.pop(), mirror, seriesList, options);
+    var language = link.pop();
+    var episode = link.pop();
+    buildBsURL(url, series, episode, language, mirror, seriesList, options);
     return true;
   } else {
     return false;
@@ -272,9 +274,9 @@ function getBeginningSelector(url, season, episode) {
   return newPath;
 }
 // opens bs url or the link to the mirror directly
-function buildBsURL(url, series, episode, mirror, seriesList, options) {
+function buildBsURL(url, series, episode, language, mirror, seriesList, options) {
   var path = url.pathname.split("/");
-  var newPath = path[0]+"/"+path[1]+"/"+path[2]+"/"+series.season+"/"+episode+"/de/"+mirror;
+  var newPath = path[0]+"/"+path[1]+"/"+path[2]+"/"+series.season+"/"+episode+"/"+language+"/"+mirror;
   var newURL = url.protocol + "//" + url.host + newPath;
   if(options.directLink && mirror !== "OpenLoad" && mirror !== "OpenLoadHD") {
     $.ajax({
