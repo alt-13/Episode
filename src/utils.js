@@ -15,6 +15,7 @@ var openURLCallCount = 0;
 // @param options - contains replace tab option
 // @param close - close animehaven selection popup (usage: ah.js)
 function openURL(url, incognito, seriesList, options, close) {
+  console.log(url);
   close = typeof close !== "undefined" ? close : false;
   chrome.extension.isAllowedIncognitoAccess(function(isAllowedAccess) {
     var ids = getTabIDs();
@@ -96,7 +97,7 @@ function setPopupTo(popup) {
 function getTabIDs() {
   var ids = localStorage.getItem("episode++TabIDs");
   var tabInfos = [];
-  if(ids != null && ids !== "0") {
+  if(ids != null && ids !== "0" && !ids.includes("||")) {
     var idsarr = ids.split("|");
     for(i = 0; i < idsarr.length; i += 4) {
       var tabInfo = {};
@@ -136,7 +137,8 @@ function createWindow(url, incognito, isAllowedAccess) {
     chrome.windows.onRemoved.addListener(function(windowId){
       if(windowId === srcWindow.id && isAllowedAccess) {
         var tabID = getTabIDs();
-        setTabIDs(0+"|"+tabID.windowID+"|"+tabID.tabID+(incognito?"|i":"|n"));
+        if(tabID !== null && tabID.windowID != null && tabID.tabID != null)
+          setTabIDs(0+"|"+tabID.windowID+"|"+tabID.tabID+(incognito?"|i":"|n"));
       }
     });
   });
@@ -205,7 +207,7 @@ function getStorage(storedSeriesMemChunk) {
 // @return default options
 function getDefaultOptions() {
   var defaultDomains = getDefaultMirrorDomainList();
-  // chang "bs.to" to Default
+  // change "bs.to" to Default
   var defaultOptions = {};
   defaultOptions[storedOptions] = {
     domains:defaultDomains,
@@ -257,7 +259,6 @@ function getDefaultMirrorDomainList() {
   return defaultDomains;
 }
 // Draws icon with selected color
-// http://demo.qunee.com/svg2canvas/
 function setIconColor(color) {
   color = typeof color !== "undefined" ? color : document.getElementById("iconColor").value;
   var canvas = document.createElement("canvas");

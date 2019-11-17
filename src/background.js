@@ -1,7 +1,8 @@
 var alreadyClicked = false;
 var timer;
-var funMap = {"proxer.me":buildProxerURL, "bs.to":findeEpisodeString,
-              "animehaven.to":buildAnimehavenURL, "kinox":buildKinoxURL,
+var funMap = {"proxer.me":buildProxerURL, "bs.to":findEpisodeString,
+              "burningseries.co":findEpisodeString, "aniflix.tv":buildAniflix,
+              "anisenpai.net":buildAnisenpai, "kinox":buildKinoxURL,
               "91.202.61.170":buildKinoxURL, "netflix":buildNetflixURL,
               "youtube":buildYoutubeURL};
 
@@ -118,8 +119,10 @@ function ifListFoundOpenNewestEpisode(seriesList, options) {
     urls = selected.url.split(" | ");
     for(i = 0; i < urls.length; i++) {
       var url = parseURL(urls[i]);
+      // if not bs.to or burningseries.co
       if(url.hostname !== hostNames[1] && url.hostname !== hostNames[2] && parseInt(selected.season) === 0) seriesList.edit(selected.name, selected.url, 1, selected.episode, selected.incognito, selected.contextMenu);
-      if(url.hostname !== hostNames[6] && parseInt(selected.episode) === 0) seriesList.edit(selected.name, selected.url, selected.season, 1, selected.incognito, selected.contextMenu);
+      // if not youtube
+      if(url.hostname !== hostNames[8] && parseInt(selected.episode) === 0) seriesList.edit(selected.name, selected.url, selected.season, 1, selected.incognito, selected.contextMenu);
       selectService(url, selected.save(true), seriesList, options);
     }
     seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)+1, selected.incognito, selected.contextMenu);
@@ -144,6 +147,7 @@ function selectService(url, series, seriesList, options) {
         }
       });
     }
+    console.log(chrome.i18n.getMessage("notYetSupported",url.hostname));
     openURL(series.url, series.incognito, seriesList, options);
   } else {
     chosenFunction(url, series, seriesList, options);
@@ -184,7 +188,7 @@ function buildAnimehavenURL(url, series, seriesList, options) {
   openURL(url.protocol + "//" + url.host + "/" + path.splice(1,1).join("/") + "/" + se.join("-"), series.incognito, seriesList, options);
 }
 // The bs way ------------------------------------------------------------------
-function findeEpisodeString(url, series, seriesList, options) {
+function findEpisodeString(url, series, seriesList, options) {
   var path = url.pathname.split("/");
   if(path[3] != series.season) {
     path.splice(3,path.length-3,series.season);
@@ -212,7 +216,7 @@ function findeEpisodeString(url, series, seriesList, options) {
           series.season++;
           series.episode = 1;
           seriesList.edit(series.name, series.url, series.season, 2, series.incognito, series.contextMenu);
-          findeEpisodeString(url, series, seriesList, options);
+          findEpisodeString(url, series, seriesList, options);
         } else {
           setPopup();
         }
@@ -265,7 +269,7 @@ function getBeginningSelector(url, season, episode) {
   var pathname = url.pathname;
   var path = pathname.split("/");
   if(path.length > 4) {
-    path.splice(4,2,episode+"-");
+    path.splice(4,path.length-4,episode+"-");
   } else {
     if(path[path.length-1] == "") path.splice(path.length-1,1);
     path.splice(3,1,season+"/"+episode+"-");
@@ -284,11 +288,34 @@ function buildBsURL(url, series, episode, language, mirror, seriesList, options)
       dataType : 'html',
       success  : function(data) {
         var response = $('<html />').html(data);
-        var directLink = $(response).find("a[href^='https://bs.to/out/']")[0].href;
-        openURL(directLink, series.incognito, seriesList, options);
+        var directLink = $(response).find("a[href^='https://bs.to/out/']")[0];
+        if(typeof directLink !== "undefined") {
+          directLink = directLink.href;
+          openURL(directLink, series.incognito, seriesList, options);
+        } else {
+          openURL(newURL, series.incognito, seriesList, options);
+        }
       }
     });
   } else {
     openURL(newURL, series.incognito, seriesList, options);
   }
+}
+// The Aniflix way -------------------------------------------------------------
+function buildAniflix(url, series, seriesList, options) {
+  var path = url.pathname.split("/");
+  path[path.length-1] = series.episode;
+  path[path.length-3] = series.season;
+  console.log(url.protocol + "//" + url.host + "/" + path.join("/"));
+  openURL(url.protocol + "//" + url.host + "/" + path.join("/"), series.incognito, seriesList, options);
+}
+// The Anisenpai way -----------------------------------------------------------
+function buildAnisenpai(url, series, seriesList, options) {
+  var path = url.pathname.split("/");
+  var se = path[path.length-2].split("-");
+  var sIndex = se.indexOf("staffel");
+  var eIndex = se.indexOf("folge");
+  if(sIndex !== -1) se[parseInt(sIndex)+1] = series.season;
+  if(eIndex !== -1) se[parseInt(eIndex)+1] = series.episode;
+  openURL(url.protocol + "//" + url.host + "/" + se.join("-"), series.incognito, seriesList, options);
 }
