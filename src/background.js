@@ -4,7 +4,7 @@ var funMap = {"proxer.me":buildProxerURL, "bs.to":findEpisodeString,
               "burningseries.co":findEpisodeString, "aniflix.tv":buildAniflix,
               "anisenpai.net":buildAnisenpai, "kinox":buildKinoxURL,
               "91.202.61.170":buildKinoxURL, "netflix":buildNetflixURL,
-              "youtube":buildYoutubeURL};
+              "youtube":buildYoutubeURL, "willkommen-oesterreich.tv":buildWOEURL, "plexmovies.online":buildPlexmoviesURL };
 
 // Entry: single/double click listener------------------------------------------
 chrome.browserAction.onClicked.addListener(function() {
@@ -166,6 +166,17 @@ function buildYoutubeURL(url, series, seriesList, options) {
   } else {
     openURL(url.protocol + "//" + url.host + url.pathname + url.search + (options.youtubeAutoplay ? "&autoplay=1" : ""), series.incognito, seriesList, options);
   }
+}
+// The Willkommen Oesterreich way ----------------------------------------------
+function buildWOEURL(url, series, seriesList, options) {
+  var search = url.search.split("=");
+  openURL(url.protocol + "//" + url.host + url.pathname + search[0] + "=" + series.episode, series.incognito, seriesList, options);
+}
+// The plexmovies way
+function buildPlexmoviesURL(url, series, seriesList, options) {
+  var path = url.pathname.split("/");
+  path.splice(path.length-1,  1, series.episode);
+  openURL(url.protocol + "//" + url.host + path.join("/"), series.incognito, seriesList, options);
 }
 // The kinox way ---------------------------------------------------------------
 function buildKinoxURL(url, series, seriesList, options) {
