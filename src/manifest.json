@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Episode++",
   "short_name": "Episode++",
   "version": "0.1",
@@ -12,7 +12,7 @@
     "128": "img/icon128.png"
   },
 
-  "browser_action": {
+  "action": {
     "default_icon": {
       "19": "img/icon19.png",
       "38": "img/icon38.png"
@@ -21,18 +21,18 @@
   },
 
   "background": {
-    "scripts": [ "jquery.min.js", "utils.js", "series.js", "context_menus.js", "background.js" ],
-    "persistent": false
+    "service_worker": "background.js"
   },
 
   "homepage_url": "https://github.com/alt-13/Episode",
 
-  "minimum_chrome_version": "40",
+  "minimum_chrome_version": "88",
 
   "options_ui": {
     "page": "options.html",
-    "chrome_style": true
+    "open_in_tab": true
   },
 
-  "permissions": [ "tabs", "storage", "notifications", "contextMenus", "http://*/*", "https://*/*" ]
+  "permissions": [ "tabs", "storage", "notifications", "contextMenus" ],
+  "host_permissions": [ "http://*/*", "https://*/*" ]
 }

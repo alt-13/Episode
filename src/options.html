@@ -1,60 +1,95 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>__MSG_optionsTitle__</title>
     <link rel="stylesheet" href="stylesheet.css">
     <script src="utils.js"></script>
     <script src="mirror.js"></script>
     <script src="options.js"></script>
-  </head>
-  <body id="options">
-    <div class="options">
-      <p>
-        <details id="mirrorDetails"><summary>__MSG_domainMirrorSummary__</summary>
-          <p><div id="domainMirrorOptions">
-            <div id="domainCol">
-              __MSG_domains__
-              <ul id="domains">
-              </ul>
+</head>
+<body id="options">
+<div class="options">
+    <section class="options-section">
+        <details id="mirrorDetails">
+            <summary>__MSG_domainMirrorSummary__</summary>
+            <div id="domainMirrorOptions">
+                <div id="domainCol">
+                    __MSG_domains__
+                    <ul id="domains">
+                    </ul>
+                </div>
+                <div id="mirrorCol">
+                    __MSG_chooseMirrorOrder__
+                    <ul id="mirrors">
+                    </ul>
+                </div>
             </div>
-            <div id="mirrorCol">
-              __MSG_chooseMirrorOrder__
-              <ul id="mirrors">
-              </ul>
-            </div>
-          </div></p>
         </details>
-      </p>
-      <p>
-        <input type="checkbox" id="replaceTab" name="replaceTab" value="replaceTab">
-        <label for="replaceTab">__MSG_replaceTab__</label><br>
-        <input type="checkbox" id="incognito" name="incognito" value="incognito">
-        <label for="incognito">__MSG_incognito__</label><br>
-        <input type="checkbox" id="plainTextURL" name="plainTextURL" value="plainTextURL">
-        <label for="plainTextURL">__MSG_plainTextURL__</label><br>
-        <input type="checkbox" id="showUnknownDomainNotification" name="showUnknownDomainNotification" value="showUnknownDomainNotification">
-        <label for="showUnknownDomainNotification">__MSG_showUnknownDomainNotification__</label><br>
-        <input type="checkbox" id="youtubeAutoplay" name="youtubeAutoplay" value="youtubeAutoplay">
-        <label for="youtubeAutoplay">__MSG_youtubeAutoplay__</label><br>
-        <input type="checkbox" id="directLink" name="directLink" value="directLink">
-        <label for="directLink">__MSG_directLink__</label><br>
-        <input type="checkbox" id="darkTheme" name="darkTheme" value="darkTheme">
-        <label for="darkTheme">__MSG_darkTheme__</label><br>
-        <label for="iconColor">__MSG_iconColor__</label>
-        <input type="color" id="iconColor" name="iconColor" value="#000000">
-      </p><!--<p>__MSG_ownPlugin__
-      <textarea rows="4" cols="50" disabled>
-      </textarea>
-      </p>-->
-      <div class="left"><input type="submit" id="save" title="__MSG_save__" class="btn" value="__MSG_save__"></div>
-      <a id="status"></a>
-      <div class="issueDropDown">
-        <a class="btn left">__MSG_issue__</a>
-        <ul class="dropDownMenu">
-          <li><a class="btn" id="issueReported" href="https://github.com/alt-13/Episode/issues">__MSG_issueReported__</a></li>
-          <li><a class="btn-disabled" id="reportIssue" href="#" disabled>__MSG_reportIssue__</a></li>
-        </ul>
-      </div>
-    </div>
-  </body>
+    </section>
+
+    <section class="options-section">
+        <h2>Settings</h2>
+        <div class="checkbox-group">
+            <div class="checkbox-item">
+                <input type="checkbox" id="replaceTab" name="replaceTab" value="replaceTab">
+                <label for="replaceTab">__MSG_replaceTab__</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="incognito" name="incognito" value="incognito">
+                <label for="incognito">__MSG_incognito__</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="plainTextURL" name="plainTextURL" value="plainTextURL">
+                <label for="plainTextURL">__MSG_plainTextURL__</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="showUnknownDomainNotification" name="showUnknownDomainNotification"
+                       value="showUnknownDomainNotification">
+                <label for="showUnknownDomainNotification">__MSG_showUnknownDomainNotification__</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="youtubeAutoplay" name="youtubeAutoplay" value="youtubeAutoplay">
+                <label for="youtubeAutoplay">__MSG_youtubeAutoplay__</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="directLink" name="directLink" value="directLink">
+                <label for="directLink">__MSG_directLink__</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="darkTheme" name="darkTheme" value="darkTheme">
+                <label for="darkTheme">__MSG_darkTheme__</label>
+            </div>
+        </div>
+
+        <div class="color-picker-item">
+            <label for="iconColor">__MSG_iconColor__</label>
+            <input type="color" id="iconColor" name="iconColor" value="#000000">
+        </div>
+    </section>
+
+    <section class="options-actions">
+        <div class="action-buttons">
+            <input type="submit" id="save" title="__MSG_save__" class="btn btn-primary" value="__MSG_save__">
+            <a id="status" class="status-message"></a>
+        </div>
+
+        <div class="issueDropDown">
+            <a class="btn btn-secondary">__MSG_issue__</a>
+            <ul class="dropDownMenu">
+                <li><a class="btn" id="issueReported" href="https://github.com/alt-13/Episode/issues">__MSG_issueReported__</a>
+                </li>
+                <li><a class="btn-disabled" id="reportIssue" href="#" disabled>__MSG_reportIssue__</a></li>
+            </ul>
+        </div>
+    </section>
+</div>
+</body>
 </html>

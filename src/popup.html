@@ -22,10 +22,18 @@
         </div>
       </form>
       <div id="confirmationDialog" class="overlay">
-        <div class="dialog">
-          <a id="confirmationMessage"></a>
-          <p><a title="__MSG_doNotDelete__" href="#" id="deleteCancel" class="btn">__MSG_cancel__</a>
-          <span class="right"><a title="__MSG_definitelyDelete__" href="#" id="definitelyDelete" class="btn">__MSG_yes__</a></span></p>
+          <div class="dialog modern-dialog">
+              <div class="dialog-header">
+                  <h3>Confirm Delete</h3>
+              </div>
+              <div class="dialog-content">
+                  <a id="confirmationMessage"></a>
+              </div>
+              <div class="dialog-actions">
+                  <a title="__MSG_doNotDelete__" href="#" id="deleteCancel" class="btn btn-secondary">__MSG_cancel__</a>
+                  <a title="__MSG_definitelyDelete__" href="#" id="definitelyDelete"
+                     class="btn btn-danger">__MSG_yes__</a>
+              </div>
         </div>
       </div>
     </div>

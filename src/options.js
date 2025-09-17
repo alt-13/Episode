@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", restoreOptions);
 // Saves options to sync storage
 function saveOptions(domainList) {
-  var options = {};
+    const options = {};
   options[storedOptions] = {
     domains:getDomainList(domainList),
     mirrorDetails:document.getElementById("mirrorDetails").open,
@@ -15,7 +15,7 @@ function saveOptions(domainList) {
     iconColor:document.getElementById("iconColor").value
   };
   chrome.storage.sync.set(options, function() { // show user save status
-    var status = document.getElementById("status");
+      const status = document.getElementById("status");
     status.text = chrome.i18n.getMessage("optionsSaved");
     setTimeout(function(){status.text = "";}, 1500);
   });
@@ -24,11 +24,11 @@ function saveOptions(domainList) {
 function restoreOptions() {
   localizeHtmlPage();
   document.getElementById("issueReported").addEventListener("click", enableIssueReport);
-  var defaultOptions = getDefaultOptions();
+    const defaultOptions = getDefaultOptions();
   chrome.storage.sync.get(defaultOptions, function(items) {
-    var options = items[storedOptions];
+      const options = items[storedOptions];
     // set options in option page
-    var domainList = new DomainList(options.domains, true);
+      const domainList = new DomainList(options.domains, true);
     fillInDomainsAndMirrors(domainList);
     document.getElementById("mirrorDetails").open = options.mirrorDetails;
     document.getElementById("replaceTab").checked = options.replaceTab;
@@ -55,10 +55,10 @@ function enableIssueReport(domainList) {
 //------------------------------------------------------------------------------
 // Domain and Mirror list handling ---------------------------------------------
 function fillInDomainsAndMirrors(domainList) {
-  var domainListElement = document.getElementById("domains");
-  var domains = domainList.save();
-  for(var domain in domains) {
-    var domainEl = createDomainElement(domainList, domain);
+    const domainListElement = document.getElementById("domains");
+    const domains = domainList.save();
+    for (const domain in domains) {
+        const domainEl = createDomainElement(domainList, domain);
     domainListElement.appendChild(domainEl);
   }
   domainListElement.appendChild(createAddElement(domainList));
@@ -66,13 +66,13 @@ function fillInDomainsAndMirrors(domainList) {
 // Adds stored mirrors of selected domain to the option page
 function fillInMirrors(domainList, mirrors) {
   clearMirrorList();
-  var list = document.getElementById("mirrors");
-  var mirror_i = 0
+    const list = document.getElementById("mirrors");
+    let mirror_i = 0
   if(mirrors != null) {
-    for(mirror_i = 0; mirror_i < mirrors.length; mirror_i++) {
-      var mirrorName = Object.keys(mirrors[mirror_i])[0];
-      var mirrorSString = (mirrors[mirror_i])[mirrorName];
-      var mirrorEl = createMirrorElement(domainList, mirrorName, mirrorSString, mirror_i);
+      for (mirror_i; mirror_i < mirrors.length; mirror_i++) {
+          const mirrorName = Object.keys(mirrors[mirror_i])[0];
+          const mirrorSString = (mirrors[mirror_i])[mirrorName];
+          const mirrorEl = createMirrorElement(domainList, mirrorName, mirrorSString, mirror_i);
       list.appendChild(mirrorEl);
     }
   }
@@ -80,11 +80,11 @@ function fillInMirrors(domainList, mirrors) {
 }
 // @return one mirror element with given parameters
 function createMirrorElement(domainList, mirrorName, mirrorSString, dataID) {
-  var mirrorEl = document.createElement("li");
+    const mirrorEl = document.createElement("li");
   mirrorEl.setAttribute("data-id", dataID);
   mirrorEl.setAttribute("id", mirrorName);
   mirrorEl.setAttribute("draggable", true);
-  var icon = document.createElement("a");
+    const icon = document.createElement("a");
   icon.setAttribute("class", "v-centered icon " + mirrorName);
   icon.addEventListener("error", function(){this.class="v-centered icon MyVideo";});
   mirrorEl.appendChild(icon);
@@ -99,7 +99,7 @@ function createMirrorElement(domainList, mirrorName, mirrorSString, dataID) {
 // @return add-domain/mirror element
 function createAddElement(domainList, dataID) {
   dataID = typeof dataID !== "undefined" ? dataID : null;
-  var addEl = document.createElement("li");
+    const addEl = document.createElement("li");
   addEl.style.textAlign = "center";
   addEl.innerHTML = "&#10133;"
   if(dataID === null) { //add domain element
@@ -107,24 +107,24 @@ function createAddElement(domainList, dataID) {
     addEl.addEventListener("click", function(){openAddEditDomainDialog(domainList, "addDomain");});
   } else { //add mirror element
     addEl.setAttribute("data-id", dataID);
-    addEl.setAttribute("id", "addMirror");;
+      addEl.setAttribute("id", "addMirror");
     addEl.addEventListener("click", function(){openAddEditMirrorDialog(domainList, dataID, "addMirror");});
   }
   return addEl;
 }
 // Clears mirror list in option page
 function clearMirrorList () {
-  var mirrors = document.getElementById("mirrors");
+    const mirrors = document.getElementById("mirrors");
   while (mirrors.firstChild) {
     mirrors.removeChild(mirrors.firstChild);
   }
 }
 // @return domain element
 function createDomainElement(domainList, domain) {
-  var domainEl = document.createElement("li");
+    const domainEl = document.createElement("li");
   domainEl.innerHTML = domain;
   domainEl.setAttribute("id", domain);
-  var domains = domainList.save();
+    const domains = domainList.save();
   if(domains[domain].selected) {
     domainEl.setAttribute("class", "activeDomain");
     fillInMirrors(domainList, domains[domain].mirrorList);
@@ -134,22 +134,22 @@ function createDomainElement(domainList, domain) {
 }
 // Add/edit domain ui
 function openAddEditDomainDialog(domainList, domainName) {
-  var add = domainName === "addDomain" ? true : false;
+    const add = domainName === "addDomain";
   if(domainList.getSelected().name === domainName || add) {
-    var domainEl = document.createElement("li");
+      const domainEl = document.createElement("li");
     domainEl.setAttribute("id", domainName);
-    var inputName = createInput(domainList, "domainName-"+domainName , domainName, add, false, false);
+      const inputName = createInput(domainList, "domainName-" + domainName, domainName, add, false, false);
     domainEl.appendChild(inputName);
-    var deleteDomainEl = createDeleteButton(domainList, deleteDomain, domainName, false);
+      const deleteDomainEl = createDeleteButton(domainList, deleteDomain, domainName, false);
     domainEl.appendChild(deleteDomainEl);
-    var submitDomain = createSubmitButton(domainList, addEditDomain, domainName, false);
+      const submitDomain = createSubmitButton(domainList, addEditDomain, domainName, false);
     domainEl.appendChild(submitDomain);
     if(add) { // Add
-      var addDomainEl = document.getElementById("addDomain");
+        const addDomainEl = document.getElementById("addDomain");
       addDomainEl.parentNode.replaceChild(domainEl, addDomainEl);
       selectDomain(domainList); // deselect all
     } else { // Edit
-      var editDomainEl = document.getElementById(domainName);
+        const editDomainEl = document.getElementById(domainName);
       editDomainEl.parentNode.replaceChild(domainEl, editDomainEl);
     }
     document.getElementById("domainName-"+domainName).focus();
@@ -168,7 +168,7 @@ function selectDomain(domainList, domainName) {
 // Creates button for input ui
 function createButton(domainList, text, title, clickFun, name, right) {
   right = typeof right !== "undefined" ? right : true;
-  var button = document.createElement("a");
+    const button = document.createElement("a");
   button.innerHTML = text;
   if(right)
     button.className = "btn right";
@@ -191,7 +191,7 @@ function createInput(domainList, id, name, add, mirror, substitution) {
   add = typeof add !== "undefined" ? add : false;
   mirror = typeof mirror !== "undefined" ? mirror : false;
   substitution = typeof substitution !== "undefined" ? substitution : false;
-  var inputElement = document.createElement("input");
+    const inputElement = document.createElement("input");
   inputElement.type = "text";
   inputElement.id = id; // "mirrorName-"+name / "domainName-"+name
   if(!substitution) {
@@ -226,73 +226,69 @@ function createInput(domainList, id, name, add, mirror, substitution) {
 }
 // Add/edit mirror ui
 function openAddEditMirrorDialog(domainList, dataID, mirrorName, mirrorSString) {
-  var add = typeof mirrorSString !== "undefined" ? false : true;
-  var mirrorEl = document.createElement("li");
+    const add = typeof mirrorSString === "undefined";
+    const mirrorEl = document.createElement("li");
   mirrorEl.setAttribute("data-id", dataID);
   mirrorEl.setAttribute("id", mirrorName);
-  var deleteMirrorEl = createDeleteButton(domainList, deleteMirror, mirrorName);
+    const deleteMirrorEl = createDeleteButton(domainList, deleteMirror, mirrorName);
   mirrorEl.appendChild(deleteMirrorEl);
-  var divEl = document.createElement("div");
+    let divEl = document.createElement("div");
   divEl.style.overflow = "hidden";
-  var inputName = createInput(domainList, "mirrorName-"+mirrorName , mirrorName, add, true, false);
+    const inputName = createInput(domainList, "mirrorName-" + mirrorName, mirrorName, add, true, false);
   divEl.appendChild(inputName);
   mirrorEl.appendChild(divEl);
-  var submitMirror = createSubmitButton(domainList, addEditMirror, mirrorName);
+    const submitMirror = createSubmitButton(domainList, addEditMirror, mirrorName);
   mirrorEl.appendChild(submitMirror);
-  var divEl = document.createElement("div");
+    divEl = document.createElement("div");
   divEl.style.overflow = "hidden";
-  var inputSString = createInput(domainList, "mirrorSString-"+mirrorName, mirrorSString, add, true, true);
+    const inputSString = createInput(domainList, "mirrorSString-" + mirrorName, mirrorSString, add, true, true);
   divEl.appendChild(inputSString);
   mirrorEl.appendChild(divEl);
   if(add) { // Add
-    var addMirrorEl = document.getElementById("addMirror");
+      const addMirrorEl = document.getElementById("addMirror");
     addMirrorEl.parentNode.replaceChild(mirrorEl, addMirrorEl);
   } else { // Edit
-    var editMirrorEl = document.getElementById(mirrorName);
+      const editMirrorEl = document.getElementById(mirrorName);
     editMirrorEl.parentNode.replaceChild(mirrorEl, editMirrorEl);
   }
   document.getElementById("mirrorName-"+mirrorName).focus();
 }
 // Handles domain-submit button click
 function addEditDomain(domainList, oldDomainName) {
-  var domainName = document.getElementById("domainName-"+oldDomainName).value;
-  var oldDomain = document.getElementById(oldDomainName);
+    const domainName = document.getElementById("domainName-" + oldDomainName).value;
+    const oldDomain = document.getElementById(oldDomainName);
   if(oldDomainName === "addDomain") { // add new
     if(domainList.add(domainName, [])) {
-      var domainEl = createDomainElement(domainList, domainName);
+        const domainEl = createDomainElement(domainList, domainName);
       oldDomain.parentNode.replaceChild(domainEl, oldDomain);
       document.getElementById("domains").appendChild(createAddElement(domainList));
     }
-  } else {
-    if(domainList.edit(domainName)) {
-      var domainEl = createDomainElement(domainList, domainName);
+  } else if (domainList.edit(domainName)) {
+      const domainEl = createDomainElement(domainList, domainName);
       oldDomain.parentNode.replaceChild(domainEl, oldDomain);
-    }
   }
 }
 // Handles mirror-submit button click
 function addEditMirror(domainList, oldMirrorName) {
-  var mirrorName = document.getElementById("mirrorName-"+oldMirrorName).value;
-  var mirrorSString = document.getElementById("mirrorSString-"+oldMirrorName).value;
-  var oldMirror = document.getElementById(oldMirrorName);
-  var dataID = oldMirror.getAttribute("data-id");
+    const mirrorName = document.getElementById("mirrorName-" + oldMirrorName).value;
+    const mirrorSString = document.getElementById("mirrorSString-" + oldMirrorName).value;
+    const oldMirror = document.getElementById(oldMirrorName);
+    const dataID = oldMirror.getAttribute("data-id");
   if(oldMirrorName === "addMirror") { // add new
     if(domainList.addMirror(oldMirrorName, mirrorName, mirrorSString)) {
-      var mirrorEl = createMirrorElement(domainList, mirrorName, mirrorSString, dataID);
+        const mirrorEl = createMirrorElement(domainList, mirrorName, mirrorSString, dataID);
       oldMirror.parentNode.replaceChild(mirrorEl, oldMirror);
       document.getElementById("mirrors").appendChild(createAddElement(domainList, parseInt(dataID)+1));
     }
-  } else { // edit
-    if(domainList.editMirror(oldMirrorName, mirrorName, mirrorSString)) {
-      var mirrorEl = createMirrorElement(domainList, mirrorName, mirrorSString, dataID);
+  } else if (domainList.editMirror(oldMirrorName, mirrorName, mirrorSString)) { // edit
+      const mirrorEl = createMirrorElement(domainList, mirrorName, mirrorSString, dataID);
       oldMirror.parentNode.replaceChild(mirrorEl, oldMirror);
-    }
   }
 }
 // Handles domain-delete button click
 function deleteDomain(domainList, domainName) {
-  var domain = document.getElementById(domainName);
-  var selectDomain = domainList.delete(domainName);
+    const domain = document.getElementById(domainName);
+    const selectDomain = domainList.delete(domainName);
   if(domainName === "addDomain") {
     domain.parentNode.replaceChild(createAddElement(domainList), domain);
   } else {
@@ -306,8 +302,8 @@ function deleteDomain(domainList, domainName) {
 }
 // Handles mirror-delete button click
 function deleteMirror(domainList, mirrorName) {
-  var mirror = document.getElementById(mirrorName);
-  var dataID = mirror.getAttribute("data-id");
+    const mirror = document.getElementById(mirrorName);
+    const dataID = mirror.getAttribute("data-id");
   if(mirrorName === "addMirror") {
     mirror.parentNode.replaceChild(createAddElement(domainList, dataID), mirror);
   } else {
@@ -317,11 +313,11 @@ function deleteMirror(domainList, mirrorName) {
 }
 // @return domain list with reordered mirrorlist
 function getDomainList(domainList) {
-  var mirrors = document.getElementById("mirrors").getElementsByTagName("li");
-  var mirrorOrder = [];
-  for(var mirror_i = 0; mirror_i < mirrors.length; mirror_i++) {
-    if(mirrors[mirror_i].id !== "addMirror") {
-      mirrorOrder.push(parseInt(mirrors[mirror_i].getAttribute("data-id")));
+    const mirrors = document.getElementById("mirrors").getElementsByTagName("li");
+    const mirrorOrder = [];
+    for (let mirrorI of mirrors) {
+        if (mirrorI.id !== "addMirror") {
+            mirrorOrder.push(parseInt(mirrorI.getAttribute("data-id")));
     }
   }
   return domainList.save(mirrorOrder);
