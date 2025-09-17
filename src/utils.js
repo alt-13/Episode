@@ -83,15 +83,15 @@ function openURL(url, incognito, seriesList, options, close) {
 }
 // Sets popup to "popup.html"
 function setPopup() {
-  chrome.browserAction.setPopup({popup:"popup.html"});
+  chrome.action.setPopup({popup:"popup.html"});
 }
 // Unsets popup
 function unsetPopup() {
-  chrome.browserAction.setPopup({popup:""});
+  chrome.action.setPopup({popup:""});
 }
 // Sets popup to given string
 function setPopupTo(popup) {
-  chrome.browserAction.setPopup({popup:popup});
+  chrome.action.setPopup({popup:popup});
 }
 // Fretches ID of tab in use
 function getTabIDs() {
@@ -161,25 +161,22 @@ function addTab(windowID, url) {
 }
 // Parses a given URL
 function parseURL(url) {
-  var parser = document.createElement('a'),
-      searchObject = {},
-      queries, split, i;
-  parser.href = url; // Let the browser do the work
-  // Convert query string to object
-  queries = parser.search.replace(/^\?/, '').split('&');
-  for( i = 0; i < queries.length; i++ ) {
-    split = queries[i].split('=');
-    searchObject[split[0]] = split[1];
+  var u = new URL(url);
+  var searchObject = {};
+  if (u.search && u.search.length > 1) {
+    u.search.substring(1).split('&').forEach(function(q){
+      if(!q) return; var p = q.split('='); searchObject[p[0]] = p[1];
+    });
   }
   return {
-    protocol: parser.protocol,
-    host: parser.host,
-    hostname: parser.hostname,
-    port: parser.port,
-    pathname: parser.pathname,
-    search: parser.search,
+    protocol: u.protocol,
+    host: u.host,
+    hostname: u.hostname,
+    port: u.port,
+    pathname: u.pathname,
+    search: u.search,
     searchObject: searchObject,
-    hash: parser.hash
+    hash: u.hash
   };
 }
 // Localize by replacing __MSG_***__ meta tags
@@ -317,7 +314,7 @@ function setIconColor(color) {
   ctx.restore();
   ctx.restore();
 
-  chrome.browserAction.setIcon({
+  chrome.action.setIcon({
     imageData: ctx.getImageData(0, 0, 19, 19)
   });
 }

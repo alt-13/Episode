@@ -96,7 +96,7 @@ function removeFormContentFromStorage() {
 }
 // Helper function to set popup to given string
 function setPopupTo(popup) {
-  chrome.browserAction.setPopup({popup:popup});
+  chrome.action.setPopup({popup:popup});
 }
 // Check if it is a correct animehaven URL
 function isCorrectAhURL() {

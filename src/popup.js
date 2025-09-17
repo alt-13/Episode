@@ -61,5 +61,5 @@ function getSelected() {
 }
 // Helper function to set popup to given string
 function setPopupTo(popup) {
-  chrome.browserAction.setPopup({popup:popup});
+  chrome.action.setPopup({popup:popup});
 }

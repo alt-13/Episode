@@ -4,7 +4,7 @@ function createContextMenu(seriesList) {
   chrome.contextMenus.create({
     id: contextMenuIDBeginning + "Decrement",
     title:"Episode – –",
-    contexts: ["browser_action"]
+    contexts: ["action"]
   });
   if(seriesList !== "undefined") {
     for(var series in seriesList) {
@@ -22,7 +22,7 @@ function addContextMenu(series) {
     id: contextMenuIDBeginning + series.name,
     title:series.name,
     checked:series.selected,
-    contexts: ["browser_action"]
+    contexts: ["action"]
   });
 }
 // Adds onClicked listeners to all available context menus

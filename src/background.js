@@ -1,3 +1,6 @@
+// MV3 service worker: import shared scripts
+try { importScripts('utils.js', 'series.js', 'context_menus.js'); } catch (e) { /* ignore in non-worker contexts */ }
+
 var alreadyClicked = false;
 var timer;
 var funMap = {"proxer.me":buildProxerURL, "bs.to":findEpisodeString,
@@ -7,7 +10,7 @@ var funMap = {"proxer.me":buildProxerURL, "bs.to":findEpisodeString,
               "youtube":buildYoutubeURL, "willkommen-oesterreich.tv":buildWOEURL, "plexmovies.online":buildPlexmoviesURL };
 
 // Entry: single/double click listener------------------------------------------
-chrome.browserAction.onClicked.addListener(function() {
+chrome.action.onClicked.addListener(function() {
   if (alreadyClicked) {
     clearTimeout(timer);
     setPopup(); // ----> Process double click <----
@@ -206,24 +209,20 @@ function findEpisodeString(url, series, seriesList, options) {
     series.url = url.protocol + "//" + url.host + path.join("/");
     url = parseURL(series.url);
   }
-  $.ajax({
-    url      : series.url,
-    dataType : 'html',
-    success  : function(data) {
+  fetch(series.url).then(function(res){return res.text();}).then(function(html){
       var newPath = getBeginningSelector(url, series.season, series.episode);
-      var response = $('<html />').html(data);
-      var links = findLinkToFavouriteMirror(newPath, options, response);
-      if(typeof links !== "undefined") {
-        var link = links[0].href.split("/");
-        var mirror = link.pop();
-        var language = link.pop();
-        var episode = link.pop();
+      var href = findLinkToFavouriteMirrorHref(newPath, options, html);
+      if(href) {
+        var parts = href.split("/");
+        var mirror = parts.pop();
+        var language = parts.pop();
+        var episode = parts.pop();
         buildBsURL(url, series, episode, language, mirror, seriesList, options);
       } else {
-        if(nextEpisodeFound(url, series, seriesList, options, response)) {
+        if(nextEpisodeFound(url, series, seriesList, options, html)) {
           series.episode++;
           seriesList.edit(series.name, series.url, series.season, series.episode, series.incognito, series.contextMenu);
-        } else if(nextSeasonFound(newPath, response)) {
+        } else if(nextSeasonFound(newPath, html)) {
           series.season++;
           series.episode = 1;
           seriesList.edit(series.name, series.url, series.season, 2, series.incognito, series.contextMenu);
@@ -232,32 +231,31 @@ function findEpisodeString(url, series, seriesList, options) {
           setPopup();
         }
       }
-    }
-  });
+    }).catch(function(err){ console.error(err); setPopup(); });
 }
-// @return link with preferential mirror
-function findLinkToFavouriteMirror(newPath, options, response) {
+// @return href string with preferential mirror, or null if not found
+function findLinkToFavouriteMirrorHref(newPath, options, html) {
   var mirrors = options.domains["bs.to"].mirrorList;
-  var mirror;
-  var links;
-  for(var m = 0; m < mirrors.length; m++) {
-    mirror = mirrors[m][Object.keys(mirrors[m])[0]];
-    links = $(response).find("a[href^='"+newPath+"'][href$='/"+mirror+"']");
-    if(links.length) {
-      return links;
+  for (var m = 0; m < mirrors.length; m++) {
+    var mirror = mirrors[m][Object.keys(mirrors[m])[0]];
+    var regex = new RegExp("href=\"([^\"]*" + newPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "[^\"]*/" + mirror.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")\"", "i");
+    var match = html.match(regex);
+    if (match && match[1]) {
+      return match[1];
     }
   }
+  return null;
 }
 // @return true there is another episode in this season, false otherwise
-function nextEpisodeFound(url, series, seriesList, options, response) {
+function nextEpisodeFound(url, series, seriesList, options, html) {
   series.episode++;
   var newPath = getBeginningSelector(url, series.season, series.episode);
-  var links = findLinkToFavouriteMirror(newPath, options, response);
-  if(typeof links !== "undefined") {
-    var link = links[0].href.split("/");
-    var mirror = link.pop();
-    var language = link.pop();
-    var episode = link.pop();
+  var href = findLinkToFavouriteMirrorHref(newPath, options, html);
+  if (href) {
+    var parts = href.split("/");
+    var mirror = parts.pop();
+    var language = parts.pop();
+    var episode = parts.pop();
     buildBsURL(url, series, episode, language, mirror, seriesList, options);
     return true;
   } else {
@@ -265,15 +263,12 @@ function nextEpisodeFound(url, series, seriesList, options, response) {
   }
 }
 // @return true there is another season, false otherwise
-function nextSeasonFound(newPath, response) {
+function nextSeasonFound(newPath, html) {
   var path = newPath.split("/");
   path.splice(2,2,(parseInt(path[2])+1).toString());
   newPath = path.join("/");
-  var found = $(response).find("a[href='"+newPath+"']");
-  if(found.length)
-    return true;
-  else
-    return false;
+  var needle = "href=\"" + newPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "\"";
+  return new RegExp(needle, "i").test(html);
 }
 // @return string for finding the correct href
 function getBeginningSelector(url, season, episode) {
@@ -294,20 +289,14 @@ function buildBsURL(url, series, episode, language, mirror, seriesList, options)
   var newPath = path[0]+"/"+path[1]+"/"+path[2]+"/"+series.season+"/"+episode+"/"+language+"/"+mirror;
   var newURL = url.protocol + "//" + url.host + newPath;
   if(options.directLink && mirror !== "OpenLoad" && mirror !== "OpenLoadHD") {
-    $.ajax({
-      url      : newURL,
-      dataType : 'html',
-      success  : function(data) {
-        var response = $('<html />').html(data);
-        var directLink = $(response).find("a[href^='https://bs.to/out/']")[0];
-        if(typeof directLink !== "undefined") {
-          directLink = directLink.href;
-          openURL(directLink, series.incognito, seriesList, options);
-        } else {
-          openURL(newURL, series.incognito, seriesList, options);
-        }
+    fetch(newURL).then(function(res){return res.text();}).then(function(html){
+      var match = html.match(/href=\"(https:\/\/bs\.to\/out\/[^\"]+)\"/i);
+      if (match && match[1]) {
+        openURL(match[1], series.incognito, seriesList, options);
+      } else {
+        openURL(newURL, series.incognito, seriesList, options);
       }
-    });
+    }).catch(function(){ openURL(newURL, series.incognito, seriesList, options); });
   } else {
     openURL(newURL, series.incognito, seriesList, options);
   }

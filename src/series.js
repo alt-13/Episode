@@ -123,19 +123,19 @@ function SeriesList(seriesList, plainTextURL) {
       this.save();
     }
     if(save || this[sname].selected) {
-      chrome.browserAction.setTitle({title:sname+" - S"+this[sname].season+"E"+this[sname].episode});
+      chrome.action.setTitle({title:sname+" - S"+this[sname].season+"E"+this[sname].episode});
     }
   };
   // deletes series: refreshes popup.html/redirects to edit.html if list empty
   this.delete = function(name, ifListEmpty, reload) {
     if(typeof this[name] !== "function") {
       delete this[name];
-      chrome.browserAction.setTitle({title:"\""+name+"\" has been deleted."});
+      chrome.action.setTitle({title:"\""+name+"\" has been deleted."});
     }
     if(length(this) === 0) {
       ifListEmpty();
       chrome.storage.sync.remove(storedSeries);
-      chrome.browserAction.setTitle({title:"Episode++\n\nDoubleclick to aktivate popup!"});
+      chrome.action.setTitle({title:"Episode++\n\nDoubleclick to aktivate popup!"});
     } else {
       reload();
       this.save();
@@ -148,7 +148,7 @@ function SeriesList(seriesList, plainTextURL) {
         this[series].selected = false;
     }
     if(name != null && name in this) {
-      chrome.browserAction.setTitle({title:name+" - S"+this[name].season+"E"+this[name].episode});
+      chrome.action.setTitle({title:name+" - S"+this[name].season+"E"+this[name].episode});
       this[name].selected = true;
     }
     this.save();
@@ -177,7 +177,7 @@ function SeriesList(seriesList, plainTextURL) {
     } else {
       this[name].edit(name, url, season, episode, incognito, contextMenu);
       this.save();
-      chrome.browserAction.setTitle({title:name+" - S"+season+"E"+episode});
+      chrome.action.setTitle({title:name+" - S"+season+"E"+episode});
       return true;
     }
   };
