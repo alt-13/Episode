@@ -36,8 +36,8 @@ async function openURL(url, incognito, seriesList, options, close) {
       else if(isAllowedAccess && ids[0].incognito && !incognito) {
         chrome.windows.getCurrent(function(window) {
           if(window.incognito && !incognito && ids[0].srcWindowID == 0) {
-              let myNotificationID = null;
-            chrome.notifications.create("Episode++Notification", {
+            chrome.storage.local.set({"episode++PendingIncognito": {url: url, tabID: ids[0].tabID}});
+            chrome.notifications.create("Episode++IncognitoConflict", {
               type:"basic",
               iconUrl:"img/icon128.png",
               title:"Episode++",
@@ -46,20 +46,7 @@ async function openURL(url, incognito, seriesList, options, close) {
                 {title:chrome.i18n.getMessage("openInNormalWindow")},
                 {title:chrome.i18n.getMessage("openInIncognitoWindow")}
               ]
-            }, function(id) { myNotificationID = id; });
-            chrome.notifications.onButtonClicked.addListener(function(notifId, btnIdx) {
-              if(notifId === myNotificationID) {
-                if(btnIdx === 0) // normal window
-                  createWindow(url, incognito, isAllowedAccess);
-                else if(btnIdx === 1) // incognito window
-                  updateTab(ids[0].tabID, url);
-                chrome.notifications.clear(myNotificationID);
-              }
-            });
-            chrome.notifications.onClosed.addListener(function(){
-                let selected = seriesList.getSelected();
-              seriesList.edit(selected.name, selected.url, selected.season, Number.parseInt(selected.episode)-1, selected.incognito, selected.contextMenu);
-            });
+            }, () => {});
           } else if(window.incognito && !incognito && ids[0].srcWindowID != 0) {
             chrome.windows.update(Number.parseInt(ids[0].srcWindowID), {focused:true});
             createTab(url, ids[0].srcWindowID);
@@ -144,13 +131,7 @@ async function createWindow(url, incognito, isAllowedAccess) {
           await setTabIDs(srcWindow.id + "|" + window.id + "|" + window.tabs[0].id + (incognito ? "|i" : "|n"));
       }
     });
-        chrome.windows.onRemoved.addListener(async function (windowId) {
-      if(windowId === srcWindow.id && isAllowedAccess) {
-          let tabID = await getTabIDs();
-          if (tabID?.windowID != null && tabID?.tabID != null)
-              await setTabIDs(0 + "|" + tabID.windowID + "|" + tabID.tabID + (incognito ? "|i" : "|n"));
-      }
-    });
+
   });
 }
 
@@ -159,6 +140,7 @@ function updateTab(tabID, url) {
   chrome.tabs.update(Number.parseInt(tabID),{url:url}, function(){
     if(chrome.runtime.lastError) {
       console.warn(chrome.runtime.lastError.message);
+      setTabIDs(0); // stale ID — reset tracking so createTab stores a clean entry
       createTab(url);
     }
   });

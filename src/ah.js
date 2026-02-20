@@ -14,13 +14,13 @@ function ifListFoundSetupAhPopup(seriesList, options) {
     if(Number.parseInt(selected.episode) === 0) seriesList.edit(selected.name, selected.url, selected.season, 1, selected.incognito, selected.contextMenu);
     let sUrl = parseURL(selected.url);
     let path = sUrl.pathname.split("/");
-    $.ajax({
-      url: selected.url,
-      dataType: 'html',
-      success: function(data) {
-        let response = $('<html />').html(data);
+    fetch(selected.url)
+      .then(response => response.text())
+      .then(function(data) {
+        const doc = new DOMParser().parseFromString(data, 'text/html');
+        const findLinks = text => Array.from(doc.querySelectorAll('a')).filter(a => a.textContent.includes(text));
         if(path.length > 2) {
-          let links = $(response).find("a:contains('Episode ')");
+          let links = findLinks('Episode ');
           if(links.length !== 0) {
             let url = parseURL(links.length > 1 ? links[1] : links[0]);
             let newPath = url.pathname.split("/");
@@ -30,9 +30,9 @@ function ifListFoundSetupAhPopup(seriesList, options) {
             seriesList.edit(selected.name, links[1], selected.season, selected.episode, selected.incognito, selected.contextMenu);
           }
         } else {
-          let subbed = $(response).find("a:contains('English Sub')");
-          let dubbed = $(response).find("a:contains('English Dub')");
-          let all = $(response).find("a:contains('All Episodes')");
+          let subbed = findLinks('English Sub');
+          let dubbed = findLinks('English Dub');
+          let all = findLinks('All Episodes');
           if(subbed.length !== 0 && dubbed.length === 0) {
             setNewAhURL(seriesList, options, "subbed");
           } else if(subbed.length === 0 && dubbed.length !== 0) {
@@ -44,8 +44,8 @@ function ifListFoundSetupAhPopup(seriesList, options) {
             setNewAhURL(seriesList, options, "western-cartoons");
           }
         }
-      }
-    });
+      })
+      .catch(err => console.error(err));
   }
 }
 // Modifies the URL to chosen version (dubbed/subbed)

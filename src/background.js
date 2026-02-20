@@ -57,9 +57,17 @@ chrome.tabs.onRemoved.addListener(async function (tabId, removeInfo) {
 
 chrome.windows.onRemoved.addListener(async function (windowId) {
     const ids = await getTabIDs();
-  if(ids !== null && ids[0].windowID == windowId) {
-      await setTabIDs(0);
-  }
+    if (ids === null) return;
+    if (ids[0].windowID == windowId) {
+        await setTabIDs(0);
+    } else if (ids[0].srcWindowID == windowId) {
+        // Source (normal) window closed while incognito window is still open — clear srcWindowID
+        let ids_str = "";
+        for (let i = 0; i < ids.length; i++) {
+            ids_str += (i > 0 ? "|" : "") + "0|" + ids[i].windowID + "|" + ids[i].tabID + (ids[i].incognito ? "|i" : "|n");
+        }
+        await setTabIDs(ids_str, true);
+    }
 });
 
 // Check tab detached from window ----------------------------------------------
@@ -112,6 +120,33 @@ function onInstall(seriesList, options) {
 }
 restore(setPopup, ifListFoundAddContextMenuOnClickedListeners);
 addStorageOnChangedListenerForContexMenu();
+chrome.notifications.onButtonClicked.addListener(async function(notifId, btnIdx) {
+  if(notifId === "Episode++Notification") {
+    chrome.runtime.openOptionsPage();
+  } else if(notifId === "Episode++IncognitoConflict") {
+    const result = await chrome.storage.local.get("episode++PendingIncognito");
+    const pending = result["episode++PendingIncognito"];
+    if(!pending) return;
+    await chrome.storage.local.remove("episode++PendingIncognito");
+    if(btnIdx === 0) {
+      chrome.extension.isAllowedIncognitoAccess(function(isAllowedAccess) {
+        createWindow(pending.url, false, isAllowedAccess);
+      });
+    } else if(btnIdx === 1) {
+      updateTab(pending.tabID, pending.url);
+    }
+    chrome.notifications.clear(notifId);
+  }
+});
+chrome.notifications.onClosed.addListener(async function(notifId) {
+  if(notifId === "Episode++IncognitoConflict") {
+    await chrome.storage.local.remove("episode++PendingIncognito");
+    restore(function(){}, function(seriesList) {
+      const selected = seriesList.getSelected();
+      if(selected) seriesList.edit(selected.name, selected.url, selected.season, Number.parseInt(selected.episode)-1, selected.incognito, selected.contextMenu);
+    });
+  }
+});
 
 // Process double click: setPopup (see utils) ----------------------------------
 
@@ -141,19 +176,13 @@ function selectService(url, series, seriesList, options) {
     const chosenFunction = funMap[url.hostname] ?? (funMap[url.hostname.split(".")[0]] ?? funMap[url.hostname.split(".")[1]]);
   if(!chosenFunction) {
     if(options.showUnknownDomainNotification) {
-        let myNotificationID = null;
       chrome.notifications.create("Episode++Notification", {
         type:"basic",
         iconUrl:"img/icon128.png",
         title:"Episode++",
         message:chrome.i18n.getMessage("notYetSupported",url.hostname),
         buttons:[{title:chrome.i18n.getMessage("disableNotification")}]
-      }, function(id) { myNotificationID = id; });
-      chrome.notifications.onButtonClicked.addListener(function(notifId, btnIdx) {
-        if(notifId === myNotificationID) {
-          chrome.runtime.openOptionsPage();
-        }
-      });
+      }, () => {});
     }
     console.log(chrome.i18n.getMessage("notYetSupported",url.hostname));
     openURL(series.url, series.incognito, seriesList, options);
@@ -209,7 +238,7 @@ function buildAnimehavenURL(url, series, seriesList, options) {
 // The bs way ------------------------------------------------------------------
 function findEpisodeString(url, series, seriesList, options) {
     const path = url.pathname.split("/");
-  if(path[3] != series.season) {
+  if(path.length > 4 || path[3] != series.season) {
     path.splice(3,path.length-3,series.season);
     series.url = url.protocol + "//" + url.host + path.join("/");
     url = parseURL(series.url);
