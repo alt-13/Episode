@@ -81,7 +81,7 @@ function fillInMirrors(domainList, mirrors) {
 // @return one mirror element with given parameters
 function createMirrorElement(domainList, mirrorName, mirrorSString, dataID) {
     const mirrorEl = document.createElement("li");
-  mirrorEl.setAttribute("data-id", dataID);
+  mirrorEl.dataset.id = dataID;
   mirrorEl.setAttribute("id", mirrorName);
   mirrorEl.setAttribute("draggable", true);
     const icon = document.createElement("a");
@@ -98,7 +98,7 @@ function createMirrorElement(domainList, mirrorName, mirrorSString, dataID) {
 }
 // @return add-domain/mirror element
 function createAddElement(domainList, dataID) {
-  dataID = typeof dataID !== "undefined" ? dataID : null;
+  dataID = dataID === undefined ? null : dataID;
     const addEl = document.createElement("li");
   addEl.style.textAlign = "center";
   addEl.innerHTML = "&#10133;"
@@ -106,7 +106,7 @@ function createAddElement(domainList, dataID) {
     addEl.setAttribute("id", "addDomain");
     addEl.addEventListener("click", function(){openAddEditDomainDialog(domainList, "addDomain");});
   } else { //add mirror element
-    addEl.setAttribute("data-id", dataID);
+    addEl.dataset.id = dataID;
       addEl.setAttribute("id", "addMirror");
     addEl.addEventListener("click", function(){openAddEditMirrorDialog(domainList, dataID, "addMirror");});
   }
@@ -116,7 +116,7 @@ function createAddElement(domainList, dataID) {
 function clearMirrorList () {
     const mirrors = document.getElementById("mirrors");
   while (mirrors.firstChild) {
-    mirrors.removeChild(mirrors.firstChild);
+    mirrors.firstChild.remove();
   }
 }
 // @return domain element
@@ -167,7 +167,7 @@ function selectDomain(domainList, domainName) {
 }
 // Creates button for input ui
 function createButton(domainList, text, title, clickFun, name, right) {
-  right = typeof right !== "undefined" ? right : true;
+  right = right === undefined ? true : right;
     const button = document.createElement("a");
   button.innerHTML = text;
   if(right)
@@ -188,9 +188,9 @@ function createSubmitButton(domainList, submitFun, name, right) {
 }
 // Replaces mirror/addMirror element with input ui
 function createInput(domainList, id, name, add, mirror, substitution) {
-  add = typeof add !== "undefined" ? add : false;
-  mirror = typeof mirror !== "undefined" ? mirror : false;
-  substitution = typeof substitution !== "undefined" ? substitution : false;
+  add = add === undefined ? false : add;
+  mirror = mirror === undefined ? false : mirror;
+  substitution = substitution === undefined ? false : substitution;
     const inputElement = document.createElement("input");
   inputElement.type = "text";
   inputElement.id = id; // "mirrorName-"+name / "domainName-"+name
@@ -215,10 +215,11 @@ function createInput(domainList, id, name, add, mirror, substitution) {
     }
   }
   if(add) {
-    if(!substitution)
-      inputElement.placeholder = chrome.i18n.getMessage("name");
-    else
+    if(substitution) {
       inputElement.placeholder = chrome.i18n.getMessage("substitutionString");
+    } else {
+      inputElement.placeholder = chrome.i18n.getMessage("name");
+    }
   } else {
     inputElement.value = name;
   }
@@ -226,9 +227,9 @@ function createInput(domainList, id, name, add, mirror, substitution) {
 }
 // Add/edit mirror ui
 function openAddEditMirrorDialog(domainList, dataID, mirrorName, mirrorSString) {
-    const add = typeof mirrorSString === "undefined";
+    const add = mirrorSString === undefined;
     const mirrorEl = document.createElement("li");
-  mirrorEl.setAttribute("data-id", dataID);
+  mirrorEl.dataset.id = dataID;
   mirrorEl.setAttribute("id", mirrorName);
     const deleteMirrorEl = createDeleteButton(domainList, deleteMirror, mirrorName);
   mirrorEl.appendChild(deleteMirrorEl);
@@ -273,12 +274,12 @@ function addEditMirror(domainList, oldMirrorName) {
     const mirrorName = document.getElementById("mirrorName-" + oldMirrorName).value;
     const mirrorSString = document.getElementById("mirrorSString-" + oldMirrorName).value;
     const oldMirror = document.getElementById(oldMirrorName);
-    const dataID = oldMirror.getAttribute("data-id");
+    const dataID = oldMirror.dataset.id;
   if(oldMirrorName === "addMirror") { // add new
     if(domainList.addMirror(oldMirrorName, mirrorName, mirrorSString)) {
         const mirrorEl = createMirrorElement(domainList, mirrorName, mirrorSString, dataID);
       oldMirror.parentNode.replaceChild(mirrorEl, oldMirror);
-      document.getElementById("mirrors").appendChild(createAddElement(domainList, parseInt(dataID)+1));
+      document.getElementById("mirrors").appendChild(createAddElement(domainList, Number.parseInt(dataID)+1));
     }
   } else if (domainList.editMirror(oldMirrorName, mirrorName, mirrorSString)) { // edit
       const mirrorEl = createMirrorElement(domainList, mirrorName, mirrorSString, dataID);
@@ -292,7 +293,7 @@ function deleteDomain(domainList, domainName) {
   if(domainName === "addDomain") {
     domain.parentNode.replaceChild(createAddElement(domainList), domain);
   } else {
-    domain.parentNode.removeChild(domain);
+    domain.remove();
   }
   clearMirrorList();
   if(selectDomain != null) { // select other domain
@@ -303,11 +304,11 @@ function deleteDomain(domainList, domainName) {
 // Handles mirror-delete button click
 function deleteMirror(domainList, mirrorName) {
     const mirror = document.getElementById(mirrorName);
-    const dataID = mirror.getAttribute("data-id");
+    const dataID = mirror.dataset.id;
   if(mirrorName === "addMirror") {
     mirror.parentNode.replaceChild(createAddElement(domainList, dataID), mirror);
   } else {
-    mirror.parentNode.removeChild(mirror);
+    mirror.remove();
   }
   getDomainList(domainList);
 }
@@ -317,7 +318,7 @@ function getDomainList(domainList) {
     const mirrorOrder = [];
     for (let mirrorI of mirrors) {
         if (mirrorI.id !== "addMirror") {
-            mirrorOrder.push(parseInt(mirrorI.getAttribute("data-id")));
+            mirrorOrder.push(Number.parseInt(mirrorI.dataset.id));
     }
   }
   return domainList.save(mirrorOrder);

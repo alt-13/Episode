@@ -1,4 +1,4 @@
-var contextMenuIDBeginning = "episode++ContextMenu";
+let contextMenuIDBeginning = "episode++ContextMenu";
 // Entry: called from restore in background (onInstalled)
 function createContextMenu(seriesList) {
   chrome.contextMenus.create({
@@ -6,9 +6,9 @@ function createContextMenu(seriesList) {
     title:"Episode – –",
     contexts: ["action"]
   });
-  if(seriesList !== "undefined") {
-    for(var series in seriesList) {
-      var s = seriesList[series];
+  if(seriesList !== undefined) {
+    for(let series in seriesList) {
+      let s = seriesList[series];
       if(typeof s !== "function" && s.contextMenu) {
         addContextMenu(s);
       }
@@ -32,8 +32,8 @@ function ifListFoundAddContextMenuOnClickedListeners(seriesList) {
       restore(setPopup, ifListFoundDecrement);
     }
   });
-  for(var series in seriesList) {
-    var s = seriesList[series];
+  for(let series in seriesList) {
+    let s = seriesList[series];
     if(typeof s !== "function" && s.contextMenu) {
       addContextMenuOnClickedListener(s);
     }
@@ -49,11 +49,11 @@ function addContextMenuOnClickedListener(series) {
 }
 // Episode — —: decrementing the selected series' episode (created first)
 function ifListFoundDecrement(seriesList) {
-  var selected = seriesList.getSelected();
+  let selected = seriesList.getSelected();
   if(selected === null) {
     setPopup();
   } else if(selected.episode > 0) {
-    seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)-1, selected.incognito, selected.contextMenu);
+    seriesList.edit(selected.name, selected.url, selected.season, Number.parseInt(selected.episode)-1, selected.incognito, selected.contextMenu);
   }
 }
 // Series is selected in context menu -> changes selected property in storage

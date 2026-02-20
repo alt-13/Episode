@@ -13,16 +13,29 @@ function ifListFoundSetupPopup(seriesList, options) {
   if(options.darkTheme) {
     document.getElementById("popup").className = "dark";
   }
-  var select = document.getElementById("select_series");
+  let select = document.getElementById("select_series");
   seriesList.fillInSelectOptions(select);
+  updateActionButtons();
+  select.addEventListener("change", updateActionButtons);
   document.getElementById("editSeries").addEventListener("click", function() {selectSeries(seriesList,false);});
   document.getElementById("deleteSeries").addEventListener("click", insertSeriesName);
+  document.getElementById("deleteCancel").addEventListener("click", function(e) {
+    e.preventDefault();
+    document.getElementById("confirmationDialog").style.display = "none";
+    document.getElementById("selection").style.display = "";
+  });
   document.getElementById("definitelyDelete").addEventListener("click", function(){deleteSeries(seriesList);});
   document.getElementById("selectSeries").addEventListener("click", function(){selectSeries(seriesList,true);});
 }
+// Disables edit/delete buttons when "add new series" is selected
+function updateActionButtons() {
+  let isAddNew = getSelected() == chrome.i18n.getMessage("addNewSeries");
+  document.getElementById("editSeries").classList.toggle("disabled", isAddNew);
+  document.getElementById("deleteSeries").classList.toggle("disabled", isAddNew);
+}
 // Select series/deselect all series and navigate to edit.html if required
 function selectSeries(seriesList, select) {
-  var selected = getSelected();
+  let selected = getSelected();
   if(selected == chrome.i18n.getMessage("addNewSeries")) {
     seriesList.select();
     if(select)
@@ -39,13 +52,11 @@ function selectSeries(seriesList, select) {
 }
 // Inserts series' name which will be deleted
 function insertSeriesName() {
-  var selected = getSelected();
-  if(selected == chrome.i18n.getMessage("addNewSeries")) {
-    document.getElementById("confirmationDialog").className = "hidden";
-  } else {
-    document.getElementById("confirmationDialog").className = "overlay";
-    document.getElementById("confirmationMessage").text = chrome.i18n.getMessage("confirmationMessage",selected);
-  }
+  let selected = getSelected();
+  if(selected == chrome.i18n.getMessage("addNewSeries")) return;
+  document.getElementById("selection").style.display = "none";
+  document.getElementById("confirmationDialog").style.display = "block";
+  document.getElementById("confirmationMessage").textContent = chrome.i18n.getMessage("confirmationMessage",selected);
 }
 // Deletes series and redirects to edit.html if series list is empty after del
 function deleteSeries(seriesList) {
@@ -55,8 +66,8 @@ function deleteSeries(seriesList) {
 }
 // @return selected series (in dropdown)
 function getSelected() {
-  var select = document.getElementById("select_series");
-  var selected = select.options[select.selectedIndex].text;
+  let select = document.getElementById("select_series");
+  let selected = select.options[select.selectedIndex].text;
   return selected;
 }
 // Helper function to set popup to given string

@@ -10,8 +10,8 @@ const hostNames = ["proxer.me", "bs.to", "animehaven.to", "kinox", "91.202.61.17
 let openURLCallCount = 0;
 // Creates incognito window/tab of given url
 async function openURL(url, incognito, seriesList, options, close) {
-  console.log(url);
-  close = typeof close !== "undefined" ? close : false;
+  // console.log(url);
+  close = close === undefined ? false : close;
     chrome.extension.isAllowedIncognitoAccess(async function (isAllowedAccess) {
         let ids = await getTabIDs();
     if(!options.replaceTab || ids === null) { // create
@@ -58,10 +58,10 @@ async function openURL(url, incognito, seriesList, options, close) {
             });
             chrome.notifications.onClosed.addListener(function(){
                 let selected = seriesList.getSelected();
-              seriesList.edit(selected.name, selected.url, selected.season, parseInt(selected.episode)-1, selected.incognito, selected.contextMenu);
+              seriesList.edit(selected.name, selected.url, selected.season, Number.parseInt(selected.episode)-1, selected.incognito, selected.contextMenu);
             });
           } else if(window.incognito && !incognito && ids[0].srcWindowID != 0) {
-            chrome.windows.update(parseInt(ids[0].srcWindowID), {focused:true});
+            chrome.windows.update(Number.parseInt(ids[0].srcWindowID), {focused:true});
             createTab(url, ids[0].srcWindowID);
           } else {
             createTab(url);
@@ -116,7 +116,7 @@ async function getTabIDs() {
 // Sets ID of tab in use
 async function setTabIDs(tabIDs, replace) {
     try {
-        replace = typeof replace !== "undefined" ? replace : false;
+        replace = replace === undefined ? false : replace;
         const result = await chrome.storage.local.get(["episode++TabIDs"]);
         const ids = result["episode++TabIDs"];
         if (ids != null && ids !== "0" && tabIDs !== 0 && !replace) {
@@ -130,7 +130,7 @@ async function setTabIDs(tabIDs, replace) {
 
 // Creates new tab
 async function createTab(url, srcWindowID) {
-  srcWindowID = typeof srcWindowID !== "undefined" ? parseInt(srcWindowID) : null;
+  srcWindowID = srcWindowID === undefined ? null : Number.parseInt(srcWindowID);
     chrome.tabs.create(srcWindowID === null ? {url: url} : {windowId: srcWindowID, url: url}, async function (tab) {
         await setTabIDs((srcWindowID === null ? tab.windowId : srcWindowID) + "|" + tab.windowId + "|" + tab.id + "|n");
   });
@@ -156,7 +156,7 @@ async function createWindow(url, incognito, isAllowedAccess) {
 
 // Updates tab
 function updateTab(tabID, url) {
-  chrome.tabs.update(parseInt(tabID),{url:url}, function(){
+  chrome.tabs.update(Number.parseInt(tabID),{url:url}, function(){
     if(chrome.runtime.lastError) {
       console.warn(chrome.runtime.lastError.message);
       createTab(url);
@@ -166,7 +166,7 @@ function updateTab(tabID, url) {
 
 // Add tab (for urls concatenated with " | ")
 async function addTab(windowID, url) {
-  windowID = typeof windowID !== "undefined" ? parseInt(windowID) : null;
+  windowID = windowID === undefined ? null : Number.parseInt(windowID);
     chrome.tabs.create(windowID === null ? {url: url} : {
         windowId: windowID,
         url: url,
@@ -206,7 +206,7 @@ function localizeHtmlPage()
     const objects = document.getElementsByTagName('html');
     for (const obj of objects) {
         const valStrH = obj.innerHTML.toString();
-        const valNewH = valStrH.replace(/__MSG_(\w+)__/g, function (match, v1) {
+        const valNewH = valStrH.replaceAll(/__MSG_(\w+)__/g, function (match, v1) {
       return v1 ? chrome.i18n.getMessage(v1) : "";
     });
     if(valNewH != valStrH) {
@@ -276,7 +276,7 @@ function getDefaultMirrorDomainList() {
 }
 // Draws icon with selected color
 function setIconColor(color) {
-    if (typeof color === "undefined") {
+    if (color === undefined) {
         console.warn("setIconColor called without color parameter");
         return;
     }
@@ -347,13 +347,13 @@ let source;
 function isBefore(a, b) {
   if (a.parentNode == b.parentNode) {
       for (let cur = a; cur; cur = cur.previousSibling) {
-      if (cur === b) { 
+      if (cur === b) {
         return true;
       }
     }
   }
   return false;
-} 
+}
 function dragEnter(e) {
   if (isBefore(source, e.target)) {
     e.target.parentNode.insertBefore(source, e.target);

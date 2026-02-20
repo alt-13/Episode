@@ -14,16 +14,17 @@ function ifListNotFoundSetupPlainEditPopup(options) {
 }
 // User wants to edit series list entry: Save -> edit series
 function ifListFoundSetupEditPopup(seriesList, options) {
-  var selected = seriesList.getSelected();
+  let selected = seriesList.getSelected();
   fillInFormContent(selected, options);
   if(options.darkTheme) {
     document.getElementById("edit").className = "dark";
   }
   document.getElementById("epp_title").addEventListener("input", function(event) {
-    if(!seriesList.checkNameOK(event.target.value))
-      document.getElementById("epp_title").style.borderColor = "red";
-    else
+    if(seriesList.checkNameOK(event.target.value)) {
       document.getElementById("epp_title").style.borderColor = "inherit";
+    } else {
+      document.getElementById("epp_title").style.borderColor = "red";
+    }
   }, true);
   // editSeries with parameters edits series
   document.getElementById("save").addEventListener("click", function(){editSeries(seriesList);});
@@ -31,7 +32,7 @@ function ifListFoundSetupEditPopup(seriesList, options) {
 }
 // Edits/adds series list entry
 function editSeries(seriesList) {
-  var ok = true;
+  let ok = true;
   if(seriesList === null) { // add series
     seriesList = new SeriesList();
     seriesList.add(document.getElementById("epp_title").value,
@@ -61,7 +62,7 @@ function editSeries(seriesList) {
 }
 // Stores the form content so that you can continue to edit after reload
 function saveFormContent() {
-  var formContent = {
+  let formContent = {
     name: document.getElementById("epp_title").value,
     url: document.getElementById("epp_url").value,
     season: document.getElementById("epp_season").value,
@@ -74,19 +75,19 @@ function saveFormContent() {
 }
 // Restores form content
 function fillInFormContent(series, options) {
-  var content = localStorage.getItem("episode++FormContent");
+  let content = localStorage.getItem("episode++FormContent");
   if(content != null)
     series = JSON.parse(content);
-  if(series !== null) {
+  if(series === null) {
+    document.getElementById("epp_incognito").checked = options.incognito;
+    document.getElementById("epp_contextMenu").checked = true;
+  } else {
     document.getElementById("epp_title").value = series.name;
     document.getElementById("epp_url").value = series.url;
     document.getElementById("epp_season").value = series.season;
     document.getElementById("epp_episode").value = series.episode;
     document.getElementById("epp_incognito").checked = series.incognito;
     document.getElementById("epp_contextMenu").checked = series.contextMenu;
-  } else {
-    document.getElementById("epp_incognito").checked = options.incognito;
-    document.getElementById("epp_contextMenu").checked = true;
   }
 }
 // Remove form content from storage
@@ -100,13 +101,11 @@ function setPopupTo(popup) {
 }
 // Check if it is a correct animehaven URL
 function isCorrectAhURL() {
-  var parser = document.createElement('a');
+  let parser = document.createElement('a');
   parser.href = document.getElementById("epp_url").value;;
   if(parser.hostname === hostNames[2]) {
-    var path = parser.pathname.split("/");
-    if(path.length < 3) {
-      return false;
-    } else if(path[1] === "episodes" || (path[1] !== "subbed" && path[1] !== "dubbed" && path[1] !== "western-cartoons")) {
+    let path = parser.pathname.split("/");
+    if (path.length < 3 || path[1] === "episodes" || (path[1] !== "subbed" && path[1] !== "dubbed" && path[1] !== "western-cartoons")) {
       return false;
     }
   } else return true; // no ah url -> don't care

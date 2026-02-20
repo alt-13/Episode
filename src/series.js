@@ -34,7 +34,7 @@ Series.prototype.edit = function(name, url, season, episode, incognito, contextM
 // @return trimmed series (only non-function properties)
 // @param true: can be abused as clone function
 Series.prototype.save = function(clone) {
-  clone = typeof clone !== "undefined" ? clone : false;
+  clone = clone === undefined ? false : clone;
     const seriesToStore = {};
     for (const property in this) {
     if(typeof this[property] !== "function") {
@@ -50,7 +50,7 @@ Series.prototype.save = function(clone) {
 // SeriesList ------------------------------------------------------------------
 function SeriesList(seriesList, plainTextURL) {
     let fragments_ = 1;
-    const plainTextURL_ = plainTextURL !== "undefined" ? plainTextURL : false;
+    const plainTextURL_ = plainTextURL === undefined ? false : plainTextURL;
   // @return number of series (typeof series != "function") of @param seriesList
     const length = function (seriesList) {
         let numberOfSeries = 0;
@@ -105,8 +105,8 @@ function SeriesList(seriesList, plainTextURL) {
   // @param save (optional), default true
   //                         false: less storage access in constructor
   this.add = function(name, url, season, episode, incognito, contextMenu, selected, save) {
-    selected = typeof selected !== "undefined" ? selected : true;
-    save = typeof save !== "undefined" ? save : true;
+    selected = selected === undefined ? true : selected;
+    save = save === undefined ? true : save;
       let sname = name;
       for (const series in this) {
       if(typeof this[series] === "function") {
@@ -168,42 +168,43 @@ function SeriesList(seriesList, plainTextURL) {
     if(!this[name] || typeof this[name] === "function") { // name not in list
         const s = this.getSelected(); // add new series deselects all
       if(s !== null) // rename
-        delete this[s.name];        
+        delete this[s.name];
       this.add(name, url, season, episode, incognito, contextMenu);
       return true;
-    } else if(!this[name].selected) { // name not selected (wants to rename to
-      return false;                   // existing name -> bad idea)
-    } else {
-      this[name].edit(name, url, season, episode, incognito, contextMenu);
-      this.save();
-      chrome.action.setTitle({title:name+" - S"+season+"E"+episode});
-      return true;
+    } else if(this[name].selected) {
+        this[name].edit(name, url, season, episode, incognito, contextMenu);
+        this.save();
+        chrome.action.setTitle({title: name + " - S" + season + "E" + episode});
+        return true;
+    } else { // name not selected (wants to rename to
+        return false;                   // existing name -> bad idea)
     }
   };
   // merges entries into current series list (seriesList + seriesList)
   this.merge = function(seriesList) {
     if(seriesList !== null) {
         for (const series in seriesList) {
-        if(series !== "__fragments__") {
+        if(series === "__fragments__") {
+            fragments_ = seriesList[series];
+        } else {
             const s = seriesList[series];
             const surl = (s.url.substring(0, 4) === "http") ? s.url : decodeURL(s.url);
-          this.add(s.name, surl, s.season, s.episode, s.incognito, s.contextMenu, s.selected, false);
-        } else {
-          fragments_ = seriesList[series];
+            this.add(s.name, surl, s.season, s.episode, s.incognito, s.contextMenu, s.selected, false);
         }
       }
     }
   };
   // checks if name is available while editing
   this.checkNameOK = function(name) {
-    if(typeof name === "undefined" || name === "")
+    if(name === undefined || name === "")
       return false;
     else if(!this[name])
       return true;
-    else if(!this[name].selected)
-      return false;
-    else
-      return true;
+    else if(this[name].selected) {
+        return true;
+    } else {
+        return false;
+    }
   };
   // fills select options into popup dropdown
   this.fillInSelectOptions = function(select) {
@@ -231,12 +232,12 @@ function SeriesList(seriesList, plainTextURL) {
   // SeriesList constructor
   if(seriesList !== null) {
       for (const series in seriesList) {
-      if(series !== "__fragments__") {
+      if(series === "__fragments__") {
+          fragments_ = seriesList[series];
+      } else {
           const s = seriesList[series];
           const surl = (s.url.substring(0, 4) === "http") ? s.url : decodeURL(s.url);
-        this.add(s.name, surl, s.season, s.episode, s.incognito, s.contextMenu, s.selected, false);
-      } else {
-        fragments_ = seriesList[series];
+          this.add(s.name, surl, s.season, s.episode, s.incognito, s.contextMenu, s.selected, false);
       }
     }
   }
@@ -246,8 +247,8 @@ function SeriesList(seriesList, plainTextURL) {
 // @param ifListNotFound, ifListFound: necessary
 // @param frags, fragInProcess, seriesList: optional, list containing >1 frags
 function restore(ifListNotFound, ifListFound, frags, fragInProcess, seriesList) {
-  frags = typeof frags !== "undefined" ? frags : 1;
-  fragInProcess = typeof fragInProcess !== "undefined" ? fragInProcess : 1;
+  frags = frags === undefined ? 1 : frags;
+  fragInProcess = fragInProcess === undefined ? 1 : fragInProcess;
   if(fragInProcess > 511) { // because options also stored in one mem fragment
     console.error("MAX_ITEMS for sync storage reached!");
     ifListNotFound();
@@ -263,10 +264,10 @@ function restore(ifListNotFound, ifListFound, frags, fragInProcess, seriesList) 
       } else {
           if (fragInProcess === 1) {
               seriesList = new SeriesList(items[storedSeriesPart], items[storedOptions].plainTextURL);
-              frags = parseInt(items[storedSeriesPart].__fragments__);
+              frags = Number.parseInt(items[storedSeriesPart].__fragments__);
           } else {
               seriesList.merge(items[storedSeriesPart]);
-              frags = parseInt(items[storedSeriesPart].__fragments__);
+              frags = Number.parseInt(items[storedSeriesPart].__fragments__);
           }
           if (frags - fragInProcess > 0) {
               restore(ifListNotFound, ifListFound, frags, fragInProcess + 1, seriesList);
@@ -291,14 +292,14 @@ function decodeURL(s){
     try {
         const s1 = decodeURIComponent(s.substr(0, s.length - 1));
         let t = "";
-        for (let i = 0; i < s1.length; i++) t += String.fromCharCode(s1.charCodeAt(i) - (parseInt(s.substr(s.length - 1, 1)) + i) % 10);
+        for (let i = 0; i < s1.length; i++) t += String.fromCodePoint(s1.codePointAt(i) - (Number.parseInt(s.substr(s.length - 1, 1)) + i) % 10);
         return decodeURIComponent(t);
     } catch (e) {
         // Fallback: old deprecated function
         console.warn('URL decoding failed, return old deprecated decoded url', e);
         let s1 = unescape(s.substr(0, s.length - 1));
         let t = "";
-        for (let i = 0; i < s1.length; i++) t += String.fromCharCode(s1.charCodeAt(i) - (parseInt(s.substr(s.length - 1, 1)) + i) % 10);
+        for (let i = 0; i < s1.length; i++) t += String.fromCodePoint(s1.codePointAt(i) - (Number.parseInt(s.substr(s.length - 1, 1)) + i) % 10);
         return unescape(t);
     }
 }
@@ -308,14 +309,14 @@ function encodeURL(s){
         const encN = 1;
         s = encodeURIComponent(s);
         const ta = [];
-        for (let i = 0; i < s.length; i++) ta[i] = encodeURIComponent(String.fromCharCode(s.charCodeAt(i) + (encN + i) % 10));
+        for (let i = 0; i < s.length; i++) ta[i] = encodeURIComponent(String.fromCodePoint(s.codePointAt(i) + (encN + i) % 10));
         return "" + ta.join("") + encN;
     } catch (e) {
         console.warn('URL encoding failed, returning encoded string with deprecated functions: ', e);
         let encN = 1;
         s = escape(s);
         let ta = new Array();
-        for (let i = 0; i < s.length; i++) ta[i] = escape(String.fromCharCode(s.charCodeAt(i) + (encN + i) % 10));
+        for (let i = 0; i < s.length; i++) ta[i] = escape(String.fromCodePoint(s.codePointAt(i) + (encN + i) % 10));
         return "" + ta.join("") + encN;
     }
 }

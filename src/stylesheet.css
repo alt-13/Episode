@@ -11,40 +11,14 @@ body {
 
 .popup {
     margin: 1em 0.5em 1em 0.5em;
-    width: 10em;
+    width: 13em;
 }
 
 /* Edit popup specific styling */
 .edit-popup {
-    width: 320px;
-    padding: 1em;
-    margin: 0;
+    box-sizing: border-box;
 }
 
-.edit-header {
-    text-align: center;
-    margin-bottom: 1em;
-    padding-bottom: 0.5em;
-}
-
-.edit-header h2 {
-    margin: 0;
-    font-size: 1.3em;
-    font-weight: 700;
-    color: #333;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.dark .edit-header h2 {
-    color: #f0f0f0;
-    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
 
 /* Form styling for edit popup */
 .edit-form {
@@ -72,6 +46,11 @@ body {
 .form-row {
     display: flex;
     gap: 0.75em;
+}
+
+.form-row .form-input {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .form-label {
@@ -360,6 +339,12 @@ input[type="color"]:hover {
     border-style: none;
 }
 
+.dark select {
+    background-color: rgb(51, 51, 51);
+    color: white;
+    border-color: #555;
+}
+
 .dark select option{
     background-color: rgb(51, 51, 51);
     color: white;
@@ -395,6 +380,16 @@ select {
 
 .dark .edit a:hover, .dark .edit span:hover {
     background: #A1A1A1;
+}
+
+.edit a.disabled {
+    color: #ccc;
+    pointer-events: none;
+    cursor: default;
+}
+
+.dark .edit a.disabled {
+    color: #555;
 }
 
 /* Button styling */
@@ -488,79 +483,6 @@ select {
     opacity: 0;
 }
 
-.dialog {
-    padding: 2em;
-    background: #fff;
-    border-radius: 8px;
-    transition: all 200ms ease-in-out;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.dark .dialog {
-    background: rgb(51, 51, 51);
-}
-
-/* Modern dialog styling */
-.modern-dialog {
-    width: 320px;
-    margin: 0 auto;
-    padding: 0;
-    background: #fff;
-    overflow: hidden;
-    border: none;
-}
-
-.dark .modern-dialog {
-    background: rgb(51, 51, 51);
-    border: none;
-}
-
-.dialog-header {
-    padding: 1.5em 1.5em 0 1.5em;
-    text-align: center;
-}
-
-.dialog-header h3 {
-    margin: 0;
-    font-size: 1.25em;
-    font-weight: 700;
-    color: #374151;
-}
-
-.dark .dialog-header h3 {
-    color: #f3f4f6;
-}
-
-.dialog-content {
-    padding: 1em 1.5em;
-    text-align: center;
-    color: #6b7280;
-}
-
-.dark .dialog-content {
-    color: #d1d5db;
-}
-
-.dialog-actions {
-    display: flex;
-    justify-content: space-between;
-    gap: 1em;
-    padding: 1.5em;
-    background: #f9fafb;
-    border-top: 1px solid #e5e7eb;
-}
-
-.dark .dialog-actions {
-    background: rgba(255, 255, 255, 0.05);
-    border-top-color: #555;
-}
-
-.dialog-actions .btn {
-    flex: 1;
-    margin: 0;
-    padding: 0.75em 1em;
-    font-size: 0.9em;
-}
 
 ul#mirrors {
     border: 1px solid grey;
