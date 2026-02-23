@@ -347,7 +347,7 @@ input[type="color"]:hover {
     border-color: #555;
 }
 
-.dark select option{
+.dark select option {
     background-color: rgb(51, 51, 51);
     color: white;
 }
@@ -599,10 +599,12 @@ div#mirrorCol {
     background: url(img/icons.v33.png) no-repeat;
     text-indent: -9999px
 }
+
 .v-centered.icon {
     position: relative;
     top: 2px
 }
+
 /*.icon.add{background-position:0 0}  <-- is used as default icon ¯\_(ツ)_/¯
 .icon.arrow_redo{background-position:-16px 0}
 .icon.arrow_refresh{background-position:-32px 0}

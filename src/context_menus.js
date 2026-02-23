@@ -1,71 +1,80 @@
 let contextMenuIDBeginning = "episode++ContextMenu";
+
 // Entry: called from restore in background (onInstalled)
 function createContextMenu(seriesList) {
   chrome.contextMenus.create({
     id: contextMenuIDBeginning + "Decrement",
-    title:"Episode – –",
+    title: "Episode – –",
     contexts: ["action"]
   });
-  if(seriesList !== undefined) {
-    for(let series in seriesList) {
+  if (seriesList !== undefined) {
+    for (let series in seriesList) {
       let s = seriesList[series];
-      if(typeof s !== "function" && s.contextMenu) {
+      if (typeof s !== "function" && s.contextMenu) {
         addContextMenu(s);
       }
     }
   }
 }
+
 // Adds context menus for series in list
 function addContextMenu(series) {
   chrome.contextMenus.create({
-    type:"radio",
+    type: "radio",
     id: contextMenuIDBeginning + series.name,
-    title:series.name,
-    checked:series.selected,
+    title: series.name,
+    checked: series.selected,
     contexts: ["action"]
   });
 }
+
 // Adds onClicked listeners to all available context menus
 function ifListFoundAddContextMenuOnClickedListeners(seriesList) {
-  chrome.contextMenus.onClicked.addListener(function(info, tab) {
-    if(info.menuItemId === contextMenuIDBeginning + "Decrement") {
+  chrome.contextMenus.onClicked.addListener(function (info, tab) {
+    if (info.menuItemId === contextMenuIDBeginning + "Decrement") {
       restore(setPopup, ifListFoundDecrement);
     }
   });
-  for(let series in seriesList) {
+  for (let series in seriesList) {
     let s = seriesList[series];
-    if(typeof s !== "function" && s.contextMenu) {
+    if (typeof s !== "function" && s.contextMenu) {
       addContextMenuOnClickedListener(s);
     }
   }
 }
+
 // Adds context menus' onClicked listeners for series in list
 function addContextMenuOnClickedListener(series) {
-  chrome.contextMenus.onClicked.addListener(function(info, tab) {
-    if(info.menuItemId === contextMenuIDBeginning + series.name) {
-      restore(setPopup, function(seriesList){ifListFoundSelectSeries(seriesList, series.name);});
+  chrome.contextMenus.onClicked.addListener(function (info, tab) {
+    if (info.menuItemId === contextMenuIDBeginning + series.name) {
+      restore(setPopup, function (seriesList) {
+        ifListFoundSelectSeries(seriesList, series.name);
+      });
     }
   });
 }
+
 // Episode — —: decrementing the selected series' episode (created first)
 function ifListFoundDecrement(seriesList) {
   let selected = seriesList.getSelected();
-  if(selected === null) {
+  if (selected === null) {
     setPopup();
-  } else if(selected.episode > 0) {
-    seriesList.edit(selected.name, selected.url, selected.season, Number.parseInt(selected.episode)-1, selected.incognito, selected.contextMenu);
+  } else if (selected.episode > 0) {
+    seriesList.edit(selected.name, selected.url, selected.season, Number.parseInt(selected.episode) - 1, selected.incognito, selected.contextMenu);
   }
 }
+
 // Series is selected in context menu -> changes selected property in storage
 function ifListFoundSelectSeries(seriesList, name) {
   seriesList.select(name);
   unsetPopup();
 }
+
 // Storage onChanged listener adds/removes affected select context menus
 function addStorageOnChangedListenerForContexMenu() {
-    chrome.storage.onChanged.addListener(function(changes, namespace) {
-    if(namespace === "sync" && changes !== null) {
-      if(storedSeries in changes){
+  chrome.storage.onChanged.addListener(function (changes, namespace) {
+    if (namespace === "sync" && changes !== null) {
+      if (storedSeries in changes) {
         chrome.contextMenus.removeAll();
         createContextMenu(changes[storedSeries].newValue);
       }
