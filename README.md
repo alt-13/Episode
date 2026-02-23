@@ -40,11 +40,10 @@ Sorted by priority:
 
 #### Resolved Bugs:
 
-* default for incognito (add series) not working
+* default for incognito (add series) is not working
 
 #### Known Bugs:
 * escape/unescape deprecated (right now used as fallback until all urls are encoded by the new method)
-* bs.to mirrors outdated
 <!--
 #### Issues:
 * BS.TO direct link to stream hoster only working if no captcha
