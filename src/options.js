@@ -45,7 +45,7 @@ function restoreOptions() {
     document.getElementById("iconColor").value = options.iconColor;
     // add button listeners
     document.getElementById("iconColor").addEventListener("input", function () {
-      setIconColor();
+      setIconColor(document.getElementById("iconColor").value);
     });
     document.getElementById("save").addEventListener("click", function () {
       saveOptions(domainList);
