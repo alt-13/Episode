@@ -231,34 +231,21 @@ function getDefaultOptions() {
 // @return default mirror order
 function getDefaultMirrorDomainList() {
   const defaultMirrors = [
-    {AuroraVid: "AuroraVid"},
-    {BitShare: "BitShare"},
-    {BitVID: "BitVID"},
-    {CloudTime: "CloudTime"},
-    {Dailymotion: "Dailymotion"},
-    {Ecostream: "Ecostream"},
-    {FileNuke: "FileNuke"},
-    {Firedrive: "Firedrive"},
-    {FlashX: "FlashX"},
-    {MySpass: "MySpass"},
-    {NOSVideo: "NOSVideo"},
-    {NowVideo: "NowVideo"},
-    {OpenLoad: "OpenLoad"},
-    {OpenLoadHD: "OpenLoadHD"},
-    {PowerWatch: "PowerWatch"},
-    {Primeshare: "Primeshare"},
-    {RapidVideo: "RapidVideo"},
-    {Sockshare: "Sockshare"},
-    {Shared: "Shared"},
-    {Streamango: "Streamango"},
-    {Streamcloud: "Streamcloud"},
-    {TheVideo: "TheVideo"},
-    {UploadC: "UploadC"},
-    {Vidto: "Vidto"},
+    {VOE: "VOE"},
+    {Doodstream: "Doodstream"},
+    {Vidoza: "Vidoza"},
+    {Vidmoly: "Vidmoly"},
+    {Filemoon: "Filemoon"},
+    {Streamtape: "Streamtape"},
+    {MIXdrop: "MIXdrop"},
     {Vivo: "Vivo"},
-    {WholeCloud: "WholeCloud"},
-    {YouTube: "YouTube"},
-    {YouWatch: "YouWatch"}
+    {UPStream: "UPStream"},
+    {VidLox: "VidLox"},
+    {StreamZZ: "StreamZZ"},
+    {Hexupload: "Hexupload"},
+    {Vupload: "Vupload"},
+    {SendFox: "SendFox"},
+    {PlayTube: "PlayTube"}
   ];
   const defaultDomains = {"bs.to": {"mirrorList": defaultMirrors, "selected": true}};
   return defaultDomains;

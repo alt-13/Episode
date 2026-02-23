@@ -263,10 +263,14 @@ function findEpisodeString(url, series, seriesList, options) {
       const href = findLinkToFavouriteMirrorHref(newPath, options, html);
       if(href) {
           const parts = href.split("/");
-          const mirror = parts.pop();
-          const language = parts.pop();
-          const episode = parts.pop();
-        buildBsURL(url, series, episode, language, mirror, seriesList, options);
+          if (parts.length >= 6) {
+            const mirror = parts.pop();
+            const language = parts.pop();
+            const episode = parts.pop();
+            buildBsURL(url, series, episode, language, mirror, seriesList, options);
+          } else {
+            openURL(url.protocol + "//" + url.host + "/" + href, series.incognito, seriesList, options);
+          }
       } else if (nextEpisodeFound(url, series, seriesList, options, html)) {
           series.episode++;
           seriesList.edit(series.name, series.url, series.season, series.episode, series.incognito, series.contextMenu);
@@ -281,18 +285,21 @@ function findEpisodeString(url, series, seriesList, options) {
     }).catch(function(err){ console.error(err); setPopup(); });
 }
 
-// @return href string with preferential mirror, or null if not found
+// @return href string with preferential mirror, episode href without mirror as fallback, or null
 function findLinkToFavouriteMirrorHref(newPath, options, html) {
   const mirrors = options.domains["bs.to"].mirrorList;
+  const escapedPath = newPath.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
   for (let mirrorI of mirrors) {
     const mirror = mirrorI[Object.keys(mirrorI)[0]];
-    const regex = new RegExp("href=\"([^\"]*" + newPath.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`) + "[^\"]*/" + mirror.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`) + ")\"", "i");
+    const regex = new RegExp("href=\"([^\"]*" + escapedPath + "[^\"]*/" + mirror.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`) + ")\"", "i");
     const match = html.match(regex);
     if (match?.[1]) {
       return match[1];
     }
   }
-  return null;
+  // Fallback: find episode link without mirror (ends with a 2–3 letter language code)
+  const fallback = html.match(new RegExp('href="([^"]*' + escapedPath + '[^"]+/[a-z]{2,3})"'));
+  return fallback?.[1] ?? null;
 }
 
 // @return true there is another episode in this season, false otherwise
@@ -302,10 +309,14 @@ function nextEpisodeFound(url, series, seriesList, options, html) {
   const href = findLinkToFavouriteMirrorHref(newPath, options, html);
   if (href) {
     const parts = href.split("/");
-    const mirror = parts.pop();
-    const language = parts.pop();
-    const episode = parts.pop();
-    buildBsURL(url, series, episode, language, mirror, seriesList, options);
+    if (parts.length >= 6) {
+      const mirror = parts.pop();
+      const language = parts.pop();
+      const episode = parts.pop();
+      buildBsURL(url, series, episode, language, mirror, seriesList, options);
+    } else {
+      openURL(url.protocol + "//" + url.host + "/" + href, series.incognito, seriesList, options);
+    }
     return true;
   } else {
     return false;
