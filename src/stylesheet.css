@@ -279,6 +279,8 @@ input {
     border: 2px solid #e0e0e0;
     padding: 0.5em;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font-family: inherit;
+    font-size: inherit;
 }
 
 input:focus {
@@ -357,6 +359,7 @@ select {
     font-size: 90%;
     border: 2px solid #e0e0e0;
     padding: 0.5em;
+    font-family: inherit;
 }
 
 .edit {
