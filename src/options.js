@@ -12,7 +12,7 @@ function saveOptions(domainList) {
     showUnknownDomainNotification: document.getElementById("showUnknownDomainNotification").checked,
     youtubeAutoplay: document.getElementById("youtubeAutoplay").checked,
     directLink: document.getElementById("directLink").checked,
-    darkTheme: document.getElementById("darkTheme").checked,
+    themeMode: document.getElementById("themeMode").value,
     iconColor: document.getElementById("iconColor").value
   };
   chrome.storage.sync.set(options, function () {
@@ -38,7 +38,8 @@ function restoreOptions() {
     document.getElementById("showUnknownDomainNotification").checked = options.showUnknownDomainNotification;
     document.getElementById("youtubeAutoplay").checked = options.youtubeAutoplay;
     document.getElementById("directLink").checked = options.directLink;
-    document.getElementById("darkTheme").checked = options.darkTheme;
+    migrateThemeIfNeeded(options);
+    document.getElementById("themeMode").value = options.themeMode;
     document.getElementById("iconColor").value = options.iconColor;
     // add button listeners
     document.getElementById("iconColor").addEventListener("input", function () {
@@ -47,9 +48,7 @@ function restoreOptions() {
     document.getElementById("save").addEventListener("click", function () {
       saveOptions(domainList);
     });
-    if (options.darkTheme) {
-      document.getElementById("options").className = "dark";
-    }
+    applyTheme(options.themeMode, "options");
     if (sessionStorage.getItem("optionsSaved")) {
       sessionStorage.removeItem("optionsSaved");
       const status = document.getElementById("status");
