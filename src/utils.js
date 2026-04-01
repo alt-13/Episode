@@ -110,7 +110,7 @@ async function setTabIDs(tabIDs, replace) {
     replace = replace === undefined ? false : replace;
     const result = await chrome.storage.local.get(["episode++TabIDs"]);
     const ids = result["episode++TabIDs"];
-    if (ids != null && ids !== "0" && tabIDs !== 0 && !replace) {
+    if (ids != null && ids != "0" && tabIDs !== 0 && !replace) {
       tabIDs = ids + "|" + tabIDs;
     }
     await chrome.storage.local.set({"episode++TabIDs": tabIDs});
