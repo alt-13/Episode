@@ -15,12 +15,9 @@ function saveOptions(domainList) {
     darkTheme: document.getElementById("darkTheme").checked,
     iconColor: document.getElementById("iconColor").value
   };
-  chrome.storage.sync.set(options, function () { // show user save status
-    const status = document.getElementById("status");
-    status.text = chrome.i18n.getMessage("optionsSaved");
-    setTimeout(function () {
-      status.text = "";
-    }, 1500);
+  chrome.storage.sync.set(options, function () {
+    sessionStorage.setItem("optionsSaved", "1");
+    location.reload();
   });
 }
 
@@ -52,6 +49,16 @@ function restoreOptions() {
     });
     if (options.darkTheme) {
       document.getElementById("options").className = "dark";
+    }
+    if (sessionStorage.getItem("optionsSaved")) {
+      sessionStorage.removeItem("optionsSaved");
+      const status = document.getElementById("status");
+      status.textContent = chrome.i18n.getMessage("optionsSaved");
+      status.classList.add("show");
+      setTimeout(function () {
+        status.classList.remove("show");
+        status.textContent = "";
+      }, 1500);
     }
   });
 }

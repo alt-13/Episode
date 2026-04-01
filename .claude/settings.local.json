@@ -5,7 +5,8 @@
       "WebFetch(domain:developer.chrome.com)",
       "Bash(head:*)",
       "Bash(grep:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Skill(claude-md-management:revise-claude-md)"
     ]
   }
 }

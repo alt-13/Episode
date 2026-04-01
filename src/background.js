@@ -118,6 +118,12 @@ chrome.runtime.onInstalled.addListener(function () {
   restore(onInstall, onInstall);
 });
 
+// On browser start: restore icon color (onInstalled does not fire on startup) --
+chrome.runtime.onStartup.addListener(function () {
+  restore(function (sl, options) { setIconColor(options.iconColor); },
+          function (sl, options) { setIconColor(options.iconColor); });
+});
+
 function onInstall(seriesList, options) {
   createContextMenu(seriesList);
   setIconColor(options.iconColor);
