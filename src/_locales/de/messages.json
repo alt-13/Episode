@@ -127,6 +127,18 @@
 	"darkTheme": {
 		"message": "Das dunkle Farbthema verwenden"
 	},
+	"themeLabel": {
+		"message": "Design:"
+	},
+	"themeSystem": {
+		"message": "Systemstandard"
+	},
+	"themeLight": {
+		"message": "Hell"
+	},
+	"themeDark": {
+		"message": "Dunkel"
+	},
 	"iconColor": {
 		"message": "Farbe des Icons wählen:"
 	},

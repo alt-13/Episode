@@ -127,6 +127,18 @@
 	"darkTheme": {
 		"message": "Utilizar el tema oscuro"
 	},
+	"themeLabel": {
+		"message": "Tema:"
+	},
+	"themeSystem": {
+		"message": "Predeterminado del sistema"
+	},
+	"themeLight": {
+		"message": "Claro"
+	},
+	"themeDark": {
+		"message": "Oscuro"
+	},
 	"iconColor": {
 		"message": "Elija color del icon:"
 	},
