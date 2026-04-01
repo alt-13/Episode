@@ -12,9 +12,8 @@ function ifListNotFoundGoToEdit() {
 // Fill series list entries into dropdown select and react to buttons
 function ifListFoundSetupPopup(seriesList, options) {
   setPopupTo("popup.html");
-  if (options.darkTheme) {
-    document.getElementById("popup").className = "dark";
-  }
+  migrateThemeIfNeeded(options);
+  applyTheme(options.themeMode, "popup");
   let select = document.getElementById("select_series");
   seriesList.fillInSelectOptions(select);
   updateActionButtons();
