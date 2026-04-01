@@ -8,9 +8,8 @@ window.addEventListener("unload", saveFormContent);
 
 // No series list found (empty storage): Save -> add series
 function ifListNotFoundSetupPlainEditPopup(options) {
-  if (options.darkTheme) {
-    document.getElementById("edit").className = "dark";
-  }
+  migrateThemeIfNeeded(options);
+  applyTheme(options.themeMode, "edit");
   document.getElementById("save").addEventListener("click", function () {
     editSeries(null);
   });
@@ -20,9 +19,8 @@ function ifListNotFoundSetupPlainEditPopup(options) {
 function ifListFoundSetupEditPopup(seriesList, options) {
   let selected = seriesList.getSelected();
   fillInFormContent(selected, options);
-  if (options.darkTheme) {
-    document.getElementById("edit").className = "dark";
-  }
+  migrateThemeIfNeeded(options);
+  applyTheme(options.themeMode, "edit");
   document.getElementById("epp_title").addEventListener("input", function (event) {
     if (seriesList.checkNameOK(event.target.value)) {
       document.getElementById("epp_title").style.borderColor = "inherit";
